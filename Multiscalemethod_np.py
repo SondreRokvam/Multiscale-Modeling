@@ -16,18 +16,21 @@ def lagreparametere(Q):
     g.close()
 
 def hentePopulation(coordpath):
+
     #Les fiber matrix populasjon
     xy=list()
     f = open(coordpath,'r')
     tekst = f.read()
     f.close()
     lines = tekst.split('\n')
-        #lagre koordinater til stottefil
+
+    #lagre koordinater til stottefil
     for line in lines:
         data = line.split('\t')
         a = float(data[0])
         b = float(data[1])
         xy.append([a,b])
+
 
     print 'Antall fiber = ',int(nf),'\tAntall fiberkoordinater = '+str(len(xy))+'\n'
     print '\n \n',xy,'\n \n'

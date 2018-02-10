@@ -226,7 +226,7 @@ parameterpath = 'D:/Parametere.txt'
 f = open(parameterpath, 'r')
 tekst = f.read()
 f.close()
-print tekst+'\n\n'
+print tekst+'\n'+'\n'
 data = tekst.split('\t')
 Q = float(data[0])
 r = float(data[1])

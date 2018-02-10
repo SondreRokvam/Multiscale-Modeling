@@ -3,7 +3,7 @@ import numpy as np
 
 
 for i in range(1,10):
-    img = cv2.imread(r'‪C:\Users\Rockv\Desktop\41fUEiKvDeL.jpg', 0)
+    img = cv2.imread(r'‪C:\Users\Rockv\Desktop\pyBilder\graph1.png', 0)
 
     cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     cimg = cv2.dilate(cimg, (3, 3))  # Fill in gaps from blurring. This helps to detect circles with broken edges.

@@ -488,7 +488,6 @@ if 1:
         dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5 # RVE storrelsen er satt til aa vaere relativ av nf og V
 
     """  RVE_Modelleringsparametere  """
-    wiggle = random()*r       # Omplasseringsgrenser for fiberomplassering
     iterasjonsgrense = 10000  # max antall plasseringsforsok per fiber
 
     #Toleranser
@@ -526,9 +525,10 @@ for Q in range(0,n):
     from abaqusConstants import *
     from odbAccess import *
 
-    # Q er randomfunksjonensnokkelen
-    seed(Q)
 
+    seed(Q)                                 # Q er randomfunksjonensnokkelen
+    wiggle = random()*r                    # Omplasseringsgrenser for fiberomplassering
+    
     #Abaqus navn
     Enhetstoyinger = ['Exx' + str(nf) + '_' + str(Q), 'Eyy' + str(nf) + '_' + str(Q), 'Ezz' + str(nf) + '_' + str(Q),
               'Exy' + str(nf) + '_' + str(Q), 'Exz' + str(nf) + '_' + str(Q),

@@ -1,1 +1,1 @@
-0	1.0	4	0.6	0.435461411465	C:/Multiscale-Modeling/coordst.txt	10000	0.025	0.025	4.57645616432
+0	1.0	4	0.6	0.663809227285	C:/Multiscale-Modeling/coordst.txt	10000	0.025	0.025	4.57645616432

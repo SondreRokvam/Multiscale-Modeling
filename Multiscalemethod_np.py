@@ -7,9 +7,7 @@ numCpus = cpu_count()
 
 print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMultiscale modelling on microscale  \nnumCpus = ',numCpus
 
-#RVEmodell
-
-
+#RVEmodell   SMA
 def lagreparametere(Q):
     g = open(parameterpath, "w")
     g.write(str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)) # til fiber modellering
@@ -22,17 +20,15 @@ def hentePopulation(coordpath):
     tekst = f.read()
     f.close()
     lines = tekst.split('\n')
-        #lagre koordinater til stottefil
+    #lagre koordinater til stottefil
     for line in lines:
         data = line.split('\t')
         a = float(data[0])
         b = float(data[1])
         xy.append([a,b])
-
     print 'Antall fiber = ',int(nf),'\tAntall fiberkoordinater = '+str(len(xy))+'\n'
     print '\n \n',xy,'\n \n'
     return xy
-
 #Abaqus
 
 

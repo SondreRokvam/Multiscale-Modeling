@@ -500,9 +500,9 @@ if 1:
     indredodgrense= r-gtol
 
     """Tekstfiler"""
-    parameterpath = 'D:/Parametere.txt'
-    coordpath = 'D:/coordst.txt'
-    lagrestiffpath = 'D:/Stiffness.txt'
+    parameterpath = 'C:/Multiscale-Modeling/Parametere.txt'
+    coordpath = 'C:/Multiscale-Modeling/coordst.txt'
+    lagrestiffpath = 'C:/Multiscale-Modeling/Stiffness.txt'
     workpath = 'C:/Users/Rockv/Desktop/Temp/'
 
 

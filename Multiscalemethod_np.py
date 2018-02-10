@@ -7,7 +7,7 @@ numCpus = cpu_count()
 
 print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMultiscale modelling on microscale  \nnumCpus = ',numCpus
 
-#RVEmodell
+#RVEmodell   SMA
 def lagreparametere(Q):
     g = open(parameterpath, "w")
     g.write(str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)) # til fiber modellering

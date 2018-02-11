@@ -7,10 +7,11 @@ numCpus = cpu_count()
 
 print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMultiscale modelling on microscale  \nnumCpus = ',numCpus
 
-#RVEmodell   SMA
+#RVEmodell
 def lagreparametere(Q):
     g = open(parameterpath, "w")
-    g.write('Q' + '\t' + 'r' + '\t' + 'nf' + '\t' + 'Vf' + '\t' + 'wiggle' + '\t' + 'coordpath' + '\t\t\t' + 'iterasjonsgrense' + '\t' + 'rtol' + '\t' + 'gtol' + '\t' + 'dL'+'\n'+
+    print '\nQ\tr\tnf\tVf\twiggle\t\tcoordpath\t\t\t\tLoops\trtol\tgtoL\tdL'
+    g.write('Q' + '\t' + 'r' + '\t' + 'nf' + '\t' + 'Vf' + '\t' + 'wiggle' + '\t' + 'coordpath' + '\t' + 'iterasjonsgrense' + '\t' + 'rtol' + '\t' + 'gtol' + '\t' + 'dL'+'\n'+
             str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)) # til fiber modellering
     g.close()
 
@@ -30,8 +31,8 @@ def hentePopulation(coordpath):
     print 'Antall fiber = ',int(nf),'\tAntall fiberkoordinater = '+str(len(xy))
     print '\n',xy,'\n \n'
     return xy
-#Abaqus
 
+#Abaqus
 
 def createModel(xydata):
     import section
@@ -435,7 +436,7 @@ def sweep_sig2_sig3(Compliancematrix,sweepresolution):
 
     return sweep
 
-def create_sweepedlastcases(sweep, cases):
+def create_sweepedlastcases(sweep):
 
     mod = mdb.models[modelName]
     a = mod.rootAssembly
@@ -443,19 +444,18 @@ def create_sweepedlastcases(sweep, cases):
     mod.steps.changeKey(fromName=stepName, toName=difstpNm)
     print '\nComputing strains for normalized load sweep'
     #Lagring av output data base filer .odb
-    for lol in range(0,cases):
+    for lol in range(0,sweepcases):
         Jobw =Sweeptoyinger[lol]
-        print '\nLoad at'+str(360*lol/cases)+'deg'
+        print '\nLoad at'+str(360*lol/sweepcases)+'deg'
         exx, eyy, ezz, exy, exz, eyz = sweep[lol]
         mod.boundaryConditions['BCX'].setValues(u1=exx, u2=exy, u3=exz)
         mod.boundaryConditions['BCZ'].setValues(u1=exy, u2=eyy, u3=eyz)
         mod.boundaryConditions['BCY'].setValues(u1=exz, u2=eyz, u3=ezz)
         run_Job(Jobw, modelName)
-    print 'Computing stresses for '+str(cases)+' sweep cases'
     del a, mod, Jobw, lol
 
 def Extract_parameterdata():
-
+    print 'Computing stresses for ' + str(sweepcases) + ' sweep cases'
     for kaare in range(0,sweepcases):
         odb = session.openOdb(workpath + Sweeptoyinger[kaare] + '.odb')
         Matrix = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
@@ -523,8 +523,6 @@ if 1:
     #Composite sweep stresses
     sweepresolution = 2*pi / sweepcases #stepsize
 
-    print '\nQ\tr\tnf\tVf\twiggle\t\tcoordpath\tLoops\trtol\tgtoL\tdL'
-
     #execfile('C:\Multiscale-Modeling\Multiscalemethod_np.py')
 #
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
@@ -579,22 +577,9 @@ for Q in range(0,n):
     sweepstrains = sweep_sig2_sig3(Compliancematrix,sweepresolution)
 
     # Abaqus Sweep Cases
-    create_sweepedlastcases(sweepstrains, sweepcases)
+    create_sweepedlastcases(sweepstrains)
     Extract_parameterdata()
 
 
     print 'torke'
-    #Mdb()
-    # stats
-    #if not nf <= 1:
-    #    fiberdist, avgfdist = fiberdistances(dL, xydata)
-    #analyticalfiberdist = 0.521
 
-
-    #session.mdbData.summary()
-    #
-    #o1 = session.openOdbs(names=(workpath+Toying[0]+'.odb', workpath+Toying[1]+'.odb',
-    #                             workpath+Toying[2]+'.odb', workpath+Toying[3]+'.odb', workpath+Toying[4]+'.odb',
-    #                             workpath+Toying[5]+'.odb'))
-    #session.viewports['Viewport: 1'].setValues(displayedObject=o1)
-    #Preform konvergence tests

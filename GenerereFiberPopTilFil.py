@@ -13,8 +13,7 @@ def modellereRVEsnitt():  # Lage fiber populasjon
     hjornepunkt = 0
     senterpunkt = 0
     while nplassert < nf:
-        frem = countsjikt(
-            coord) / nf  # Forlopig fremdrift - antall fibersenter som finnes i RVE/totalt antall fiber (nf)
+        frem = countsjikt(coord) / nf  # Forlopig fremdrift - antall fibersenter som finnes i RVE/totalt antall fiber (nf)
         fvf = frem * Vf  # Forlopig volumfraksjon
 
         # se om fiberutplasseringa har mott iterasjonsgrene for krasj og fibere skal shake up
@@ -24,7 +23,6 @@ def modellereRVEsnitt():  # Lage fiber populasjon
                 Iterasjonsflag = Iterasjonsflag + 1
             if Iterasjonsflag > 5:
                 Iterasjonsflag = 0
-                # print 'Punktene random forflyttes. npp:', nplassert, 'fnnp:', countsjikt(), 'Vf:', round(fvf,3), ' av tot Vf:', Vf, 'tries:', len( books), 'krasjes:', nkrasj,
                 coord = shakeitdown(coord)
 
             else:
@@ -50,8 +48,7 @@ def modellereRVEsnitt():  # Lage fiber populasjon
                     coord.append([x + dL, y + dL])
                     hjornepunkt = hjornepunkt + 1
                     nplassert = nplassert + 1
-                    print 'Fiber added! Total = ', len(coord), 'Faktisk =:', countsjikt(coord), 'av nf = ', nf, round(
-                        fvf, 3), ' av Vf:', Vf, 'krasjes:', nkrasj, 'tries:', len(books)
+                    printprog(coord, fvf, nkrasj, books)
                     Iterasjonsflag = 0
                 elif x >= 0 and y < 0 and not krasj(x, y, coord) and not krasj(x - dL, y, coord) and not krasj(x,y + dL,coord) and not krasj(x - dL, y + dL, coord):
                     coord.append([x, y])
@@ -60,8 +57,7 @@ def modellereRVEsnitt():  # Lage fiber populasjon
                     coord.append([x - dL, y + dL])
                     hjornepunkt = hjornepunkt + 1
                     nplassert = nplassert + 1
-                    print 'Fiber added! Total = ', len(coord), 'Faktisk =:', countsjikt(coord), 'av nf = ', nf, round(
-                        fvf, 3), ' av Vf:', Vf, 'krasjes:', nkrasj, 'tries:', len(books)
+                    printprog(coord, fvf, nkrasj, books)
                     Iterasjonsflag = 0
                 elif x < 0 and y >= 0 and not krasj(x, y, coord) and not krasj(x + dL, y, coord) and not krasj(x,
                                                                                                                y - dL,
@@ -73,8 +69,7 @@ def modellereRVEsnitt():  # Lage fiber populasjon
                     coord.append((x + dL, y - dL))
                     hjornepunkt = hjornepunkt + 1
                     nplassert = nplassert + 1
-                    print 'Fiber added! Total = ', len(coord), 'Faktisk =:', countsjikt(coord), 'av nf = ', nf, round(
-                        fvf, 3), ' av Vf:', Vf, 'krasjes:', nkrasj, 'tries:', len(books)
+                    printprog(coord, fvf, nkrasj, books)
                     Iterasjonsflag = 0
                 elif x >= 0 and y >= 0 and not krasj(x, y, coord) and not krasj(x - dL, y, coord) and not krasj(x,
                                                                                                                 y - dL,
@@ -84,11 +79,9 @@ def modellereRVEsnitt():  # Lage fiber populasjon
                     coord.append([x - dL, y])
                     coord.append([x, y - dL])
                     coord.append([x - dL, y - dL])
-                    # print ("opp, hoy")
                     hjornepunkt = hjornepunkt + 1
                     nplassert = nplassert + 1
-                    print 'Fiber added! Total = ', len(coord), 'Faktisk =:', countsjikt(coord), 'av nf = ', nf, round(
-                        fvf, 3), ' av Vf:', Vf, 'krasjes:', nkrasj, 'tries:', len(books)
+                    printprog(coord, fvf, nkrasj, books)
                     Iterasjonsflag = 0
                 else:
                     nkrasj = nkrasj + 1
@@ -100,8 +93,7 @@ def modellereRVEsnitt():  # Lage fiber populasjon
                     coord.append([x, y])
                     coord.append([x - dL, y])
                     nplassert = nplassert + 1
-                    print 'Fiber added! Total = ', len(coord), 'Faktisk =:', countsjikt(coord), 'av nf = ', nf, round(
-                        fvf, 3), ' av Vf:', Vf, 'krasjes:', nkrasj, 'tries:', len(books)
+                    printprog(coord, fvf, nkrasj, books)
                     Iterasjonsflag = 0
                     sidepunkt = sidepunkt + 1
 
@@ -109,8 +101,7 @@ def modellereRVEsnitt():  # Lage fiber populasjon
                     coord.append([x, y])
                     coord.append([x + dL, y])
                     nplassert = nplassert + 1
-                    print 'Fiber added! Total = ', len(coord), 'Faktisk =:', countsjikt(coord), 'av nf = ', nf, round(
-                        fvf, 3), ' av Vf:', Vf, 'krasjes:', nkrasj, 'tries:', len(books)
+                    printprog(coord, fvf, nkrasj, books)
                     Iterasjonsflag = 0
                     sidepunkt = sidepunkt + 1
 
@@ -118,8 +109,7 @@ def modellereRVEsnitt():  # Lage fiber populasjon
                     coord.append([x, y])
                     coord.append([x, y - dL])
                     nplassert = nplassert + 1
-                    print 'Fiber added! Total = ', len(coord), 'Faktisk =:', countsjikt(coord), 'av nf = ', nf, round(
-                        fvf, 3), ' av Vf:', Vf, 'krasjes:', nkrasj, 'tries:', len(books)
+                    printprog(coord, fvf, nkrasj, books)
                     Iterasjonsflag = 0
                     sidepunkt = sidepunkt + 1
                     # print ("topp punkt")
@@ -128,8 +118,7 @@ def modellereRVEsnitt():  # Lage fiber populasjon
                     coord.append([x, y])
                     coord.append([x, y + dL])
                     nplassert = nplassert + 1
-                    print 'Fiber added! Total = ', len(coord), 'Faktisk =:', countsjikt(coord), 'av nf = ', nf, round(
-                        fvf, 3), ' av Vf:', Vf, 'krasjes:', nkrasj, 'tries:', len(books)
+                    printprog(coord, fvf, nkrasj, books)
                     Iterasjonsflag = 0
                     sidepunkt = sidepunkt + 1
                 else:
@@ -140,7 +129,7 @@ def modellereRVEsnitt():  # Lage fiber populasjon
                 coord.append([x, y])
                 nplassert = nplassert + 1
                 senterpunkt = senterpunkt + 1
-                print 'Fiber added! Total = ', len(coord), 'Faktisk =:', countsjikt(coord),'av nf = ', nf, round(fvf,3), ' av Vf:', Vf, 'krasjes:', nkrasj, 'tries:', len(books)
+                printprog(coord, fvf, nkrasj, books)
                 Iterasjonsflag = 0
         else:
             nkrasj = nkrasj + 1
@@ -151,7 +140,6 @@ def modellereRVEsnitt():  # Lage fiber populasjon
         if l < (len(coord)-1):
             g.write('\n')
     g.close()
-    # print str(countsjikt(coord)), 'av nf '+str(nf)
     del Iterasjonsflag
     del fVfforrige
     del nplassert  # antall fiber plassert
@@ -220,24 +208,20 @@ def shakeitrand(coord):
                     coord[t] = [x, y]
             t = t + 1  # moves to next fiber no matter moved or not
     return coord
+def printprog(coord,fvf,nkrasj,books):
+    print 'Fiber added! Fiber =', countsjikt(coord), 'av nf = ', nf, 'Koordinater = ', len(coord),' Vf = ',round(
+        fvf, 3), ' av ', Vf, ' Krasjes:', nkrasj, 'Tries:', len(books)
 
-
-parameterpath = '‪C:/Multiscale-Modeling/Parametere.txt'
+GitHub ='C:/Multiscale-Modeling/'
+parameterpath = GitHub+'Parametere.txt'
 
 f = open(parameterpath, 'r')
 tekst = f.read()
+print tekst+'\n\n'
 f.close()
-print tekst+'\n'+'\n'
-data = tekst.split('\t')
-Q = float(data[0])
-r = float(data[1])
-nf = float(data[2])
-Vf = float(data[3])
-wiggle = float(data[4])
-coordpath = data[5]
-iterasjonsgrense = float(data[6])
-rtol = float(data[7])
-gtol = float(data[8])
+lines = tekst.split('\n')
+data = lines[1].split('\t')
+Q, r, nf, Vf, wiggle, coordpath,iterasjonsgrense, rtol, gtol = float(data[0]),float(data[1]),float(data[2]), float(data[3]), float(data[4]),data[5],float(data[6]), float(data[7]), float(data[8])
 
 #str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)
 dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5

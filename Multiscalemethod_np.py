@@ -452,8 +452,8 @@ def create_sweepedlastcases(stepName,difstpNm,sweep, cases, modelName,workpath):
         mod.boundaryConditions['BCZ'].setValues(u1=exy, u2=eyy, u3=eyz)
         mod.boundaryConditions['BCY'].setValues(u1=exz, u2=eyz, u3=ezz)
         run_Job(Jobw, modelName)
-    print 'Calculated '+str(cases)+' cases'
-    del a,a
+    print 'Computing stresses for '+str(cases)+' sweep cases'
+    del a, mod, Jobw, lol
 
 def Extract_parameterenvelopes():
     odb = session.openOdb(workpath + Job + '.odb')

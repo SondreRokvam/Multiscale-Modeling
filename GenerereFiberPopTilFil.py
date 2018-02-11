@@ -221,7 +221,8 @@ def shakeitrand(coord):
             t = t + 1  # moves to next fiber no matter moved or not
     return coord
 
-parameterpath = 'D:/Parametere.txt'
+
+parameterpath = '‪C:/Multiscale-Modeling/Parametere.txt'
 
 f = open(parameterpath, 'r')
 tekst = f.read()

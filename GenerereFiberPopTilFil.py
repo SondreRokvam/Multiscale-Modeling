@@ -217,9 +217,10 @@ parameterpath = GitHub+'Parametere.txt'
 
 f = open(parameterpath, 'r')
 tekst = f.read()
-print tekst+'\n\n'
+
 f.close()
 lines = tekst.split('\n')
+print lines[1]+'\n'
 data = lines[1].split('\t')
 Q, r, nf, Vf, wiggle, coordpath,iterasjonsgrense, rtol, gtol = float(data[0]),float(data[1]),float(data[2]), float(data[3]), float(data[4]),data[5],float(data[6]), float(data[7]), float(data[8])
 

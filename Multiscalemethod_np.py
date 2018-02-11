@@ -10,7 +10,7 @@ print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMul
 #RVEmodell   SMA
 def lagreparametere(Q):
     g = open(parameterpath, "w")
-    g.write('Q' + '\t' + 'r' + '\t' + 'nf' + '\t' + 'Vf' + '\t' + 'wiggle' + '\t' + 'coordpath' + '\t' + 'iterasjonsgrense' + '\t' + 'rtol' + '\t' + 'gtol' + '\t' + 'dL'+'\n'+
+    g.write('Q' + '\t' + 'r' + '\t' + 'nf' + '\t' + 'Vf' + '\t' + 'wiggle' + '\t' + 'coordpath' + '\t\t\t' + 'iterasjonsgrense' + '\t' + 'rtol' + '\t' + 'gtol' + '\t' + 'dL'+'\n'+
             str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)) # til fiber modellering
     g.close()
 
@@ -27,8 +27,8 @@ def hentePopulation(coordpath):
         a = float(data[0])
         b = float(data[1])
         xy.append([a,b])
-    print 'Antall fiber = ',int(nf),'\tAntall fiberkoordinater = '+str(len(xy))+'\n'
-    print '\n \n',xy,'\n \n'
+    print 'Antall fiber = ',int(nf),'\tAntall fiberkoordinater = '+str(len(xy))
+    print '\n',xy,'\n \n'
     return xy
 #Abaqus
 
@@ -154,7 +154,6 @@ def createModel(xydata):
         n = p.nodes
         nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
         p.deleteNode(nodes=nodes)
-
         # Created extruded mesh part
 
         # This is where the fibers are chosen and put together in set
@@ -186,7 +185,6 @@ def createModel(xydata):
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
         region = p.sets['Matrix']
-        print len(region.nodes)
         p.SectionAssignment(region=region, sectionName='matrix', offset=0.0,
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
@@ -217,7 +215,7 @@ def createModel(xydata):
     #del mod.parts['Part-1'], p, n, mod, region
     print '\nModel created, meshed and assigned properties'
 
-def createCEq(dL,modelName,instanceName):
+def createCEq():
     mod = mdb.models[modelName]
     a = mod.rootAssembly
     a.DatumCsysByDefault(CARTESIAN)
@@ -246,7 +244,6 @@ def createCEq(dL,modelName,instanceName):
     a.ReferencePoint(point=(0.0, 0.0,zmin - 0.2 * (zmax - zmin)))
     refPoints = (a.referencePoints[a.features['RP-3'].id],)
     a.Set(referencePoints=refPoints, name='RPZ')
-
 
     allNodes = a.instances[instanceName].nodes
     for n in allNodes:
@@ -346,7 +343,6 @@ def run_Job(Jobe, modelName):
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
             scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
             numDomains=numCpus, numGPUs=1000)
-
     #mdb.jobs[Jobe].submit(consistencyChecking=OFF)
     #mdb.jobs[Jobe].waitForCompletion()
 
@@ -439,7 +435,7 @@ def sweep_sig2_sig3(Compliancematrix,sweepresolution):
 
     return sweep
 
-def create_sweepedlastcases(stepName,difstpNm,sweep, cases, modelName,workpath):
+def create_sweepedlastcases(sweep, cases):
 
     mod = mdb.models[modelName]
     a = mod.rootAssembly
@@ -459,22 +455,28 @@ def create_sweepedlastcases(stepName,difstpNm,sweep, cases, modelName,workpath):
     del a, mod, Jobw, lol
 
 def Extract_parameterdata():
+
     for kaare in range(0,sweepcases):
-
         odb = session.openOdb(workpath + Sweeptoyinger[kaare] + '.odb')
-        # instance = odb.rootAssembly.instances[
-        elset = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
-        elset_nodes = set()
-
-        for element in elset.elements:
-            elset_nodes.update(element.connectivity)
+        Matrix = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
+        nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL, region= Matrix).values
+        norm=list()
+        sher=list()
+        for j in range(0,len(nodalStresses)):
+            for p in range(0,3):
+                norm.append(float(nodalStresses[j].data[p]))
+                sher.append(float(nodalStresses[j].data[p+3]))
         odb.close()
-        print len(elset)
+        print len(norm),'max norm', max(norm), ' min = ',min(norm)
+        print len(sher), 'max sher =', max(sher), ' min = ',min(sher)
+
 
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
 """              ALT OVER ER FUNKSJONER           """
 
-"""Utgangspunkt variabler"""
+
+
+#Variabler
 
 Vf = 0.6
 nf = 4
@@ -483,7 +485,9 @@ n = 1  # sweep variabel 1 naa = antall random seed(n)
 meshsize = r * 0.3
 sweepcases = 4
 
-"""Andre variabler"""
+
+
+#Andre variabler
 if 1:
     #Er RVE tomt?
     if nf ==0 or Vf==0: # Fiberfri RVE
@@ -493,18 +497,16 @@ if 1:
     else:
         dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5 # RVE storrelsen er satt til aa vaere relativ av nf og V
 
-    """  RVE_Modelleringsparametere  """
-    iterasjonsgrense = 10000  # max antall plasseringsforsok per fiber
+    #RVE_Modelleringsparametere
+    rtol = 0.025  * r    #Mellomfiber toleranse
+    gtol = r * 0.025    #Dodsone klaring toleranse
 
-    #Toleranser
-    rtol = 0.025  * r    #mellomfiber
-    gtol = r * 0.025    #dodsone klaring
-
-    #Parametere for dodzonegrense
-    ytredodgrense = r+gtol
+    ytredodgrense = r+gtol  #Parametere for dodzonegrense
     indredodgrense= r-gtol
 
-    """Tekstfiler"""
+    iterasjonsgrense =10000
+
+    # Tekstfiler
     GitHub ='C:/Multiscale-Modeling/'
     parameterpath = GitHub+'Parametere.txt'
     coordpath = GitHub+'coordst.txt'
@@ -518,21 +520,20 @@ if 1:
     stepName = 'Enhetstoyninger'
     difstpNm = 'Lasttoyinger'
 
-    #Composite unit stresses
-
+    #Composite sweep stresses
     sweepresolution = 2*pi / sweepcases #stepsize
 
     print '\nQ\tr\tnf\tVf\twiggle\t\tcoordpath\tLoops\trtol\tgtoL\tdL'
 
-
+    #execfile('C:\Multiscale-Modeling\Multiscalemethod_np.py')
 #
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
 """              Micromodelleringsfunksjon av (n) kompositt           """
+
 for Q in range(0,n):
     from abaqus import *
     from abaqusConstants import *
     from odbAccess import *
-
 
     seed(Q)                                 # Q er randomfunksjonensnokkelen
     wiggle = random()*r                    # Omplasseringsgrenser for fiberomplassering
@@ -551,6 +552,7 @@ for Q in range(0,n):
 
     lagreparametere(Q)
 
+
     """Prosess"""
 
     xydata = None
@@ -563,9 +565,8 @@ for Q in range(0,n):
         xydata= hentePopulation(coordpath)
 
     # Lage Abaqus strain-cases
-    # Build_Enviroment()
     createModel( xydata)
-    createCEq(dL, modelName, instanceName)
+    createCEq()
     create_unitstrainslastcases(stepName)
 
     #Faa ut stiffnessmatrix
@@ -578,7 +579,7 @@ for Q in range(0,n):
     sweepstrains = sweep_sig2_sig3(Compliancematrix,sweepresolution)
 
     # Abaqus Sweep Cases
-    create_sweepedlastcases(stepName,difstpNm,sweepstrains, sweepcases, modelName,workpath)
+    create_sweepedlastcases(sweepstrains, sweepcases)
     Extract_parameterdata()
 
 

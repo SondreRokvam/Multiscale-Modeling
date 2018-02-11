@@ -146,6 +146,9 @@ def createModel(xydata):
         p.generateBottomUpExtrudedMesh(elemFacesSourceSide=pickedElemFacesSourceSide,
                                        extrudeVector=vector, numberOfLayers=2)
         p = mod.parts['Part-1']
+        n = p.nodes
+        nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
+        p.deleteNode(nodes=nodes)
         p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
         p = mod.parts['Part-1-mesh-1']
         n = p.nodes
@@ -431,7 +434,7 @@ def sweep_sig2_sig3(Compliancematrix,sweepresolution):
         sig3 = sin(x[d])
         a=np.dot([0,sig2,sig3,0,0,0],Compliancematrix)
         a = a.tolist()
-        print a, '\n'
+        print a
         sweep.append(a)
 
     return sweep
@@ -455,16 +458,18 @@ def create_sweepedlastcases(stepName,difstpNm,sweep, cases, modelName,workpath):
     print 'Computing stresses for '+str(cases)+' sweep cases'
     del a, mod, Jobw, lol
 
-def Extract_parameterenvelopes():
-    odb = session.openOdb(workpath + Job + '.odb')
-    # instance = odb.rootAssembly.instances[
-    elset = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
-    elset_nodes = set()
+def Extract_parameterdata():
+    for kaare in range(0,sweepcases):
 
-    for element in elset.elements:
-        elset_nodes.update(element.connectivity)
-    odb.close()
-    print len(elset)
+        odb = session.openOdb(workpath + Sweeptoyinger[kaare] + '.odb')
+        # instance = odb.rootAssembly.instances[
+        elset = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
+        elset_nodes = set()
+
+        for element in elset.elements:
+            elset_nodes.update(element.connectivity)
+        odb.close()
+        print len(elset)
 
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
 """              ALT OVER ER FUNKSJONER           """
@@ -574,8 +579,9 @@ for Q in range(0,n):
 
     # Abaqus Sweep Cases
     create_sweepedlastcases(stepName,difstpNm,sweepstrains, sweepcases, modelName,workpath)
-    #collect parameters()
-    # Extract_parameterenvelopes()
+    Extract_parameterdata()
+
+
     print 'torke'
     #Mdb()
     # stats

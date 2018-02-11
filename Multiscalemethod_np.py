@@ -10,7 +10,8 @@ print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMul
 #RVEmodell   SMA
 def lagreparametere(Q):
     g = open(parameterpath, "w")
-    g.write(str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)) # til fiber modellering
+    g.write('Q' + '\t' + 'r' + '\t' + 'nf' + '\t' + 'Vf' + '\t' + 'wiggle' + '\t' + 'coordpath' + '\t\t\t' + 'iterasjonsgrense' + '\t' + 'rtol' + '\t' + 'gtol' + '\t' + 'dL'+'\n'+
+            str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)) # til fiber modellering
     g.close()
 
 def hentePopulation(coordpath):
@@ -26,13 +27,13 @@ def hentePopulation(coordpath):
         a = float(data[0])
         b = float(data[1])
         xy.append([a,b])
-    print 'Antall fiber = ',int(nf),'\tAntall fiberkoordinater = '+str(len(xy))+'\n'
-    print '\n \n',xy,'\n \n'
+    print 'Antall fiber = ',int(nf),'\tAntall fiberkoordinater = '+str(len(xy))
+    print '\n',xy,'\n \n'
     return xy
 #Abaqus
 
 
-def createModel(modelName,xydata,L,rf,nf, meshsize):
+def createModel(xydata):
     import section
     import regionToolset
     import displayGroupMdbToolset as dgm
@@ -50,14 +51,18 @@ def createModel(modelName,xydata,L,rf,nf, meshsize):
     import displayGroupOdbToolset as dgo
     import connectorBehavior
     Mdb()  #reset
+    #
+
     model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lag model
-    del mdb.models['Model-1']  # Slett standard model
+    del mdb.models['Model-1']                                       # Slett standard model
+
+
     mod = mdb.models[modelName]
 
-    dx=L/2.0
-    dy=L/2.0
+    dx=dL/2.0
+    dy=dL/2.0
     #Lag sketch
-    s1 = model.ConstrainedSketch(name='__profile__',sheetSize=2*L)
+    s1 = model.ConstrainedSketch(name='__profile__',sheetSize=2*dL)
     s1.setPrimaryObject(option=STANDALONE)
 
     #Tegne Firkant
@@ -69,9 +74,9 @@ def createModel(modelName,xydata,L,rf,nf, meshsize):
         type=DEFORMABLE_BODY)
     p = model.parts['Part-1']
     p.BaseShell(sketch=s1)
-
     s1.unsetPrimaryObject()
-    del mod.sketches['__profile__']
+    #del mod.sketches['__profile__']
+
     if not nf == 0:
         f1, e, = p.faces, p.edges
         t = p.MakeSketchTransform(sketchPlane=f1.findAt(coordinates=(0.0,
@@ -80,26 +85,26 @@ def createModel(modelName,xydata,L,rf,nf, meshsize):
                                       coordinates=(dx, 0.0, 0.0)), sketchPlaneSide=SIDE1, origin=(0.0,
                                                                                                   0.0, 0.0))
         s1 = model.ConstrainedSketch(name='__profile__',
-                                     sheetSize=2*L, gridSpacing=L / 20.0, transform=t)
+                                     sheetSize=2*dL, gridSpacing=dL / 25.0, transform=t)
         s1.setPrimaryObject(option=SUPERIMPOSE)
         p.projectReferencesOntoSketch(sketch=s1, filter=COPLANAR_EDGES)
 
-        rcos45 = rf * cos(45.0 * pi / 180.0)
+        rcos45 = r * cos(45.0 * pi / 180.0)
         for data in xydata:
             x = data[0]
             y = data[1]
             done = 0
             if done == 0 and x >= dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rf, y))
+                s1.CircleByCenterPerimeter(center=(x, y), point1=(x + r, y))
                 done = 1
             if done == 0 and x <= -dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rf, y))
+                s1.CircleByCenterPerimeter(center=(x, y), point1=(x - r, y))
                 done = 1
             if done == 0 and y >= dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y + rf))
+                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y + r))
                 done = 1
             if done == 0 and y <= -dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y - rf))
+                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y - r))
                 done = 1
 
             if done == 0 and x >= 0 and y >= 0:
@@ -122,8 +127,8 @@ def createModel(modelName,xydata,L,rf,nf, meshsize):
         p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,
                                                                     0.0)), faces=pickedFaces, sketch=s1)
         s1.unsetPrimaryObject()
-        del model.sketches['__profile__'], f, pickedFaces, e1, d2, f1, e, t
-        del s1, model
+        #del model.sketches['__profile__'], f, pickedFaces, e1, d2, f1, e, t
+        #del s1, model
         #Partioned planar shell
 
         # mesh
@@ -141,14 +146,16 @@ def createModel(modelName,xydata,L,rf,nf, meshsize):
         p.generateBottomUpExtrudedMesh(elemFacesSourceSide=pickedElemFacesSourceSide,
                                        extrudeVector=vector, numberOfLayers=2)
         p = mod.parts['Part-1']
+        n = p.nodes
+        nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
+        p.deleteNode(nodes=nodes)
         p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
         p = mod.parts['Part-1-mesh-1']
         n = p.nodes
         nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
         p.deleteNode(nodes=nodes)
+        # Created extruded mesh part
 
-        # print 'Created extruded mesh part'
-        # Debugging abaqus tool :)#del mdb.models['Model-1']
         # This is where the fibers are chosen and put together in set
         p = mod.parts['Part-1-mesh-1']
         p.Set(name='AllE', elements=p.elements)
@@ -205,38 +212,24 @@ def createModel(modelName,xydata,L,rf,nf, meshsize):
         p.SectionAssignment(region=region, sectionName='Matrix', offset=0.0,
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
-    del mod.parts['Part-1'], p, n, mod, region
+    #del mod.parts['Part-1'], p, n, mod, region
     print '\nModel created, meshed and assigned properties'
 
-def createCEq(dL,modelName,instanceName):
+def createCEq():
     mod = mdb.models[modelName]
     a = mod.rootAssembly
     a.DatumCsysByDefault(CARTESIAN)
     p = mdb.models[modelName].parts['Part-1-mesh-1']
     a.Instance(name=instanceName, part=p, dependent=ON)
 
+    #Flytte modellen til origo og sette x i fiberretning.
     a.translate(instanceList=(instanceName, ), vector=(0.0, 0.0, -1.0))
-
     a.rotate(instanceList=(instanceName, ), axisPoint=(0.0, 0.0, 0.0),
         axisDirection=(0.0, 1.0, 0.0), angle=90.0)
     tol = 0.01
 
-
-    allNodes = a.instances[instanceName].nodes
-
     # Finding the dimensions
     xmax, ymax, zmax, xmin, ymin, zmin = 1.0, dL/2, dL/2, 0.0, -dL/2, -dL/2
-    # Debugging abaqus tool :)
-    #del mdb.models['Model-1']
-    for n in allNodes:
-        x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
-        xmax = max(xmax, x)
-        ymax = max(ymax, y)
-        zmax = max(zmax, z)
-        xmin = min(xmin, x)
-        ymin = min(ymin, y)
-        zmin = min(zmin, z)
-    #print xmax, ymax, zmax, xmin, ymin, zmin
 
     # Creating reference point
 
@@ -252,6 +245,15 @@ def createCEq(dL,modelName,instanceName):
     refPoints = (a.referencePoints[a.features['RP-3'].id],)
     a.Set(referencePoints=refPoints, name='RPZ')
 
+    allNodes = a.instances[instanceName].nodes
+    for n in allNodes:
+        x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
+        xmax = max(xmax, x)
+        ymax = max(ymax, y)
+        zmax = max(zmax, z)
+        xmin = min(xmin, x)
+        ymin = min(ymin, y)
+        zmin = min(zmin, z)
     # CE between x-normal surfaces:
 
     nodesXa = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmin - tol, xmin + tol, ymax + tol, zmax + tol)
@@ -341,10 +343,8 @@ def run_Job(Jobe, modelName):
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
             scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
             numDomains=numCpus, numGPUs=1000)
-"""
-    mdb.jobs[Job].submit(consistencyChecking=OFF)
-    mdb.jobs[Job].waitForCompletion()
-    """
+    #mdb.jobs[Jobe].submit(consistencyChecking=OFF)
+    #mdb.jobs[Jobe].waitForCompletion()
 
 def create_unitstrainslastcases(stepName):
     id = np.identity(6)  # Identity matrix for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
@@ -363,7 +363,6 @@ def create_unitstrainslastcases(stepName):
 
         #Laste inn toyningscase
         exx, eyy, ezz, exy, exz, eyz = id[i]
-
         mod.DisplacementBC(name='BCX', createStepName=stepName,
                            region=a.sets['RPX'], u1=exx, u2=exy, u3=exz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
@@ -431,12 +430,12 @@ def sweep_sig2_sig3(Compliancematrix,sweepresolution):
         sig3 = sin(x[d])
         a=np.dot([0,sig2,sig3,0,0,0],Compliancematrix)
         a = a.tolist()
-        print a, '\n'
+        print a
         sweep.append(a)
 
     return sweep
 
-def create_sweepedlastcases(stepName,difstpNm,sweep, cases, modelName,workpath):
+def create_sweepedlastcases(sweep, cases):
 
     mod = mdb.models[modelName]
     a = mod.rootAssembly
@@ -452,23 +451,32 @@ def create_sweepedlastcases(stepName,difstpNm,sweep, cases, modelName,workpath):
         mod.boundaryConditions['BCZ'].setValues(u1=exy, u2=eyy, u3=eyz)
         mod.boundaryConditions['BCY'].setValues(u1=exz, u2=eyz, u3=ezz)
         run_Job(Jobw, modelName)
-    print 'Calculated '+str(cases)+' cases'
-    del a,a
+    print 'Computing stresses for '+str(cases)+' sweep cases'
+    del a, mod, Jobw, lol
 
-def Extract_parameterenvelopes():
-    odb = session.openOdb(workpath + Job + '.odb')
-    # instance = odb.rootAssembly.instances[
-    elset = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
-    elset_nodes = set()
+def Extract_parameterdata():
 
-    for element in elset.elements:
-        elset_nodes.update(element.connectivity)
-    odb.close()
+    for kaare in range(0,sweepcases):
+        odb = session.openOdb(workpath + Sweeptoyinger[kaare] + '.odb')
+        Matrix = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
+        nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL, region= Matrix).values
+        norm=list()
+        sher=list()
+        for j in range(0,len(nodalStresses)):
+            for p in range(0,3):
+                norm.append(float(nodalStresses[j].data[p]))
+                sher.append(float(nodalStresses[j].data[p+3]))
+        odb.close()
+        print len(norm),'max norm', max(norm), ' min = ',min(norm)
+        print len(sher), 'max sher =', max(sher), ' min = ',min(sher)
+
 
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
 """              ALT OVER ER FUNKSJONER           """
 
-"""Utgangspunkt variabler"""
+
+
+#Variabler
 
 Vf = 0.6
 nf = 4
@@ -477,7 +485,9 @@ n = 1  # sweep variabel 1 naa = antall random seed(n)
 meshsize = r * 0.3
 sweepcases = 4
 
-"""Andre variabler"""
+
+
+#Andre variabler
 if 1:
     #Er RVE tomt?
     if nf ==0 or Vf==0: # Fiberfri RVE
@@ -487,22 +497,20 @@ if 1:
     else:
         dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5 # RVE storrelsen er satt til aa vaere relativ av nf og V
 
-    """  RVE_Modelleringsparametere  """
-    wiggle = random()*r       # Omplasseringsgrenser for fiberomplassering
-    iterasjonsgrense = 10000  # max antall plasseringsforsok per fiber
+    #RVE_Modelleringsparametere
+    rtol = 0.025  * r    #Mellomfiber toleranse
+    gtol = r * 0.025    #Dodsone klaring toleranse
 
-    #Toleranser
-    rtol = 0.025  * r    #mellomfiber
-    gtol = r * 0.025    #dodsone klaring
-
-    #Parametere for dodzonegrense
-    ytredodgrense = r+gtol
+    ytredodgrense = r+gtol  #Parametere for dodzonegrense
     indredodgrense= r-gtol
 
-    """Tekstfiler"""
-    parameterpath = 'C:/Multiscale-Modeling/Parametere.txt'
-    coordpath = 'C:/Multiscale-Modeling/coordst.txt'
-    lagrestiffpath = 'C:/Multiscale-Modeling/Stiffness.txt'
+    iterasjonsgrense =10000
+
+    # Tekstfiler
+    GitHub ='C:/Multiscale-Modeling/'
+    parameterpath = GitHub+'Parametere.txt'
+    coordpath = GitHub+'coordst.txt'
+    lagrestiffpath = GitHub+'Stiffness.txt'
     workpath = 'C:/Users/Rockv/Desktop/Temp/'
 
 
@@ -512,23 +520,24 @@ if 1:
     stepName = 'Enhetstoyninger'
     difstpNm = 'Lasttoyinger'
 
-    #Composite unit stresses
-
+    #Composite sweep stresses
     sweepresolution = 2*pi / sweepcases #stepsize
 
     print '\nQ\tr\tnf\tVf\twiggle\t\tcoordpath\tLoops\trtol\tgtoL\tdL'
 
-
-#Micromodellering av (n) kompositt
+    #execfile('C:\Multiscale-Modeling\Multiscalemethod_np.py')
+#
+"""$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
+"""              Micromodelleringsfunksjon av (n) kompositt           """
 
 for Q in range(0,n):
     from abaqus import *
     from abaqusConstants import *
     from odbAccess import *
 
-    # Q er randomfunksjonensnokkelen
-    seed(Q)
-
+    seed(Q)                                 # Q er randomfunksjonensnokkelen
+    wiggle = random()*r                    # Omplasseringsgrenser for fiberomplassering
+    
     #Abaqus navn
     Enhetstoyinger = ['Exx' + str(nf) + '_' + str(Q), 'Eyy' + str(nf) + '_' + str(Q), 'Ezz' + str(nf) + '_' + str(Q),
               'Exy' + str(nf) + '_' + str(Q), 'Exz' + str(nf) + '_' + str(Q),
@@ -546,33 +555,34 @@ for Q in range(0,n):
 
     """Prosess"""
 
-    #Maa vi ha fiber populasjon?
+    xydata = None
+
+    # Maa vi ha fiber populasjon?
     if not (nf==0):
         # create a random population
-        execfile('D:/GenerereFiberPopTilFil.py')                                        #modellereRVEsnitt()
+        execfile(GitHub+'GenerereFiberPopTilFil.py')                                        #modellereRVEsnitt()
         # hente fibercoordinater
         xydata= hentePopulation(coordpath)
-    else:
-        xydata = None
-    
+
     # Lage Abaqus strain-cases
-    # Build_Enviroment()
-    createModel(modelName, xydata, dL, r, nf, meshsize)
-    createCEq(dL, modelName, instanceName)
+    createModel( xydata)
+    createCEq()
     create_unitstrainslastcases(stepName)
 
     #Faa ut stiffnessmatrix
 
     Stiffmatrix=get_stiffness()
 
-    #Calculations
+    #Finne strains for sweep stress caser
+
     Compliancematrix = get_compliance(Stiffmatrix)
     sweepstrains = sweep_sig2_sig3(Compliancematrix,sweepresolution)
 
     # Abaqus Sweep Cases
-    create_sweepedlastcases(stepName,difstpNm,sweepstrains, sweepcases, modelName,workpath)
-    #collect parameters()
-    # Extract_parameterenvelopes()
+    create_sweepedlastcases(sweepstrains, sweepcases)
+    Extract_parameterdata()
+
+
     print 'torke'
     #Mdb()
     # stats

@@ -48,8 +48,8 @@ def saveplot():
     fig.savefig('D:/graph.png')
     plt.show()
 
-parameterpath = 'D:/Parametere.txt'
-coordpath = 'D:/coordst.txt'
+parameterpath = '‪C:/Multiscale-Modeling/Parametere.txt'
+coordpath = 'C:/Multiscale-Modeling/coordst.txt'
 a,dL,r= henteParametere()
 if a:
     coord =hentePopulation()

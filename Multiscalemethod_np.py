@@ -543,18 +543,17 @@ for Q in range(0,n):
 
     lagreparametere(Q)
 
-
     """Prosess"""
 
-    #Maa vi ha fiber populasjon?
+    xydata = None
+
+    # Maa vi ha fiber populasjon?
     if not (nf==0):
         # create a random population
         execfile('D:/GenerereFiberPopTilFil.py')                                        #modellereRVEsnitt()
         # hente fibercoordinater
         xydata= hentePopulation(coordpath)
-    else:
-        xydata = None
-    
+
     # Lage Abaqus strain-cases
     # Build_Enviroment()
     createModel(modelName, xydata, dL, r, nf, meshsize)
@@ -565,7 +564,8 @@ for Q in range(0,n):
 
     Stiffmatrix=get_stiffness()
 
-    #Calculations
+    #Finne strains for sweep stress caser
+
     Compliancematrix = get_compliance(Stiffmatrix)
     sweepstrains = sweep_sig2_sig3(Compliancematrix,sweepresolution)
 

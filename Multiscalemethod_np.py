@@ -344,8 +344,8 @@ def run_Job(Jobe, modelName):
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
             scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
             numDomains=numCpus, numGPUs=1000)
-    #mdb.jobs[Jobe].submit(consistencyChecking=OFF)
-    #mdb.jobs[Jobe].waitForCompletion()
+    mdb.jobs[Jobe].submit(consistencyChecking=OFF)
+    mdb.jobs[Jobe].waitForCompletion()
 
 def create_unitstrainslastcases(stepName):
     id = np.identity(6)  # Identity matrix for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
@@ -429,7 +429,7 @@ def sweep_sig2_sig3(Compliancematrix,sweepresolution):
     for d in range(0, len(x)):
         sig2 = cos(x[d])
         sig3 = sin(x[d])
-        a=np.dot([0,sig2,sig3,0,0,0],Compliancematrix)
+        a=np.dot(Compliancematrix,[0,sig2,sig3,0,0,0])
         a = a.tolist()
         print a
         sweep.append(a)
@@ -456,19 +456,48 @@ def create_sweepedlastcases(sweep):
 
 def Extract_parameterdata():
     print 'Computing stresses for ' + str(sweepcases) + ' sweep cases'
+    normSpenx_y = list()
+    sherSpenx_y = list()
+    normToyx_y = list()
+    sherToyx_y = list()
     for kaare in range(0,sweepcases):
         odb = session.openOdb(workpath + Sweeptoyinger[kaare] + '.odb')
-        Matrix = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
-        nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL, region= Matrix).values
-        norm=list()
-        sher=list()
+        nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL).values
+        nodalStrains = odb.steps[difstpNm].frames[-1].fieldOutputs['E'].getSubset(position=ELEMENT_NODAL).values
+
+        if not nf==0:
+            Matrix = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
+            nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL,
+                                                                                       region=Matrix).values
+            nodalStrains = odb.steps[difstpNm].frames[-1].fieldOutputs['E'].getSubset(position=ELEMENT_NODAL,
+                                                                                      region=Matrix).values
+
+        normstresses = list()
+        sherstresses = list()
+        normstrains=list()
+        sherstrains=list()
+
         for j in range(0,len(nodalStresses)):
             for p in range(0,3):
-                norm.append(float(nodalStresses[j].data[p]))
-                sher.append(float(nodalStresses[j].data[p+3]))
+                normstresses.append(float(nodalStresses[j].data[p]))
+                sherstresses.append(abs(float(nodalStresses[j].data[p+3])))
+                normstrains.append(float(nodalStrains[j].data[p]))
+                sherstrains.append(abs(float(nodalStrains[j].data[p+3])))
         odb.close()
-        print len(norm),'max norm', max(norm), ' min = ',min(norm)
-        print len(sher), 'max sher =', max(sher), ' min = ',min(sher)
+        phi = 2 * pi*kaare/sweepcases
+        normSpenx_y.append([max(normstresses)*cos(phi),max(normstresses)*sin(phi)])
+        sherSpenx_y.append([max(sherstresses) * cos(phi),max(sherstresses) * sin(phi)])
+        normToyx_y.append([max(normstrains)*cos(phi),max(normstrains)*sin(phi)])
+        sherToyx_y.append([max(normstrains) * cos(phi),max(normstrains) * sin(phi)])
+
+    g = open(Envelope, "w")
+    for a in range(0, len(normSpenx_y)):#  1                        2                                           3                                           4                                            5
+        g.write(str(float(normSpenx_y[a][0])) + '\t' + str(float(normSpenx_y[a][1])) + '\t' + str(float(sherSpenx_y[a][0])) + '\t' + str(float(sherSpenx_y[a][1])) +
+                '\t' + str(float(normToyx_y[a][0])) + '\t' + str(float(normToyx_y[a][1])) + '\t' + str(float(sherToyx_y[a][0])) + '\t' + str(float(sherToyx_y[a][1])))
+        if not a ==len(normSpenx_y)-1:
+            g.write('\n')
+    g.close()
+    return
 
 
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
@@ -478,12 +507,12 @@ def Extract_parameterdata():
 
 #Variabler
 
-Vf = 0.6
+Vf = 0
 nf = 4
 r = 1.0  # radiusen paa fiberne er satt til aa vaere uniforme, dette kan endres med en liste og random funksjon med data om faktisk variasjon i fibertype. Kommer det til aa gjore noe forskjell?
 n = 1  # sweep variabel 1 naa = antall random seed(n)
 meshsize = r * 0.3
-sweepcases = 4
+sweepcases = 16
 
 
 
@@ -508,6 +537,7 @@ if 1:
 
     # Tekstfiler
     GitHub ='C:/Multiscale-Modeling/'
+    Envelope = GitHub+'envelope.txt'
     parameterpath = GitHub+'Parametere.txt'
     coordpath = GitHub+'coordst.txt'
     lagrestiffpath = GitHub+'Stiffness.txt'
@@ -523,10 +553,11 @@ if 1:
     #Composite sweep stresses
     sweepresolution = 2*pi / sweepcases #stepsize
 
-    #execfile('C:\Multiscale-Modeling\Multiscalemethod_np.py')
+
 #
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
 """              Micromodelleringsfunksjon av (n) kompositt           """
+#execfile('C:\Multiscale-Modeling\Multiscalemethod_np.py')
 
 for Q in range(0,n):
     from abaqus import *
@@ -578,7 +609,7 @@ for Q in range(0,n):
 
     # Abaqus Sweep Cases
     create_sweepedlastcases(sweepstrains)
-    Extract_parameterdata()
+    Extract_parameterdata()      #norm [0]       sher [1]
 
 
     print 'torke'

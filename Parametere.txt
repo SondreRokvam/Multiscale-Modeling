@@ -1,2 +1,2 @@
 Q	r	nf	Vf	wiggle	coordpath	iterasjonsgrense	rtol	gtol	dL
-0	1.0	10	0.6	0.844421851525	C:/Multiscale-Modeling/coordst.txt	10000	0.025	0.025	7.23601254558
+0	1.0	4	0.6	0.844421851525	C:/Multiscale-Modeling/coordst.txt	10000	0.025	0.025	4.57645616432

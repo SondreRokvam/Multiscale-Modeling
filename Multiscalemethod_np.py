@@ -380,7 +380,7 @@ def create_unitstrainslastcases(stepName):
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-        run_Job(Enhetstoyinger[i],modelName)
+        #run_Job(Enhetstoyinger[i],modelName)
         del exx, eyy, ezz, exy, exz, eyz
 
 def get_stiffness():
@@ -514,12 +514,12 @@ def Extract_parameterdata():
 
 #Variabler
 
-Vf = 0.6
-nf = 10
+Vf = 0
+nf = 4
 r = 1.0  # radiusen paa fiberne er satt til aa vaere uniforme, dette kan endres med en liste og random funksjon med data om faktisk variasjon i fibertype. Kommer det til aa gjore noe forskjell?
 n = 1  # sweep variabel 1 naa = antall random seed(n)
 meshsize = r * 0.3
-sweepcases = 32
+sweepcases = 16
 
 
 
@@ -581,7 +581,7 @@ for Q in range(0,n):
 
     Sweeptoyinger = [''] * sweepcases
     for g in range(0,sweepcases):
-        Sweeptoyinger[g] = 'Sweep_strain_at'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q))
+        Sweeptoyinger[g] = 'Sweep_strain_'+ str(nf) + '_at_' + +str(int(g*180*sweepresolution/pi))+'deg__Q_'+str(int(Q))
 
 
     #Lagre parametere til stottefiler

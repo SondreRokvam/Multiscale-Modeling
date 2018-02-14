@@ -32,6 +32,7 @@ def hentePopulation(coordpath):
     return xy
 
 #Abaqus
+
 def createModel(xydata):
     import section
     import regionToolset
@@ -49,16 +50,19 @@ def createModel(xydata):
     import xyPlot
     import displayGroupOdbToolset as dgo
     import connectorBehavior
-#Reset session
-    Mdb()
-    model =mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)    #Lag model
-    del mdb.models['Model-1']                                           #Slett standard model
+    Mdb()  #reset
+    #
+
+    model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lag model
+    del mdb.models['Model-1']                                       # Slett standard model
+
+
     mod = mdb.models[modelName]
 
-    dx=L/2.0
-    dy=L/2.0
+    dx=dL/2.0
+    dy=dL/2.0
     #Lag sketch
-    s1 = model.ConstrainedSketch(name='__profile__',sheetSize=2*L)
+    s1 = model.ConstrainedSketch(name='__profile__',sheetSize=2*dL)
     s1.setPrimaryObject(option=STANDALONE)
 
     #Tegne Firkant
@@ -70,9 +74,9 @@ def createModel(xydata):
         type=DEFORMABLE_BODY)
     p = model.parts['Part-1']
     p.BaseShell(sketch=s1)
-
     s1.unsetPrimaryObject()
-    del mod.sketches['__profile__']
+    #del mod.sketches['__profile__']
+
     if not nf == 0:
         f1, e, = p.faces, p.edges
         t = p.MakeSketchTransform(sketchPlane=f1.findAt(coordinates=(0.0,
@@ -81,26 +85,26 @@ def createModel(xydata):
                                       coordinates=(dx, 0.0, 0.0)), sketchPlaneSide=SIDE1, origin=(0.0,
                                                                                                   0.0, 0.0))
         s1 = model.ConstrainedSketch(name='__profile__',
-                                     sheetSize=2*L, gridSpacing=L / 20.0, transform=t)
+                                     sheetSize=2*dL, gridSpacing=dL / 25.0, transform=t)
         s1.setPrimaryObject(option=SUPERIMPOSE)
         p.projectReferencesOntoSketch(sketch=s1, filter=COPLANAR_EDGES)
 
-        rcos45 = rf * cos(45.0 * pi / 180.0)
+        rcos45 = r * cos(45.0 * pi / 180.0)
         for data in xydata:
             x = data[0]
             y = data[1]
             done = 0
             if done == 0 and x >= dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rf, y))
+                s1.CircleByCenterPerimeter(center=(x, y), point1=(x + r, y))
                 done = 1
             if done == 0 and x <= -dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rf, y))
+                s1.CircleByCenterPerimeter(center=(x, y), point1=(x - r, y))
                 done = 1
             if done == 0 and y >= dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y + rf))
+                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y + r))
                 done = 1
             if done == 0 and y <= -dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y - rf))
+                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y - r))
                 done = 1
 
             if done == 0 and x >= 0 and y >= 0:
@@ -123,8 +127,8 @@ def createModel(xydata):
         p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,
                                                                     0.0)), faces=pickedFaces, sketch=s1)
         s1.unsetPrimaryObject()
-        del model.sketches['__profile__'], f, pickedFaces, e1, d2, f1, e, t
-        del s1, model
+        #del model.sketches['__profile__'], f, pickedFaces, e1, d2, f1, e, t
+        #del s1, model
         #Partioned planar shell
 
         # mesh
@@ -142,14 +146,12 @@ def createModel(xydata):
         p.generateBottomUpExtrudedMesh(elemFacesSourceSide=pickedElemFacesSourceSide,
                                        extrudeVector=vector, numberOfLayers=2)
         p = mod.parts['Part-1']
-        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
-        p = mod.parts['Part-1-mesh-1']
         n = p.nodes
         nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
         p.deleteNode(nodes=nodes)
+        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
+        # Created extruded mesh part
 
-        # print 'Created extruded mesh part'
-        # Debugging abaqus tool :)#del mdb.models['Model-1']
         # This is where the fibers are chosen and put together in set
         p = mod.parts['Part-1-mesh-1']
         p.Set(name='AllE', elements=p.elements)
@@ -191,13 +193,14 @@ def createModel(xydata):
         vector = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
         p.generateBottomUpExtrudedMesh(elemFacesSourceSide=pickedElemFacesSourceSide,
                                        extrudeVector=vector, numberOfLayers=2)
-        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
-        # extruded mesh and make orphan mesh
-        p = mod.parts['Part-1-mesh-1']
+        p = mod.parts['Part-1']
         n = p.nodes
         nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
         p.deleteNode(nodes=nodes)
         # delete shell nodes
+        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
+        # extruded mesh and make orphan mesh
+
         p.Set(name='AllE', elements=p.elements)
         mod.Material(name='resin')
         mod.materials['resin'].Elastic(table=((3500.0, 0.33),))
@@ -206,8 +209,7 @@ def createModel(xydata):
         p.SectionAssignment(region=region, sectionName='Matrix', offset=0.0,
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
-
-    del p, n, mod, region
+    #del mod.parts['Part-1'], p, n, mod, region
     print '\nModel created, meshed and assigned properties'
 
 def createCEq():
@@ -217,21 +219,16 @@ def createCEq():
     p = mdb.models[modelName].parts['Part-1-mesh-1']
     a.Instance(name=instanceName, part=p, dependent=ON)
 
-    a.translate(instanceList=(instanceName, ), vector=(0.0, 0.0, -tykkelse))
-
-    a.rotate(instanceList=(instanceName, ), axisPoint=(0.0, 0.0, 0.0),
-        axisDirection=(0.0, 1.0, 0.0), angle=90.0)
+    # Flytte modellen til origo og sette x i fiberretning.
+    a.translate(instanceList=(instanceName,), vector=(0.0, 0.0, -tykkelse))
+    a.rotate(instanceList=(instanceName,), axisPoint=(0.0, 0.0, 0.0),
+             axisDirection=(0.0, 1.0, 0.0), angle=90.0)
     tol = 0.01
-
 
     allNodes = a.instances[instanceName].nodes
 
-
-
     # Finding the dimensions
-    xmax, ymax, zmax, xmin, ymin, zmin = tykkelse, dL/2, dL/2, 0.0, -dL/2, -dL/2
-    # Debugging abaqus tool :)
-    #del mdb.models['Model-1']
+    xmax, ymax, zmax, xmin, ymin, zmin = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
     for n in allNodes:
         x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
         xmax = max(xmax, x)
@@ -240,11 +237,10 @@ def createCEq():
         xmin = min(xmin, x)
         ymin = min(ymin, y)
         zmin = min(zmin, z)
-    #print xmax, ymax, zmax, xmin, ymin, zmin
 
     # Creating reference point
 
-    a.ReferencePoint(point=( xmin - 0.2 * (zmax - zmin),0.0,  0.0))
+    a.ReferencePoint(point=(xmin - 0.2 * (xmax - xmin), 0.0, 0.0))
     refPoints = (a.referencePoints[a.features['RP-1'].id],)
     a.Set(referencePoints=refPoints, name='RPX')
 
@@ -252,7 +248,7 @@ def createCEq():
     refPoints = (a.referencePoints[a.features['RP-2'].id],)
     a.Set(referencePoints=refPoints, name='RPY')
 
-    a.ReferencePoint(point=(0.0, 0.0,zmin - 0.2 * (zmax - zmin)))
+    a.ReferencePoint(point=(0.0, 0.0, zmin - 0.2 * (zmax - zmin)))
     refPoints = (a.referencePoints[a.features['RP-3'].id],)
     a.Set(referencePoints=refPoints, name='RPZ')
 
@@ -335,18 +331,21 @@ def createCEq():
                      terms=((1.0, name2, 3), (-1.0, name1, 3), (-(zmax - zmin), 'RPZ', 3),))  # 33
 
         counter = counter + 1
+    
     print 'Constraint equ. applied'
 
 def run_Job(Jobe, modelName):
     mdb.Job(name=Jobe, model=modelName, description='', type=ANALYSIS,
-            atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=95,
+            atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
             explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
             scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
             numDomains=numCpus, numGPUs=1000)
+    a=1
     mdb.jobs[Jobe].submit(consistencyChecking=OFF)
     mdb.jobs[Jobe].waitForCompletion()
+    del a
 
 def create_unitstrainslastcases():
     id = np.identity(6)  # Identity matrix for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
@@ -474,7 +473,7 @@ def Extract_parameterdata():
         odb = session.openOdb(workpath + Sweeptoyinger[case] + '.odb')
         nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL).values
         nodalStrains = odb.steps[difstpNm].frames[-1].fieldOutputs['E'].getSubset(position=ELEMENT_NODAL).values
-        Mises = odb.steps[difstpNm].frames[-1].fieldOutputs['MISES'].getSubset(position=ELEMENT_NODAL).values
+        Mises = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL).values
         if not nf==0:
             Matrix = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
             nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL,
@@ -505,14 +504,14 @@ def Extract_parameterdata():
         maxnormstrains.append(float(max(normstrains)))
         minnormstrains.append(float(min(normstrains)))
 
-        maxsherstresses.append(float(max(abs(sherstresses))))
-        maxsherstrains.append(float(max(abs(sherstrains))))
+        maxsherstresses.append(max(sherstresses))
+        maxsherstrains.append(max(sherstrains))
     g = open(Envelope, "w")
-    for a in range(0, len(normSpenx_y)):
+    for a in range(0, len(maxMisesStresses)):
         #                 1                              2                             3                             4                        5
-        g.write(str(maxMisesStresses) + '\t' + str(minMisesStresses) + '\t' + str(maxnormstresses) + '\t' + str(minnormstresses) + '\t' + str(maxnormstrains)
-                + '\t' + str(minnormstrains) + '\t' + str(maxsherstresses) + '\t' + str(maxsherstrains))
-        if not a ==len(normSpenx_y)-1:
+        g.write(str(maxMisesStresses[a]) + '\t' + str(minMisesStresses[a]) + '\t' + str(maxnormstresses[a]) + '\t' + str(minnormstresses[a]) + '\t' + str(maxnormstrains[a])
+                + '\t' + str(minnormstrains[a]) + '\t' + str(maxsherstresses[a]) + '\t' + str(maxsherstrains[a]))
+        if not a ==len(maxMisesStresses)-1:
             g.write('\n')
     g.close()
     return
@@ -525,9 +524,9 @@ def Extract_parameterdata():
 
 #Variabler
 
-Vf = 0.6
+Vf = 0
 nf = 1
-r = 1.0  # radiusen paa fiberne er satt til aa vaere uniforme, dette kan endres med en liste og random funksjon med data om faktisk variasjon i fibertype. Kommer det til aa gjore noe forskjell?
+r = 1.0  # radiusene paa fiberne er naa satt til aa vaere uniforme, kan endres til liste med faktisk variasjon i diameter
 n = 1  # sweep variabel 1 naa = antall random seed(n)
 meshsize = r * 0.3
 sweepcases = 16
@@ -540,13 +539,11 @@ if 1:
     if nf ==0 or Vf==0: # Fiberfri RVE
         nf=0
         Vf=0
-        dL = 3
-        L = dL
-        rf = r
+        dL = 6
+
     else:
         dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5 # RVE storrelsen er satt til aa vaere relativ av nf og V
-        L= dL
-        rf=r
+
 
     #RVE_Modelleringsparametere
     rtol = 0.025 * r        #Mellomfiber toleranse

@@ -331,7 +331,7 @@ def createCEq():
                      terms=((1.0, name2, 3), (-1.0, name1, 3), (-(zmax - zmin), 'RPZ', 3),))  # 33
 
         counter = counter + 1
-    
+
     print 'Constraint equ. applied'
 
 def run_Job(Jobe, modelName):
@@ -377,7 +377,7 @@ def create_unitstrainslastcases():
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
         run_Job(Enhetstoyinger[i],modelName)
-        del exx, eyy, ezz, exy, exz, eyz
+        del exx, eyy, ezz, exy, exz, eyz,sda
 
 def get_stiffness():
     stiffmatrix = []

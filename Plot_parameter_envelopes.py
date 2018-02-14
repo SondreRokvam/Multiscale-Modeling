@@ -9,6 +9,13 @@ import math
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
 
+#                                           XT   XC   YT   YC   S12
+materialA = ( (140000, 10000, 0.3, 5000), (1200, 800, 50, 150, 75) )
+
+nf=0
+
+
+
 def to_xy(Values):
     x = list()
     y = list()
@@ -18,7 +25,7 @@ def to_xy(Values):
     return x,y
 
 GitHub = 'C:/Multiscale-Modeling/'
-Envelope = GitHub + 'envelope.txt'
+Envelope = GitHub + 'envelope'
 
 maxMises = list()
 minMises = list()
@@ -29,7 +36,7 @@ minNormToy = list()
 maxSherSpen = list()
 maxSherToy = list()
 
-g = open(Envelope, "r")
+g = open(Envelope+str(nf)+'.txt', "r")
 tekst =g.read()
 print(tekst)
 g.close()
@@ -49,8 +56,6 @@ phi=(1/len(maxMises))*2*math.pi
 print(phi,phi*360/(2*math.pi),len(maxMises),360/len(maxMises))
 
 
-#                                           XT   XC   YT   YC   S12
-materialA = ( (140000, 10000, 0.3, 5000), (1200, 800, 50, 150, 75) )
 
 # s1 = maxMises og minMises
 # s2 = max og min NormsSpen

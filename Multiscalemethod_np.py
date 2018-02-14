@@ -334,17 +334,16 @@ def createCEq():
     print 'Constraint equ. applied'
 
 def run_Job(Jobe, modelName):
-    mdb.Job(name=Jobe, model=modelName, description='', type=ANALYSIS,
-            atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
-            memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-            explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
-            modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
-            numDomains=numCpus, numGPUs=1000)
-    a=1
-    mdb.jobs[Jobe].submit(consistencyChecking=OFF)
-    mdb.jobs[Jobe].waitForCompletion()
-    del a
+    if Runjob:
+        mdb.Job(name=Jobe, model=modelName, description='', type=ANALYSIS,
+                atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
+                memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+                explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
+                modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
+                scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
+                numDomains=numCpus, numGPUs=1000)
+        mdb.jobs[Jobe].submit(consistencyChecking=OFF)
+        mdb.jobs[Jobe].waitForCompletion()
 
 def create_unitstrainslastcases():
     id = np.identity(6)  # Identity matrix for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
@@ -522,10 +521,12 @@ def Extract_parameterdata():
 
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
 """              ALT OVER ER FUNKSJONER           """
+#Flag
+Runjob = 0
 
 
 for v in range (0,2):
-    #Variabler
+    #Modelleringsvariabler
 
     Vf = 0.6
     nf = v*4

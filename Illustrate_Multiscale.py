@@ -45,7 +45,7 @@ def saveplot():
         p = PatchCollection(fiberlist, alpha=0.8)
         sx.add_collection(p)
 
-    fig.savefig('D:/graph.png')
+    fig.savefig('D:/RVEmodel.png')
     plt.show()
 
 parameterpath = '‪C:/Multiscale-Modeling/Parametere.txt'

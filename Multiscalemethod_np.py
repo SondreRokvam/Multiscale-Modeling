@@ -340,7 +340,7 @@ def createCEq():
         counter = counter + 1
     print 'Constraint equ. applied'
 
-#def run_Job(Jobe, modelName):
+def run_Job(Jobe, modelName):
     mdb.Job(name=Jobe, model=modelName, description='', type=ANALYSIS,
             atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,

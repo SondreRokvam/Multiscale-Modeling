@@ -198,6 +198,10 @@ def createModel(xydata):
         vector = ((0.0, 0.0, 0.0), (0.0, 0.0, 2.0))
         p.generateBottomUpExtrudedMesh(elemFacesSourceSide=pickedElemFacesSourceSide,
                                        extrudeVector=vector, numberOfLayers=2)
+        p = mod.parts['Part-1']
+        n = p.nodes
+        nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
+        p.deleteNode(nodes=nodes)
         p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
         # extruded mesh and make orphan mesh
         p = mod.parts['Part-1-mesh-1']
@@ -376,7 +380,7 @@ def create_unitstrainslastcases(stepName):
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-        run_Job(Enhetstoyinger[i],modelName)
+        #run_Job(Enhetstoyinger[i],modelName)
         del exx, eyy, ezz, exy, exz, eyz
 
 def get_stiffness():
@@ -429,7 +433,7 @@ def sweep_sig2_sig3(Compliancematrix,sweepresolution):
     for d in range(0, len(x)):
         sig2 = cos(x[d])
         sig3 = sin(x[d])
-        a=np.dot(Compliancematrix,[0,sig2,sig3,0,0,0])
+        a=np.dot([0,sig2,sig3,0,0,0],Compliancematrix)
         a = a.tolist()
         print a
         sweep.append(a)
@@ -444,15 +448,18 @@ def create_sweepedlastcases(sweep):
     mod.steps.changeKey(fromName=stepName, toName=difstpNm)
     print '\nComputing strains for normalized load sweep'
     #Lagring av output data base filer .odb
-    for lol in range(0,sweepcases):
-        Jobw =Sweeptoyinger[lol]
-        print '\nLoad at'+str(360*lol/sweepcases)+'deg'
-        exx, eyy, ezz, exy, exz, eyz = sweep[lol]
+    for case in range(0,sweepcases):
+
+        print '\nLoad at'+str(360*case/sweepcases)+'deg'
+        exx, eyy, ezz, exy, exz, eyz = sweep[case]
         mod.boundaryConditions['BCX'].setValues(u1=exx, u2=exy, u3=exz)
-        mod.boundaryConditions['BCZ'].setValues(u1=exy, u2=eyy, u3=eyz)
-        mod.boundaryConditions['BCY'].setValues(u1=exz, u2=eyz, u3=ezz)
+        mod.boundaryConditions['BCY'].setValues(u1=exy, u2=eyy, u3=eyz)
+        mod.boundaryConditions['BCZ'].setValues(u1=exz, u2=eyz, u3=ezz)
+        Jobw = Sweeptoyinger[case]
         run_Job(Jobw, modelName)
-    del a, mod, Jobw, lol
+
+    del a, mod, Jobw, case
+
 
 def Extract_parameterdata():
     print 'Computing stresses for ' + str(sweepcases) + ' sweep cases'
@@ -512,7 +519,7 @@ nf = 4
 r = 1.0  # radiusen paa fiberne er satt til aa vaere uniforme, dette kan endres med en liste og random funksjon med data om faktisk variasjon i fibertype. Kommer det til aa gjore noe forskjell?
 n = 1  # sweep variabel 1 naa = antall random seed(n)
 meshsize = r * 0.3
-sweepcases = 16
+sweepcases = 8
 
 
 

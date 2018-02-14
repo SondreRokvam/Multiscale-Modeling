@@ -1,0 +1,1 @@
+execfile('C:\Multiscale-Modeling\Multiscalemethod_np.py')

@@ -7,6 +7,7 @@ import numpy as np
 from matplotlib.collections import PatchCollection
 import math
 import matplotlib.pyplot as plt
+from matplotlib.ticker import NullFormatter
 
 GitHub = 'C:/Multiscale-Modeling/'
 Envelope = GitHub + 'envelope.txt'
@@ -42,7 +43,10 @@ for line in lines:
     yenlist.append(yen)
     xeslist.append(xes)
     yeslist.append(yes)
-print(len(xnlist),len(ynlist),len(xslist),len(yslist),len(xenlist),len(yenlist),len(xeslist),len(xeslist))
+print(xslist,yslist,'\n', len(xslist), len(yslist))
+
+print(xeslist,yeslist,'\n', len(xeslist), len(yeslist))
+#print(len(xnlist),len(ynlist),len(xslist),len(yslist),len(xenlist),len(yenlist),len(xeslist),len(xeslist))
 """
 def maxStress(stresses,material):
     XT = material[1][0]
@@ -78,6 +82,10 @@ def tsaiWu(stresses,material):
     return 1/R
    """
 
+
+#plt.plot(maxStress_sig1,maxStress_sig2,tsaiWu_sig1,tsaiWu_sig2)
+
+
 ### APPLICATIONS ###
       #                                    XT   XC   YT   YC   S12
 materialA = ( (140000, 10000, 0.3, 5000), (1200, 800, 50, 150, 75) )
@@ -104,33 +112,47 @@ for i in range(0,3600):
     max(max(xeslist),
     
     """
-s= float((max(xnlist)))*5/4
-a= float((max(xenlist)))*5/4
-print(s,a)
-#plt.plot(maxStress_sig1,maxStress_sig2,tsaiWu_sig1,tsaiWu_sig2)
-fig, (sx,ax) = plt.subplots(nrows=1, ncols=2,figsize=(10,5))
+s1= float((max(max(xnlist), max(ynlist))))*5/4
+s2= float((max(max(xslist), max(yslist))))*5/4
+
+a1= float((max(max(xenlist),max(yenlist))))*5/4
+a2= float((max(max(xeslist),max(yeslist))))*5/4
 
 
-sx.set_title('Spenning')
-sx.set_xlim(-s,s )
-sx.set_ylim(-s,s )
-sx.set_xticks(np.arange(-s, s, s/5))
-sx.set_yticks(np.arange(-s, s, s/5))
-sx.grid(True)
+fig, ((sx1,sx2),(ax1,ax2)) = plt.subplots(nrows=2,ncols=2,figsize=(10,5))
 
-sx.plot(0.0,0.0,'x',xnlist,ynlist,'bo')
+sx1.set_title('Normal Spenning')
+sx1.set_xlim(-s1,s1 )
+sx1.set_ylim(-s1,s1 )
+sx1.set_xticks(np.arange(-s1, s1, s1/5))
+sx1.set_yticks(np.arange(-s1, s1, s1/5))
+sx1.grid(True)
+sx1.plot(0.0,0.0,'rx',xnlist,ynlist,'bo')
 
-#,xslist,yslist,
+sx2.set_title('Shear Spenning')
+sx2.set_xlim(-s2,s2 )
+sx2.set_ylim(-s2,s2 )
+sx2.set_xticks(np.arange(-s2, s2, s2/5))
+sx2.set_yticks(np.arange(-s2, s2, s2/5))
+sx2.grid(True)
+sx2.plot(0.0,0.0,'rx',xslist,yslist,'go')
 
+ax1.set_title('Normal Toying')
+ax1.set_xlim(-a1,a1 )
+ax1.set_ylim(-a1,a1 )
+ax1.set_xticks(np.arange(-a1 , a1 , a1/4))
+ax1.set_yticks(np.arange(-a1,  a1 , a1/4))
+ax1.grid(True)
+ax1.plot(0.0,0.0,'ro',xenlist,yenlist,'bx')
 
-ax.set_title('Toying')
-ax.set_xlim(-a,a )
-ax.set_ylim(-a,a )
-ax.set_xticks(np.arange(-a , a , a/4))
-ax.set_yticks(np.arange(-a,  a , a/4))
-ax.grid(True)
-ax.plot(0.0,0.0,'x',xenlist,yenlist,'rx')
-#,xeslist,yeslist,'go')
+ax2.set_title('Shear Toying')
+ax2.set_xlim(-a2,a2 )
+ax2.set_ylim(-a2,a2 )
+ax2.set_xticks(np.arange(-a2 , a2 , a2/4))
+ax2.set_yticks(np.arange(-a2,  a2 , a2/4))
+ax2.grid(True)
+ax2.plot(0.0,0.0,'ro',xeslist,yeslist,'gx')
+plt.gca().yaxis.set_minor_formatter(NullFormatter())
 plt.tight_layout()
 plt.show()
 

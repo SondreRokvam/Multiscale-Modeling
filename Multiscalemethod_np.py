@@ -340,7 +340,7 @@ def createCEq():
         counter = counter + 1
     print 'Constraint equ. applied'
 
-def run_Job(Jobe, modelName):
+#def run_Job(Jobe, modelName):
     mdb.Job(name=Jobe, model=modelName, description='', type=ANALYSIS,
             atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
@@ -515,7 +515,7 @@ def Extract_parameterdata():
 #Variabler
 
 Vf = 0.6
-nf = 4
+nf = 10
 r = 1.0  # radiusen paa fiberne er satt til aa vaere uniforme, dette kan endres med en liste og random funksjon med data om faktisk variasjon i fibertype. Kommer det til aa gjore noe forskjell?
 n = 1  # sweep variabel 1 naa = antall random seed(n)
 meshsize = r * 0.3

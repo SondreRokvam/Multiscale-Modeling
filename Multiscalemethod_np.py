@@ -509,7 +509,7 @@ def Extract_parameterdata():
 
         maxsherstresses.append(max(sherstresses))
         maxsherstrains.append(max(sherstrains))
-    g = open(Envelope, "w")
+    g = open(Envelope+str(nf)+'.txt', "w")
     for a in range(0, len(maxMisesStresses)):
         #                 1                              2                             3                             4                        5
         g.write(str(maxMisesStresses[a]) + '\t' + str(minMisesStresses[a]) + '\t' + str(maxnormstresses[a]) + '\t' + str(minnormstresses[a]) + '\t' + str(maxnormstrains[a])
@@ -524,115 +524,115 @@ def Extract_parameterdata():
 """              ALT OVER ER FUNKSJONER           """
 
 
+for v in range (0,2):
+    #Variabler
 
-#Variabler
+    Vf = 0.6
+    nf = v*4
+    r = 1.0  # radiusene paa fiberne er naa satt til aa vaere uniforme, kan endres til liste med faktisk variasjon i diameter
+    n = 1  # sweep variabel 1 naa = antall random seed(n)
+    meshsize = r * 0.3
+    sweepcases = 64
 
-Vf = 0.6
-nf = 0
-r = 1.0  # radiusene paa fiberne er naa satt til aa vaere uniforme, kan endres til liste med faktisk variasjon i diameter
-n = 1  # sweep variabel 1 naa = antall random seed(n)
-meshsize = r * 0.3
-sweepcases = 16
+    tykkelse =0.1
 
-tykkelse =0.1
+    #Andre variabler
+    if 1:
+        #Er RVE tomt?
+        if nf ==0 or Vf==0: # Fiberfri RVE
+            nf=0
+            Vf=0
+            dL = 6
 
-#Andre variabler
-if 1:
-    #Er RVE tomt?
-    if nf ==0 or Vf==0: # Fiberfri RVE
-        nf=0
-        Vf=0
-        dL = 6
-
-    else:
-        dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5 # RVE storrelsen er satt til aa vaere relativ av nf og V
-
-
-    #RVE_Modelleringsparametere
-    rtol = 0.025 * r        #Mellomfiber toleranse
-    gtol = 0.025 * r        #Dodsone klaring toleranse
-
-    ytredodgrense = r+gtol  #Dodzone avstand, lengst fra kantene
-    indredodgrense= r-gtol  #Dodzone avstand, naermest kantene
-
-    iterasjonsgrense =10000
-
-    # Tekstfiler
-    GitHub ='C:/Multiscale-Modeling/'
-    Envelope = GitHub+'envelope.txt'
-    parameterpath = GitHub+'Parametere.txt'
-    coordpath = GitHub+'coordst.txt'
-    lagrestiffpath = GitHub+'Stiffness.txt'
-    workpath = 'C:/Users/Rockv/Desktop/Temp/'
+        else:
+            dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5 # RVE storrelsen er satt til aa vaere relativ av nf og V
 
 
-    """   ABAQUS   """
-    modelName = 'Model-A'
-    instanceName = 'PART-1-MESH-1-1'
-    stepName = 'Enhetstoyninger'
-    difstpNm = 'Lasttoyinger'
+        #RVE_Modelleringsparametere
+        rtol = 0.025 * r        #Mellomfiber toleranse
+        gtol = 0.025 * r        #Dodsone klaring toleranse
 
-    #Composite sweep stresses
-    sweepresolution = 2*pi / sweepcases #stepsize
+        ytredodgrense = r+gtol  #Dodzone avstand, lengst fra kantene
+        indredodgrense= r-gtol  #Dodzone avstand, naermest kantene
 
+        iterasjonsgrense =10000
 
-#
-"""$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
-"""              Micromodelleringsfunksjon av (n) kompositt           """
-#execfile('C:\Multiscale-Modeling\Multiscalemethod_np.py')
-
-for Q in range(0,n):
-    from abaqus import *
-    from abaqusConstants import *
-    from odbAccess import *
-
-    seed(Q)                                 # Q er randomfunksjonensnokkelen
-    wiggle = random()*r                    # Omplasseringsgrenser for fiberomplassering
-    
-    #Abaqus navn
-    Enhetstoyinger = ['Exx' + str(nf) + '_' + str(Q), 'Eyy' + str(nf) + '_' + str(Q), 'Ezz' + str(nf) + '_' + str(Q),
-                      'Exy' + str(nf) + '_' + str(Q), 'Exz' + str(nf) + '_' + str(Q), 'Eyz' + str(nf) + '_' + str(Q)]
-                        # Enhetstoyingene fra 0 til 5. Alle 6
+        # Tekstfiler
+        GitHub ='C:/Multiscale-Modeling/'
+        Envelope = GitHub+'envelope'
+        parameterpath = GitHub+'Parametere.txt'
+        coordpath = GitHub+'coordst.txt'
+        lagrestiffpath = GitHub+'Stiffness.txt'
+        workpath = 'C:/Users/Rockv/Desktop/Temp/'
 
 
-    Sweeptoyinger = [''] * sweepcases
-    for g in range(0,sweepcases):
-        Sweeptoyinger[g] = ('Sweep_strain'+ str(nf) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
+        """   ABAQUS   """
+        modelName = 'Model-A'
+        instanceName = 'PART-1-MESH-1-1'
+        stepName = 'Enhetstoyninger'
+        difstpNm = 'Lasttoyinger'
+
+        #Composite sweep stresses
+        sweepresolution = 2*pi / sweepcases #stepsize
 
 
-    #Lagre parametere til stottefiler
+    #
+    """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
+    """              Micromodelleringsfunksjon av (n) kompositt           """
+    #execfile('C:\Multiscale-Modeling\Multiscalemethod_np.py')
 
-    lagreparametere(Q)
+    for Q in range(0,n):
+        from abaqus import *
+        from abaqusConstants import *
+        from odbAccess import *
 
-    """Prosess"""
+        seed(Q)                                 # Q er randomfunksjonensnokkelen
+        wiggle = random()*r                    # Omplasseringsgrenser for fiberomplassering
 
-    xydata = None
-
-    # Maa vi ha fiber populasjon?
-    if not (nf==0):
-        # create a random population
-        execfile(GitHub+'GenerereFiberPopTilFil.py')                                        #modellereRVEsnitt()
-        # hente fibercoordinater
-        xydata= hentePopulation(coordpath)
-    print '\n', xydata ,'\n\n'
-    # Lage Abaqus strain-cases
-    createModel( xydata)
-    createCEq()
-    create_unitstrainslastcases()
-
-    #Faa ut stiffnessmatrix
-
-    Stiffmatrix=get_stiffness()
-
-    #Finne strains for sweep stress caser
-
-    Compliancematrix = get_compliance(Stiffmatrix)
-    sweepstrains = sweep_sig2_sig3(Compliancematrix,sweepresolution)
-
-    # Abaqus Sweep Cases
-    create_sweepedlastcases(sweepstrains)
-    Extract_parameterdata()      #norm [0]       sher [1]
+        #Abaqus navn
+        Enhetstoyinger = ['Exx' + str(nf) + '_' + str(Q), 'Eyy' + str(nf) + '_' + str(Q), 'Ezz' + str(nf) + '_' + str(Q),
+                          'Exy' + str(nf) + '_' + str(Q), 'Exz' + str(nf) + '_' + str(Q), 'Eyz' + str(nf) + '_' + str(Q)]
+                            # Enhetstoyingene fra 0 til 5. Alle 6
 
 
-    print 'torke'
+        Sweeptoyinger = [''] * sweepcases
+        for g in range(0,sweepcases):
+            Sweeptoyinger[g] = ('Sweep_strain'+ str(nf) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
+
+
+        #Lagre parametere til stottefiler
+
+        lagreparametere(Q)
+
+        """Prosess"""
+
+        xydata = None
+
+        # Maa vi ha fiber populasjon?
+        if not (nf==0):
+            # create a random population
+            execfile(GitHub+'GenerereFiberPopTilFil.py')                                        #modellereRVEsnitt()
+            # hente fibercoordinater
+            xydata= hentePopulation(coordpath)
+        print '\n', xydata ,'\n\n'
+        # Lage Abaqus strain-cases
+        createModel( xydata)
+        createCEq()
+        create_unitstrainslastcases()
+
+        #Faa ut stiffnessmatrix
+
+        Stiffmatrix=get_stiffness()
+
+        #Finne strains for sweep stress caser
+
+        Compliancematrix = get_compliance(Stiffmatrix)
+        sweepstrains = sweep_sig2_sig3(Compliancematrix,sweepresolution)
+
+        # Abaqus Sweep Cases
+        create_sweepedlastcases(sweepstrains)
+        Extract_parameterdata()      #norm [0]       sher [1]
+
+
+        print 'torke'
 

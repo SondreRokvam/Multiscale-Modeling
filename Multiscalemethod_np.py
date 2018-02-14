@@ -29,11 +29,9 @@ def hentePopulation(coordpath):
         b = float(data[1])
         xy.append([a,b])
     print 'Antall fiber = ',int(nf),'\tAntall fiberkoordinater = '+str(len(xy))
-    print '\n',xy,'\n \n'
     return xy
 
 #Abaqus
-
 def createModel(xydata):
     import section
     import regionToolset
@@ -51,19 +49,16 @@ def createModel(xydata):
     import xyPlot
     import displayGroupOdbToolset as dgo
     import connectorBehavior
-    Mdb()  #reset
-    #
-
-    model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lag model
-    del mdb.models['Model-1']                                       # Slett standard model
-
-
+#Reset session
+    Mdb()
+    model =mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)    #Lag model
+    del mdb.models['Model-1']                                           #Slett standard model
     mod = mdb.models[modelName]
 
-    dx=dL/2.0
-    dy=dL/2.0
+    dx=L/2.0
+    dy=L/2.0
     #Lag sketch
-    s1 = model.ConstrainedSketch(name='__profile__',sheetSize=2*dL)
+    s1 = model.ConstrainedSketch(name='__profile__',sheetSize=2*L)
     s1.setPrimaryObject(option=STANDALONE)
 
     #Tegne Firkant
@@ -75,9 +70,9 @@ def createModel(xydata):
         type=DEFORMABLE_BODY)
     p = model.parts['Part-1']
     p.BaseShell(sketch=s1)
-    s1.unsetPrimaryObject()
-    #del mod.sketches['__profile__']
 
+    s1.unsetPrimaryObject()
+    del mod.sketches['__profile__']
     if not nf == 0:
         f1, e, = p.faces, p.edges
         t = p.MakeSketchTransform(sketchPlane=f1.findAt(coordinates=(0.0,
@@ -86,26 +81,26 @@ def createModel(xydata):
                                       coordinates=(dx, 0.0, 0.0)), sketchPlaneSide=SIDE1, origin=(0.0,
                                                                                                   0.0, 0.0))
         s1 = model.ConstrainedSketch(name='__profile__',
-                                     sheetSize=2*dL, gridSpacing=dL / 25.0, transform=t)
+                                     sheetSize=2*L, gridSpacing=L / 20.0, transform=t)
         s1.setPrimaryObject(option=SUPERIMPOSE)
         p.projectReferencesOntoSketch(sketch=s1, filter=COPLANAR_EDGES)
 
-        rcos45 = r * cos(45.0 * pi / 180.0)
+        rcos45 = rf * cos(45.0 * pi / 180.0)
         for data in xydata:
             x = data[0]
             y = data[1]
             done = 0
             if done == 0 and x >= dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x + r, y))
+                s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rf, y))
                 done = 1
             if done == 0 and x <= -dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x - r, y))
+                s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rf, y))
                 done = 1
             if done == 0 and y >= dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y + r))
+                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y + rf))
                 done = 1
             if done == 0 and y <= -dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y - r))
+                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y - rf))
                 done = 1
 
             if done == 0 and x >= 0 and y >= 0:
@@ -128,8 +123,8 @@ def createModel(xydata):
         p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,
                                                                     0.0)), faces=pickedFaces, sketch=s1)
         s1.unsetPrimaryObject()
-        #del model.sketches['__profile__'], f, pickedFaces, e1, d2, f1, e, t
-        #del s1, model
+        del model.sketches['__profile__'], f, pickedFaces, e1, d2, f1, e, t
+        del s1, model
         #Partioned planar shell
 
         # mesh
@@ -143,20 +138,18 @@ def createModel(xydata):
 
         mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
         pickedElemFacesSourceSide = mod.parts['Part-1'].elementFaces
-        vector = ((0.0, 0.0, 0.0), (0.0, 0.0, 2.0))
+        vector = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
         p.generateBottomUpExtrudedMesh(elemFacesSourceSide=pickedElemFacesSourceSide,
                                        extrudeVector=vector, numberOfLayers=2)
         p = mod.parts['Part-1']
-        n = p.nodes
-        nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
-        p.deleteNode(nodes=nodes)
         p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
         p = mod.parts['Part-1-mesh-1']
         n = p.nodes
         nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
         p.deleteNode(nodes=nodes)
-        # Created extruded mesh part
 
+        # print 'Created extruded mesh part'
+        # Debugging abaqus tool :)#del mdb.models['Model-1']
         # This is where the fibers are chosen and put together in set
         p = mod.parts['Part-1-mesh-1']
         p.Set(name='AllE', elements=p.elements)
@@ -195,7 +188,7 @@ def createModel(xydata):
         p.generateMesh()
         mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
         pickedElemFacesSourceSide = mod.parts['Part-1'].elementFaces
-        vector = ((0.0, 0.0, 0.0), (0.0, 0.0, 2.0))
+        vector = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
         p.generateBottomUpExtrudedMesh(elemFacesSourceSide=pickedElemFacesSourceSide,
                                        extrudeVector=vector, numberOfLayers=2)
         p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
@@ -213,7 +206,8 @@ def createModel(xydata):
         p.SectionAssignment(region=region, sectionName='Matrix', offset=0.0,
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
-    #del mod.parts['Part-1'], p, n, mod, region
+
+    del p, n, mod, region
     print '\nModel created, meshed and assigned properties'
 
 def createCEq():
@@ -223,14 +217,30 @@ def createCEq():
     p = mdb.models[modelName].parts['Part-1-mesh-1']
     a.Instance(name=instanceName, part=p, dependent=ON)
 
-    #Flytte modellen til origo og sette x i fiberretning.
-    a.translate(instanceList=(instanceName, ), vector=(0.0, 0.0, -1.0))
+    a.translate(instanceList=(instanceName, ), vector=(0.0, 0.0, -tykkelse))
+
     a.rotate(instanceList=(instanceName, ), axisPoint=(0.0, 0.0, 0.0),
         axisDirection=(0.0, 1.0, 0.0), angle=90.0)
     tol = 0.01
 
+
+    allNodes = a.instances[instanceName].nodes
+
+
+
     # Finding the dimensions
-    xmax, ymax, zmax, xmin, ymin, zmin = 1.0, dL/2, dL/2, 0.0, -dL/2, -dL/2
+    xmax, ymax, zmax, xmin, ymin, zmin = tykkelse, dL/2, dL/2, 0.0, -dL/2, -dL/2
+    # Debugging abaqus tool :)
+    #del mdb.models['Model-1']
+    for n in allNodes:
+        x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
+        xmax = max(xmax, x)
+        ymax = max(ymax, y)
+        zmax = max(zmax, z)
+        xmin = min(xmin, x)
+        ymin = min(ymin, y)
+        zmin = min(zmin, z)
+    #print xmax, ymax, zmax, xmin, ymin, zmin
 
     # Creating reference point
 
@@ -246,15 +256,6 @@ def createCEq():
     refPoints = (a.referencePoints[a.features['RP-3'].id],)
     a.Set(referencePoints=refPoints, name='RPZ')
 
-    allNodes = a.instances[instanceName].nodes
-    for n in allNodes:
-        x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
-        xmax = max(xmax, x)
-        ymax = max(ymax, y)
-        zmax = max(zmax, z)
-        xmin = min(xmin, x)
-        ymin = min(ymin, y)
-        zmin = min(zmin, z)
     # CE between x-normal surfaces:
 
     nodesXa = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmin - tol, xmin + tol, ymax + tol, zmax + tol)
@@ -336,321 +337,9 @@ def createCEq():
         counter = counter + 1
     print 'Constraint equ. applied'
 
-"""
-def createModel(xydata):
-    import section
-    import regionToolset
-    import displayGroupMdbToolset as dgm
-    import part
-    import material
-    import assembly
-    import step
-    import interaction
-    import load
-    import mesh
-    import job
-    import sketch
-    import visualization
-    import xyPlot
-    import displayGroupOdbToolset as dgo
-    import connectorBehavior
-    Mdb()  #reset
-
-    model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lag model
-    del mdb.models['Model-1']                                       # Slett standard model
-
-
-    mod = mdb.models[modelName]
-
-    dx=dL/2.0
-    dy=dL/2.0
-    #Lag sketch
-    s1 = model.ConstrainedSketch(name='__profile__',sheetSize=2*dL)
-    s1.setPrimaryObject(option=STANDALONE)
-
-    #Tegne Firkant
-    s1.Line(point1=(-dx, -dy), point2=(dx, -dy))
-    s1.Line(point1=(dx, -dy), point2=(dx, dy))
-    s1.Line(point1=(dx,dy), point2=(-dx,dy))
-    s1.Line(point1=(-dx,dy), point2=(-dx,-dy))
-    p = mod.Part(name='Part-1', dimensionality=THREE_D,
-        type=DEFORMABLE_BODY)
-    p = model.parts['Part-1']
-    p.BaseShell(sketch=s1)
-    s1.unsetPrimaryObject()
-    #del mod.sketches['__profile__']
-
-    if not nf == 0:
-        f1, e, = p.faces, p.edges
-        t = p.MakeSketchTransform(sketchPlane=f1.findAt(coordinates=(0.0,
-                                                                     0.0, 0.0), normal=(0.0, 0.0, 1.0)),
-                                  sketchUpEdge=e.findAt(
-                                      coordinates=(dx, 0.0, 0.0)), sketchPlaneSide=SIDE1, origin=(0.0,
-                                                                                                  0.0, 0.0))
-        s1 = model.ConstrainedSketch(name='__profile__',
-                                     sheetSize=2*dL, gridSpacing=dL / 25.0, transform=t)
-        s1.setPrimaryObject(option=SUPERIMPOSE)
-        p.projectReferencesOntoSketch(sketch=s1, filter=COPLANAR_EDGES)
-
-        rcos45 = r * cos(45.0 * pi / 180.0)
-        for data in xydata:
-            x = data[0]
-            y = data[1]
-            done = 0
-            if done == 0 and x >= dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x + r, y))
-                done = 1
-            if done == 0 and x <= -dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x - r, y))
-                done = 1
-            if done == 0 and y >= dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y + r))
-                done = 1
-            if done == 0 and y <= -dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y - r))
-                done = 1
-
-            if done == 0 and x >= 0 and y >= 0:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rcos45, y - rcos45))
-                done = 1
-            if done == 0 and x >= 0 and y <= 0:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rcos45, y + rcos45))
-                done = 1
-            if done == 0 and x <= 0 and y <= 0:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rcos45, y + rcos45))
-                done = 1
-            if done == 0 and x <= 0 and y >= 0:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rcos45, y - rcos45))
-                done = 1
-
-        # Create partioned planar shell from sketch
-        f = p.faces
-        pickedFaces = f.findAt(((0.0, 0.0, 0.0),))
-        e1, d2 = p.edges, p.datums
-        p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,
-                                                                    0.0)), faces=pickedFaces, sketch=s1)
-        s1.unsetPrimaryObject()
-        #del model.sketches['__profile__'], f, pickedFaces, e1, d2, f1, e, t
-        #del s1, model
-        #Partioned planar shell
-
-        # mesh
-
-        p = mod.parts['Part-1']
-        p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
-        p = mod.parts['Part-1']
-        p.generateMesh()
-        p = mod.parts['Part-1']
-        # meshed
-
-        mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
-        pickedElemFacesSourceSide = mod.parts['Part-1'].elementFaces
-        vector = ((0.0, 0.0, 0.0), (0.0, 0.0, 2.0))
-        p.generateBottomUpExtrudedMesh(elemFacesSourceSide=pickedElemFacesSourceSide,
-                                       extrudeVector=vector, numberOfLayers=2)
-        p = mod.parts['Part-1']
-        n = p.nodes
-        nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
-        p.deleteNode(nodes=nodes)
-        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
-        p = mod.parts['Part-1-mesh-1']
-        n = p.nodes
-        nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
-        p.deleteNode(nodes=nodes)
-        # Created extruded mesh part
-
-        # This is where the fibers are chosen and put together in set
-        p = mod.parts['Part-1-mesh-1']
-        p.Set(name='AllE', elements=p.elements)
-        x = xydata[0][0]
-        y = xydata[0][1]
-        fiber = p.elements.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
-        for i in range(1, len(xydata)):
-            x = xydata[i][0]
-            y = xydata[i][1]
-            temp = p.elements.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
-            fiber = fiber + temp
-        p.Set(name='Fibers', elements=fiber)
-        p.SetByBoolean(name='Matrix', sets=(p.sets['AllE'], p.sets['Fibers'],), operation=DIFFERENCE)
-
-        mod.Material(name='glass')
-        mod.materials['glass'].Elastic(table=((70000.0, 0.22),))
-        mod.Material(name='resin')
-        mod.materials['resin'].Elastic(table=((3500.0, 0.33),))
-        mod.HomogeneousSolidSection(name='Fibers', material='glass',
-                                                      thickness=None)
-        mod.HomogeneousSolidSection(name='matrix', material='resin',
-                                                      thickness=None)
-
-        p = mod.parts['Part-1-mesh-1']
-        region = p.sets['Fibers']
-        p.SectionAssignment(region=region, sectionName='Fibers', offset=0.0,
-                            offsetType=MIDDLE_SURFACE, offsetField='',
-                            thicknessAssignment=FROM_SECTION)
-        region = p.sets['Matrix']
-        p.SectionAssignment(region=region, sectionName='matrix', offset=0.0,
-                            offsetType=MIDDLE_SURFACE, offsetField='',
-                            thicknessAssignment=FROM_SECTION)
-        del x, y
-    else:
-        p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
-        p.generateMesh()
-        mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
-        pickedElemFacesSourceSide = mod.parts['Part-1'].elementFaces
-        vector = ((0.0, 0.0, 0.0), (0.0, 0.0, 2.0))
-        p.generateBottomUpExtrudedMesh(elemFacesSourceSide=pickedElemFacesSourceSide,
-                                       extrudeVector=vector, numberOfLayers=2)
-        p = mod.parts['Part-1']
-        n = p.nodes
-        nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
-        p.deleteNode(nodes=nodes)
-        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
-        # extruded mesh and make orphan mesh
-        
-        
-        
-        #p = mod.parts['Part-1-mesh-1']
-        #n = p.nodes
-        #nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
-        #p.deleteNode(nodes=nodes)
-        
-        
-        
-        # delete shell nodes
-        p.Set(name='AllE', elements=p.elements)
-        mod.Material(name='resin')
-        mod.materials['resin'].Elastic(table=((3500.0, 0.33),))
-        mod.HomogeneousSolidSection(name='Matrix', material='resin', thickness=None)
-        region = p.sets['AllE']
-        p.SectionAssignment(region=region, sectionName='Matrix', offset=0.0,
-                            offsetType=MIDDLE_SURFACE, offsetField='',
-                            thicknessAssignment=FROM_SECTION)
-    #del mod.parts['Part-1'], p, n, mod, region
-    print '\nModel created, meshed and assigned properties'
-
-def createCEq():
-    mod = mdb.models[modelName]
-    a = mod.rootAssembly
-    a.DatumCsysByDefault(CARTESIAN)
-    p = mdb.models[modelName].parts['Part-1-mesh-1']
-    a.Instance(name=instanceName, part=p, dependent=ON)
-
-    #Flytte modellen til origo og sette x i fiberretning.
-    a.translate(instanceList=(instanceName, ), vector=(0.0, 0.0, -1.0))
-    a.rotate(instanceList=(instanceName, ), axisPoint=(0.0, 0.0, 0.0),
-        axisDirection=(0.0, 1.0, 0.0), angle=90.0)
-    tol = 0.01
-
-    # Finding the dimensions
-    xmax, ymax, zmax, xmin, ymin, zmin = 1.0, dL/2, dL/2, 0.0, -dL/2, -dL/2
-
-    # Creating reference point
-
-    a.ReferencePoint(point=( xmin - 0.2 * (xmax - xmin),0.0,  0.0))
-    refPoints = (a.referencePoints[a.features['RP-1'].id],)
-    a.Set(referencePoints=refPoints, name='RPX')
-
-    a.ReferencePoint(point=(0.0, ymin - 0.2 * (ymax - ymin), 0.0))
-    refPoints = (a.referencePoints[a.features['RP-2'].id],)
-    a.Set(referencePoints=refPoints, name='RPY')
-
-    a.ReferencePoint(point=(0.0, 0.0,zmin - 0.2 * (zmax - zmin)))
-    refPoints = (a.referencePoints[a.features['RP-3'].id],)
-    a.Set(referencePoints=refPoints, name='RPZ')
-
-    allNodes = a.instances[instanceName].nodes
-    for n in allNodes:
-        x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
-        xmax = max(xmax, x)
-        ymax = max(ymax, y)
-        zmax = max(zmax, z)
-        xmin = min(xmin, x)
-        ymin = min(ymin, y)
-        zmin = min(zmin, z)
-    # CE between x-normal surfaces:
-
-    nodesXa = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmin - tol, xmin + tol, ymax + tol, zmax + tol)
-    nodesXb = allNodes.getByBoundingBox(xmax - tol, ymin - tol, zmin - tol, xmax + tol, ymax + tol, zmax + tol)
-
-    counter = 0
-
-    for n in nodesXa:
-        name1 = "Xa%i" % (counter)
-        nodes1 = nodesXa[counter:counter + 1]
-        a.Set(nodes=nodes1, name=name1)
-        x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
-        name2 = "Xb%i" % (counter)
-        nodes2 = nodesXb.getByBoundingBox(x + (xmax - xmin) - tol, y - tol, z - tol, x + (xmax - xmin) + tol, y + tol,
-                                          z + tol)
-        a.Set(nodes=nodes2, name=name2)
-
-        mod.Equation(name="Cq11x%i" % (counter),
-                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(xmax - xmin), 'RPX', 1),))  # 11
-        mod.Equation(name="Cq21x%i" % (counter),
-                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(xmax - xmin) / 2, 'RPX', 2),))  # 21
-        mod.Equation(name="Cq31x%i" % (counter),
-                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(xmax - xmin) / 2, 'RPX', 3),))  # 31
-
-        counter = counter + 1
-
-        # CE between y-normal surfaces
-    # Note: excluding the nodes at xmax:
-
-    nodesYa = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmin - tol, xmax - tol, ymin + tol, zmax + tol)
-    nodesYb = allNodes.getByBoundingBox(xmin - tol, ymax - tol, zmin - tol, xmax - tol, ymax + tol, zmax + tol)
-
-    counter = 0
-
-    for n in nodesYa:
-        name1 = "Ya%i" % (counter)
-        nodes1 = nodesYa[counter:counter + 1]
-        a.Set(nodes=nodes1, name=name1)
-        x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
-        name2 = "Yb%i" % (counter)
-        nodes2 = nodesYb.getByBoundingBox(x - tol, y + (ymax - ymin) - tol, z - tol, x + tol, y + (ymax - ymin) + tol,
-                                          z + tol)
-        a.Set(nodes=nodes2, name=name2)
-
-        mod.Equation(name="Cq12y%i" % (counter),
-                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(ymax - ymin) / 2, 'RPY', 1),))  # 12
-        mod.Equation(name="Cq22y%i" % (counter),
-                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(ymax - ymin), 'RPY', 2),))  # 22
-        mod.Equation(name="Cq32y%i" % (counter),
-                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(ymax - ymin) / 2, 'RPY', 3),))  # 32
-
-        counter = counter + 1
-
-        # CE between z-normal surfaces
-    # Note: excluding the nodes at xmax and ymax :
-
-    nodesZa = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmin - tol, xmax - tol, ymax - tol, zmin + tol)
-    nodesZb = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmax - tol, xmax - tol, ymax - tol, zmax + tol)
-
-    counter = 0
-
-    for n in nodesZa:
-        name1 = "Za%i" % (counter)
-        nodes1 = nodesZa[counter:counter + 1]
-        a.Set(nodes=nodes1, name=name1)
-        x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
-        name2 = "Zb%i" % (counter)
-        nodes2 = nodesZb.getByBoundingBox(x - tol, y - tol, z + (zmax - zmin) - tol, x + tol, y + tol,
-                                          z + (zmax - zmin) + tol)
-        a.Set(nodes=nodes2, name=name2)
-
-        mod.Equation(name="Cq13z%i" % (counter),
-                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(zmax - zmin) / 2, 'RPZ', 1),))  # 13
-        mod.Equation(name="Cq23z%i" % (counter),
-                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(zmax - zmin) / 2, 'RPZ', 2),))  # 23
-        mod.Equation(name="Cq33z%i" % (counter),
-                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(zmax - zmin), 'RPZ', 3),))  # 33
-
-        counter = counter + 1
-    print 'Constraint equ. applied'
-"""
 def run_Job(Jobe, modelName):
     mdb.Job(name=Jobe, model=modelName, description='', type=ANALYSIS,
-            atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
+            atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=95,
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
             explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
@@ -706,7 +395,7 @@ def get_stiffness():
                 sag[p] = sag[p]+v.values[j].data[p]*elvol.values[j].data
         odb.close()
         for k in range(0,6):
-            sag[k]= sag[k]/(1*(dL)**2) #Volume
+            sag[k]= sag[k]/(tykkelse*(dL)**2) #Volume
         stiffmatrix.append(sag)
     print '\n'
     g = open(lagrestiffpath, "w")
@@ -767,7 +456,6 @@ def create_sweepedlastcases(sweep):
         run_Job(Jobw, modelName)
 
     del a, mod, Jobw, case
-
 
 def Extract_parameterdata():
     maxMisesStresses = list()
@@ -837,14 +525,14 @@ def Extract_parameterdata():
 
 #Variabler
 
-Vf = 0
-nf = 4
+Vf = 0.6
+nf = 1
 r = 1.0  # radiusen paa fiberne er satt til aa vaere uniforme, dette kan endres med en liste og random funksjon med data om faktisk variasjon i fibertype. Kommer det til aa gjore noe forskjell?
 n = 1  # sweep variabel 1 naa = antall random seed(n)
 meshsize = r * 0.3
 sweepcases = 16
 
-
+tykkelse =0.1
 
 #Andre variabler
 if 1:
@@ -852,16 +540,20 @@ if 1:
     if nf ==0 or Vf==0: # Fiberfri RVE
         nf=0
         Vf=0
-        dL = 5
+        dL = 3
+        L = dL
+        rf = r
     else:
         dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5 # RVE storrelsen er satt til aa vaere relativ av nf og V
+        L= dL
+        rf=r
 
     #RVE_Modelleringsparametere
-    rtol = 0.025  * r    #Mellomfiber toleranse
-    gtol = r * 0.025    #Dodsone klaring toleranse
+    rtol = 0.025 * r        #Mellomfiber toleranse
+    gtol = 0.025 * r        #Dodsone klaring toleranse
 
-    ytredodgrense = r+gtol  #Parametere for dodzonegrense
-    indredodgrense= r-gtol
+    ytredodgrense = r+gtol  #Dodzone avstand, lengst fra kantene
+    indredodgrense= r-gtol  #Dodzone avstand, naermest kantene
 
     iterasjonsgrense =10000
 
@@ -922,7 +614,7 @@ for Q in range(0,n):
         execfile(GitHub+'GenerereFiberPopTilFil.py')                                        #modellereRVEsnitt()
         # hente fibercoordinater
         xydata= hentePopulation(coordpath)
-    print xydata
+    print '\n', xydata ,'\n\n'
     # Lage Abaqus strain-cases
     createModel( xydata)
     createCEq()

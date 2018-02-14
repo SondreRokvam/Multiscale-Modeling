@@ -76,7 +76,7 @@ def createModel(xydata):
     p.BaseShell(sketch=s1)
     s1.unsetPrimaryObject()
     #del mod.sketches['__profile__']
-
+    del bon
     if not nf == 0:
         f1, e, = p.faces, p.edges
         t = p.MakeSketchTransform(sketchPlane=f1.findAt(coordinates=(0.0,
@@ -343,8 +343,8 @@ def run_Job(Jobe, modelName):
             scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
             numDomains=numCpus, numGPUs=1000)
     a=1
-    mdb.jobs[Jobe].submit(consistencyChecking=OFF)
-    mdb.jobs[Jobe].waitForCompletion()
+    #mdb.jobs[Jobe].submit(consistencyChecking=OFF)
+    #mdb.jobs[Jobe].waitForCompletion()
     del a
 
 def create_unitstrainslastcases():
@@ -377,7 +377,7 @@ def create_unitstrainslastcases():
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
         run_Job(Enhetstoyinger[i],modelName)
-        del exx, eyy, ezz, exy, exz, eyz,sda
+        del exx, eyy, ezz, exy, exz, eyz
 
 def get_stiffness():
     stiffmatrix = []
@@ -418,22 +418,24 @@ def get_compliance(Stiffmatrix):
         pass    #intended break
     for a in range(0, 6):
         print inverse[0][a],'\t', inverse[1][a],'\t', inverse[2][a],'\t', inverse[3][a],'\t',inverse[4][a],'\t', inverse[5][a]
+    inverse = inverse.tolist()
     return inverse
 
 def sweep_sig2_sig3(Compliancematrix,sweepresolution):
     sweep=list()
     x= np.arange(0,2*pi,sweepresolution)
-
-    print '\nStrains from stress sweep \n',
+    x =x.tolist()
+    print '\nStrains from stress sweep at angle \n',
     print  x,'\n'
     for d in range(0, len(x)):
         sig2 = cos(x[d])
         sig3 = sin(x[d])
         a=np.dot(Compliancematrix,[0,sig2,sig3,0,0,0])
-        print a
-        a = a.tolist()
-        sweep.append(a)
 
+        a = a.tolist()
+        print a
+        sweep.append(a)
+    print sweep
     return sweep
 
 def create_sweepedlastcases(sweep):
@@ -457,11 +459,13 @@ def create_sweepedlastcases(sweep):
     del a, mod, Jobw, case
 
 def Extract_parameterdata():
+
     maxMisesStresses = list()
     minMisesStresses = list()
 
     maxnormstresses = list()
     minnormstresses = list()
+
     maxnormstrains = list()
     minnormstrains = list()
 

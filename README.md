@@ -1,4 +1,4 @@
 # Multiscale Modeling
 
 
-Sondre er liten
+Sondre Rokvam

@@ -3,9 +3,9 @@ from math import *
 import numpy as np
 from multiprocessing import cpu_count
 
-numCpus = cpu_count()
+numCpus = cpu_count()/2
 
-print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMultiscale modelling on microscale  \nnumCpus = ',numCpus
+print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMultiscale modelling on microscale  \nHalve numCpus = ',numCpus
 
 #RVEmodell
 def lagreparametere(Q):
@@ -52,7 +52,6 @@ def createModel(xydata):
     import displayGroupOdbToolset as dgo
     import connectorBehavior
     Mdb()  #reset
-    #
 
     model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lag model
     del mdb.models['Model-1']                                       # Slett standard model
@@ -204,10 +203,12 @@ def createModel(xydata):
         p.deleteNode(nodes=nodes)
         p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
         # extruded mesh and make orphan mesh
+        """
         p = mod.parts['Part-1-mesh-1']
         n = p.nodes
         nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
         p.deleteNode(nodes=nodes)
+        """
         # delete shell nodes
         p.Set(name='AllE', elements=p.elements)
         mod.Material(name='resin')
@@ -238,7 +239,7 @@ def createCEq():
 
     # Creating reference point
 
-    a.ReferencePoint(point=( xmin - 0.2 * (zmax - zmin),0.0,  0.0))
+    a.ReferencePoint(point=( xmin - 0.2 * (xmax - xmin),0.0,  0.0))
     refPoints = (a.referencePoints[a.features['RP-1'].id],)
     a.Set(referencePoints=refPoints, name='RPX')
 
@@ -351,7 +352,7 @@ def run_Job(Jobe, modelName):
     mdb.jobs[Jobe].submit(consistencyChecking=OFF)
     mdb.jobs[Jobe].waitForCompletion()
 
-def create_unitstrainslastcases(stepName):
+def create_unitstrainslastcases():
     id = np.identity(6)  # Identity matrix for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
     mod = mdb.models[modelName]
     a = mod.rootAssembly
@@ -380,7 +381,7 @@ def create_unitstrainslastcases(stepName):
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-        #run_Job(Enhetstoyinger[i],modelName)
+        run_Job(Enhetstoyinger[i],modelName)
         del exx, eyy, ezz, exy, exz, eyz
 
 def get_stiffness():
@@ -433,9 +434,9 @@ def sweep_sig2_sig3(Compliancematrix,sweepresolution):
     for d in range(0, len(x)):
         sig2 = cos(x[d])
         sig3 = sin(x[d])
-        a=np.dot([0,sig2,sig3,0,0,0],Compliancematrix)
-        a = a.tolist()
+        a=np.dot(Compliancematrix,[0,sig2,sig3,0,0,0])
         print a
+        a = a.tolist()
         sweep.append(a)
 
     return sweep
@@ -462,45 +463,60 @@ def create_sweepedlastcases(sweep):
 
 
 def Extract_parameterdata():
+    maxMisesStresses = list()
+    minMisesStresses = list()
+
+    maxnormstresses = list()
+    minnormstresses = list()
+    maxnormstrains = list()
+    minnormstrains = list()
+
+    maxsherstresses = list()
+    maxsherstrains = list()
+
     print 'Computing stresses for ' + str(sweepcases) + ' sweep cases'
-    normSpenx_y = list()
-    sherSpenx_y = list()
-    normToyx_y = list()
-    sherToyx_y = list()
-    for kaare in range(0,sweepcases):
-        odb = session.openOdb(workpath + Sweeptoyinger[kaare] + '.odb')
+    for case in range(0,sweepcases):
+        odb = session.openOdb(workpath + Sweeptoyinger[case] + '.odb')
         nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL).values
         nodalStrains = odb.steps[difstpNm].frames[-1].fieldOutputs['E'].getSubset(position=ELEMENT_NODAL).values
-
+        Mises = odb.steps[difstpNm].frames[-1].fieldOutputs['MISES'].getSubset(position=ELEMENT_NODAL).values
         if not nf==0:
             Matrix = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
             nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL,
                                                                                        region=Matrix).values
             nodalStrains = odb.steps[difstpNm].frames[-1].fieldOutputs['E'].getSubset(position=ELEMENT_NODAL,
                                                                                       region=Matrix).values
+            Mises = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL,region=Matrix).values
 
+        MisesStresses = list()
         normstresses = list()
         sherstresses = list()
         normstrains=list()
         sherstrains=list()
 
         for j in range(0,len(nodalStresses)):
+            MisesStresses.append(float(Mises[j].mises))
             for p in range(0,3):
                 normstresses.append(float(nodalStresses[j].data[p]))
                 sherstresses.append(abs(float(nodalStresses[j].data[p+3])))
                 normstrains.append(float(nodalStrains[j].data[p]))
                 sherstrains.append(abs(float(nodalStrains[j].data[p+3])))
         odb.close()
-        phi = 2 * pi*kaare/sweepcases
-        normSpenx_y.append([max(normstresses)*cos(phi),max(normstresses)*sin(phi)])
-        sherSpenx_y.append([max(sherstresses) * cos(phi),max(sherstresses) * sin(phi)])
-        normToyx_y.append([max(normstrains)*cos(phi),max(normstrains)*sin(phi)])
-        sherToyx_y.append([max(normstrains) * cos(phi),max(normstrains) * sin(phi)])
+        maxMisesStresses.append(float(max(MisesStresses)))
+        minMisesStresses.append(float(min(MisesStresses)))
 
+        maxnormstresses.append(float(max(normstresses)))
+        minnormstresses.append(float(min(normstresses)))
+        maxnormstrains.append(float(max(normstrains)))
+        minnormstrains.append(float(min(normstrains)))
+
+        maxsherstresses.append(float(max(abs(sherstresses))))
+        maxsherstrains.append(float(max(abs(sherstrains))))
     g = open(Envelope, "w")
-    for a in range(0, len(normSpenx_y)):#  1                        2                                           3                                           4                                            5
-        g.write(str(float(normSpenx_y[a][0])) + '\t' + str(float(normSpenx_y[a][1])) + '\t' + str(float(sherSpenx_y[a][0])) + '\t' + str(float(sherSpenx_y[a][1])) +
-                '\t' + str(float(normToyx_y[a][0])) + '\t' + str(float(normToyx_y[a][1])) + '\t' + str(float(sherToyx_y[a][0])) + '\t' + str(float(sherToyx_y[a][1])))
+    for a in range(0, len(normSpenx_y)):
+        #                 1                              2                             3                             4                        5
+        g.write(str(maxMisesStresses) + '\t' + str(minMisesStresses) + '\t' + str(maxnormstresses) + '\t' + str(minnormstresses) + '\t' + str(maxnormstrains)
+                + '\t' + str(minnormstrains) + '\t' + str(maxsherstresses) + '\t' + str(maxsherstrains))
         if not a ==len(normSpenx_y)-1:
             g.write('\n')
     g.close()
@@ -529,7 +545,7 @@ if 1:
     if nf ==0 or Vf==0: # Fiberfri RVE
         nf=0
         Vf=0
-        dL = 10
+        dL = 5
     else:
         dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5 # RVE storrelsen er satt til aa vaere relativ av nf og V
 
@@ -576,18 +592,18 @@ for Q in range(0,n):
     
     #Abaqus navn
     Enhetstoyinger = ['Exx' + str(nf) + '_' + str(Q), 'Eyy' + str(nf) + '_' + str(Q), 'Ezz' + str(nf) + '_' + str(Q),
-              'Exy' + str(nf) + '_' + str(Q), 'Exz' + str(nf) + '_' + str(Q),
-              'Eyz' + str(nf) + '_' + str(Q)]  # Enhetstoyingene fra 0 til 5. Alle 6
+                      'Exy' + str(nf) + '_' + str(Q), 'Exz' + str(nf) + '_' + str(Q), 'Eyz' + str(nf) + '_' + str(Q)]
+                        # Enhetstoyingene fra 0 til 5. Alle 6
+
 
     Sweeptoyinger = [''] * sweepcases
     for g in range(0,sweepcases):
-        Sweeptoyinger[g] = 'Sweep_strain_'+ str(nf) + '_at_' + +str(int(g*180*sweepresolution/pi))+'deg__Q_'+str(int(Q))
+        Sweeptoyinger[g] = ('Sweep_strain'+ str(nf) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
 
 
     #Lagre parametere til stottefiler
 
     lagreparametere(Q)
-
 
     """Prosess"""
 
@@ -599,11 +615,11 @@ for Q in range(0,n):
         execfile(GitHub+'GenerereFiberPopTilFil.py')                                        #modellereRVEsnitt()
         # hente fibercoordinater
         xydata= hentePopulation(coordpath)
-
+    print xydata
     # Lage Abaqus strain-cases
     createModel( xydata)
     createCEq()
-    create_unitstrainslastcases(stepName)
+    create_unitstrainslastcases()
 
     #Faa ut stiffnessmatrix
 

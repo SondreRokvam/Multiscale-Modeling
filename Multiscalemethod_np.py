@@ -76,7 +76,7 @@ def createModel(xydata):
     p.BaseShell(sketch=s1)
     s1.unsetPrimaryObject()
     #del mod.sketches['__profile__']
-    del bon
+
     if not nf == 0:
         f1, e, = p.faces, p.edges
         t = p.MakeSketchTransform(sketchPlane=f1.findAt(coordinates=(0.0,
@@ -193,14 +193,13 @@ def createModel(xydata):
         vector = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
         p.generateBottomUpExtrudedMesh(elemFacesSourceSide=pickedElemFacesSourceSide,
                                        extrudeVector=vector, numberOfLayers=2)
-        p = mod.parts['Part-1']
+        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
+        # extruded mesh and make orphan mesh
+        p = mod.parts['Part-1-mesh-1']
         n = p.nodes
         nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
         p.deleteNode(nodes=nodes)
         # delete shell nodes
-        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
-        # extruded mesh and make orphan mesh
-
         p.Set(name='AllE', elements=p.elements)
         mod.Material(name='resin')
         mod.materials['resin'].Elastic(table=((3500.0, 0.33),))
@@ -343,8 +342,8 @@ def run_Job(Jobe, modelName):
             scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
             numDomains=numCpus, numGPUs=1000)
     a=1
-    #mdb.jobs[Jobe].submit(consistencyChecking=OFF)
-    #mdb.jobs[Jobe].waitForCompletion()
+    mdb.jobs[Jobe].submit(consistencyChecking=OFF)
+    mdb.jobs[Jobe].waitForCompletion()
     del a
 
 def create_unitstrainslastcases():
@@ -528,8 +527,8 @@ def Extract_parameterdata():
 
 #Variabler
 
-Vf = 0
-nf = 1
+Vf = 0.6
+nf = 0
 r = 1.0  # radiusene paa fiberne er naa satt til aa vaere uniforme, kan endres til liste med faktisk variasjon i diameter
 n = 1  # sweep variabel 1 naa = antall random seed(n)
 meshsize = r * 0.3

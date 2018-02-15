@@ -12,7 +12,7 @@ from matplotlib.ticker import NullFormatter
 #                                           XT   XC   YT   YC   S12
 materialA = ( (140000, 10000, 0.3, 5000), (1200, 800, 50, 150, 75) )
 
-nf=4
+nf=25
 def Get_sweeps(Samples):
     g = open(Envelope+str(nf*Samples)+'.txt', "r")
     tekst =g.read()
@@ -32,7 +32,7 @@ def to_xy(Values):
 
 
 
-for Samples in range(0,2):
+for Samples in range(1,3):
     GitHub = 'C:/Multiscale-Modeling/'
     Envelope = GitHub + 'envelope'
     maxMises = list()
@@ -113,8 +113,6 @@ for Samples in range(0,2):
     ax1.set_ylim(-a1,a1 )
     ax1.set_xticks(np.arange(-a1, a1, a1 / 5))
     ax1.set_yticks(np.arange(-a1, a1, a1 / 5))
-    print('subs')
-    print('subs')
     ax1.grid(True)
     ax1.plot(0.0,0.0,'kx',XmaxNT, YmaxNT,'ro',XminNT, YminNT,'bo', XmaxST,YmaxST,'gx')
 
@@ -154,8 +152,6 @@ for Samples in range(0,2):
     ax3.set_ylim(-a1,a1 )
     ax3.set_xticks(np.arange(-steplength, (len(minMises)+1)*steplength, steplength))
     ax3.set_yticks(np.arange(-a1, a1, a1 / 5))
-    print('subs')
-    print('subs')
     ax3.grid(True)
 
     ax3.plot(Steg,maxNormToy,'ro',Steg,minNormToy,'bo',Steg,maxSherToy,'gx')
@@ -167,10 +163,9 @@ for Samples in range(0,2):
     ax4.set_yticks(np.arange(-a2, a2, a2 / 5))
     ax4.grid(True)
     ax4.plot(Steg,maxSherSpen,'gx')
-    print('subs')
 
     plt.tight_layout()
-    fig.savefig('D:/graph'+str(Samples)+'.png')
+    fig.savefig('D:/graph'+str(int(Samples*nf))+'.png')
 
 
 

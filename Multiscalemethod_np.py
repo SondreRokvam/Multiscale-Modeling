@@ -508,7 +508,7 @@ def Extract_parameterdata():
 
         maxsherstresses.append(max(sherstresses))
         maxsherstrains.append(max(sherstrains))
-    g = open(Envelope+str(nf)+'.txt', "w")
+    g = open(Envelope+str(int(nf))+'.txt', "w")
     for a in range(0, len(maxMisesStresses)):
         #                 1                              2                             3                             4                        5
         g.write(str(maxMisesStresses[a]) + '\t' + str(minMisesStresses[a]) + '\t' + str(maxnormstresses[a]) + '\t' + str(minnormstresses[a]) + '\t' + str(maxnormstrains[a])
@@ -525,11 +525,11 @@ def Extract_parameterdata():
 Runjob = 0
 
 
-for v in range (0,2):
+for v in range (1,3):
     #Modelleringsvariabler
 
     Vf = 0.6
-    nf = v*4
+    nf = v*25
     r = 1.0  # radiusene paa fiberne er naa satt til aa vaere uniforme, kan endres til liste med faktisk variasjon i diameter
     n = 1  # sweep variabel 1 naa = antall random seed(n)
     meshsize = r * 0.3

@@ -9,7 +9,7 @@ print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMul
 
 #RVEmodell
 def lagreparametere(Q):
-    g = open(parameterpath, "w")
+    g = open(parameterpath+str(int(nf))+'.txt', "w")
     print '\nQ\tr\tnf\tVf\twiggle\t\tcoordpath\t\t\t\tLoops\trtol\tgtoL\tdL'
     g.write('Q' + '\t' + 'r' + '\t' + 'nf' + '\t' + 'Vf' + '\t' + 'wiggle' + '\t' + 'coordpath' + '\t' + 'iterasjonsgrense' + '\t' + 'rtol' + '\t' + 'gtol' + '\t' + 'dL'+'\n'+
             str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)) # til fiber modellering
@@ -461,6 +461,9 @@ def Extract_parameterdata():
     maxMisesStresses = list()
     minMisesStresses = list()
 
+    maxPrinceStresses = list()
+    minPrinceStresses = list()
+
     maxnormstresses = list()
     minnormstresses = list()
 
@@ -475,23 +478,27 @@ def Extract_parameterdata():
         odb = session.openOdb(workpath + Sweeptoyinger[case] + '.odb')
         nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL).values
         nodalStrains = odb.steps[difstpNm].frames[-1].fieldOutputs['E'].getSubset(position=ELEMENT_NODAL).values
-        Mises = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL).values
+        Stresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL).values
         if not nf==0:
             Matrix = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
             nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL,
                                                                                        region=Matrix).values
             nodalStrains = odb.steps[difstpNm].frames[-1].fieldOutputs['E'].getSubset(position=ELEMENT_NODAL,
                                                                                       region=Matrix).values
-            Mises = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL,region=Matrix).values
+            Stesses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL,region=Matrix).values
 
         MisesStresses = list()
+        maxPrince =list()
+        minPrince =list()
         normstresses = list()
         sherstresses = list()
         normstrains=list()
         sherstrains=list()
 
         for j in range(0,len(nodalStresses)):
-            MisesStresses.append(float(Mises[j].mises))
+            MisesStresses.append(float(Stresses[j].mises))
+            maxPrince.append(float(Stresses[j].maxPrincipal))
+            minPrince.append(float(Stresses[j].minPrincipal))
             for p in range(0,3):
                 normstresses.append(float(nodalStresses[j].data[p]))
                 sherstresses.append(abs(float(nodalStresses[j].data[p+3])))
@@ -500,7 +507,10 @@ def Extract_parameterdata():
         odb.close()
         maxMisesStresses.append(float(max(MisesStresses)))
         minMisesStresses.append(float(min(MisesStresses)))
-
+        maxPrinceStresses.append(float(max(maxPrince)))
+        minPrinceStresses.append(float(min(minPrince)))
+        maxnormstresses.append(float(max(normstresses)))
+        minnormstresses.append(float(min(normstresses)))
         maxnormstresses.append(float(max(normstresses)))
         minnormstresses.append(float(min(normstresses)))
         maxnormstrains.append(float(max(normstrains)))
@@ -510,9 +520,9 @@ def Extract_parameterdata():
         maxsherstrains.append(max(sherstrains))
     g = open(Envelope+str(int(nf))+'.txt', "w")
     for a in range(0, len(maxMisesStresses)):
-        #                 1                              2                             3                             4                        5
+        #                 1                              2                                      3                             4                        5
         g.write(str(maxMisesStresses[a]) + '\t' + str(minMisesStresses[a]) + '\t' + str(maxnormstresses[a]) + '\t' + str(minnormstresses[a]) + '\t' + str(maxnormstrains[a])
-                + '\t' + str(minnormstrains[a]) + '\t' + str(maxsherstresses[a]) + '\t' + str(maxsherstrains[a]))
+                + '\t' + str(minnormstrains[a]) + '\t' + str(maxsherstresses[a]) + '\t' + str(maxsherstrains[a]) + '\t' + str(maxPrinceStresses[a]) + '\t' + str(minPrinceStresses[a]))
         if not a ==len(maxMisesStresses)-1:
             g.write('\n')
     g.close()
@@ -525,7 +535,7 @@ def Extract_parameterdata():
 Runjob = 0
 
 
-for v in range (1,3):
+for v in range (0,3):
     #Modelleringsvariabler
 
     Vf = 0.6
@@ -561,7 +571,7 @@ for v in range (1,3):
         # Tekstfiler
         GitHub ='C:/Multiscale-Modeling/'
         Envelope = GitHub+'envelope'
-        parameterpath = GitHub+'Parametere.txt'
+        parameterpath = GitHub+'Parametere'
         coordpath = GitHub+'coordst.txt'
         lagrestiffpath = GitHub+'Stiffness.txt'
         workpath = 'C:/Users/Rockv/Desktop/Temp/'

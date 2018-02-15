@@ -1,14 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.collections import PatchCollection
-
+"Funksjoner"
 def henteParametere():
-    a=1
-    f = open(parameterpath, 'r')
+    f = open(parameterpath+'.txt', 'r')
     tekst = f.read()
-    data = tekst.split('\t')
+    lines =tekst.split('\n')
+    data = lines[1].split('\t')
     f.close()
-    dL,r,nf,Vf,wiggle,sweepcases = float(data[0]),float(data[1]),float(data[2]),float(data[3]),float(data[4]),float(data[5])
+    dL,r,nf,Vf = float(data[9]),float(data[1]),float(data[2]),float(data[3])
+    a = 1
     if nf == 0 or Vf == 0:
         a=0
     return a,dL,r
@@ -44,12 +45,13 @@ def saveplot():
             fiberlist.append(circle)
         p = PatchCollection(fiberlist, alpha=0.8)
         sx.add_collection(p)
-
     fig.savefig('D:/RVEmodel.png')
     plt.show()
 
-parameterpath = '‪C:/Multiscale-Modeling/Parametere.txt'
-coordpath = 'C:/Multiscale-Modeling/coordst.txt'
+"""Variabler"""
+GitHub = 'C:/Multiscale-Modeling/'
+parameterpath = GitHub+'Parametere'
+coordpath = GitHub+'coordst.txt'
 a,dL,r= henteParametere()
 if a:
     coord =hentePopulation()

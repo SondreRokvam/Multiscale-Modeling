@@ -38,7 +38,7 @@ GitHub = 'C:/Multiscale-Modeling/'
 Envelope = GitHub + 'envelope'
 
 """ Lage RVE modell"""
-Sample=[0,4,25,50]
+Sample=[0,50]
 for Samples in Sample:
     maxMises = list()
     minMises = list()
@@ -74,8 +74,8 @@ for Samples in Sample:
                     ['min Mises Stresses',                      invert(minMises)],
                     ['max Principal Stresses',                  invert(maxPrince)],
                     ['min Principal Stresses',                  invert(minPrince)],
-                    ['max Normal xyz orientated  Stresses',     invert(maxNormToy)],
-                    ['min Normal xyz orientated  Stresses',     invert(minNormToy)],
+                    ['max Normal xyz orientated  Stresses',     invert(maxNormSpen)],
+                    ['min Normal xyz orientated  Stresses',     invert(minNormSpen)],
                     ['max Normal xyz orientated  Toying',       invert(maxNormToy)],
                     ['min Normal xyz orientated  Toying',       invert(minNormToy)],
                     ['max Shear  xyz  orientated Stresses',     invert(maxSherSpen)],
@@ -87,43 +87,38 @@ for Samples in Sample:
     rows =5
     col = 4
     fig, ((sx1, sx2,sx3,sx4),(ax1, ax2,ax3,ax4),(dx1, dx2,dx3,dx4),(px1, px2,px3,px4),(fx1, fx2,fx3,fx4)) = plt.subplots(nrows=rows, ncols=col, figsize=(15, 15))
-    a = [[sx1, sx2,sx3,sx4],[ax1, ax2,ax3,ax4],[dx1, dx2,dx3,dx4],[px1, px2,px3,px4],[fx1, fx2,fx3,fx4]]
+    a = [sx1, sx2,sx3,sx4,ax1, ax2,ax3,ax4,dx1, dx2,dx3,dx4,px1, px2,px3,px4,fx1, fx2,fx3,fx4]
 
 
-    for num in range(0,len(a)):
-        for plot in range(0,int(col/2)):
-            count = 2*num+plot
-            #
+    for num in range(0,int(len(a)/2)):
+        x,y = to_xy(plotinfo[num][1])
+        my1 = max(max(y),abs(min(y)))*Scale
+        my2 = max(max(plotinfo[num][1]),abs(min(plotinfo[num][1])))
+        mx1 = max(max(x),abs(min(x)))*Scale
+        job1 = a[num]
+        job2 = a[num+1]
+        job1.set_title(plotinfo[num][0])
+        job2.set_title(plotinfo[num][0])
+        job1.set_xlim(-mx1, mx1)
+        job2.set_xlim(-phi, (len(minMises) + 1) * phi)
+        job1.set_ylim(-my1, my1)
+        job2.set_ylim(-my2, my2)
+        job1.set_xticks(np.arange(-mx1, mx1, mx1 / 5))
+        job2.set_xticks(np.arange(-phi, (len(minMises) + 1) * phi,phi))
+        job1.set_yticks(np.arange(-my1, my1, my1 / 5))
+        job2.set_yticks(np.arange(-my2, my2, my2 / 5))
+        job1.set_xlabel(angular_plotaxe[0])
+        job2.set_xlabel(straight_plotaxe[0])
+        job1.set_ylabel(angular_plotaxe[1])
+        job2.set_ylabel(straight_plotaxe[1])
+        job1.grid(True)
+        job2.grid(True)
+        job1.plot(x,y,'b--')
+        job2.plot(Steg,plotinfo[num][1],'b--')
 
-
-            x,y = to_xy(plotinfo[count][1])
-            my1 = max(max(y),abs(min(y)))*Scale
-            my2 = max(max(plotinfo[count][1]),abs(min(plotinfo[count][1])))
-            mx1 = max(max(x),abs(min(x)))*Scale
-            job1 = a[num][2*plot]
-            job2 = a[num][2*plot+1]
-            job1.set_title(plotinfo[count][0])
-            job2.set_title(plotinfo[count][0])
-            job1.set_xlim(-mx1, mx1)
-            job2.set_xlim(-phi, (len(minMises) + 1) * phi)
-            job1.set_ylim(-my1, my1)
-            job2.set_ylim(-my2, my2)
-            job1.set_xticks(np.arange(-mx1, mx1, mx1 / 5))
-            job2.set_xticks(np.arange(-phi, (len(minMises) + 1) * phi,phi))
-            job1.set_yticks(np.arange(-my1, my1, my1 / 5))
-            job2.set_yticks(np.arange(-my2, my2, my2 / 5))
-            job1.set_xlabel(angular_plotaxe[0])
-            job2.set_xlabel(straight_plotaxe[0])
-            job1.set_ylabel(angular_plotaxe[1])
-            job2.set_ylabel(straight_plotaxe[1])
-            job1.grid(True)
-            job2.grid(True)
-            job1.plot(x,y,'k--')
-            job2.plot(Steg,plotinfo[count][1],'k--')
-
-    """%%%%%%%%%%%%%%%%%%%%%%%"""
-    """Sirkelplot Spenninger
-for plot in range(0,len(plotinfo)
+    """%%%%%%%%%%%%%%%%%%%%%%%
+    Sirkelplot Spenninger
+    for plot in range(0,len(plotinfo)
     sub_id, Title, xlabel, ylabel, ):
     sub_id.set_title(Title)
     maP.set_xlim(-MAP,MAP )

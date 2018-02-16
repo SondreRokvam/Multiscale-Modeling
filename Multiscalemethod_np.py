@@ -534,12 +534,11 @@ def Extract_parameterdata():
 #Flag
 Runjob = 0
 
-
-for v in range (0,3):
+Sample=[0,4,25,50]
+for nf in Sample:
     #Modelleringsvariabler
 
     Vf = 0.6
-    nf = v*25
     r = 1.0  # radiusene paa fiberne er naa satt til aa vaere uniforme, kan endres til liste med faktisk variasjon i diameter
     n = 1  # sweep variabel 1 naa = antall random seed(n)
     meshsize = r * 0.3

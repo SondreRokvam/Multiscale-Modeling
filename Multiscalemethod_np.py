@@ -3,7 +3,7 @@ from math import *
 import numpy as np
 from multiprocessing import cpu_count
 
-numCpus = cpu_count()/4
+numCpus = 1
 
 print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMultiscale modelling on microscale  \nHalve numCpus = ',numCpus
 
@@ -336,15 +336,21 @@ def createCEq():
 def run_Job(Jobe, modelName):
     if Runjob:
         mdb.Job(name=Jobe, model=modelName, description='', type=ANALYSIS,
-                atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
+        atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
+        memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
+        modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
+        scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2,
+        numDomains=2, numGPUs=0)
+
+        mdb.jobs[Jobe].submit(consistencyChecking=OFF)
+        mdb.jobs[Jobe].waitForCompletion()
+        """type=ANALYSIS,atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
                 memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
                 explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
                 modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
                 scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
-                numDomains=numCpus, numGPUs=1000)
-        mdb.jobs[Jobe].submit(consistencyChecking=OFF)
-        mdb.jobs[Jobe].waitForCompletion()
-
+                numDomains=numCpus, numGPUs=OFF)"""
 def create_unitstrainslastcases():
     id = np.identity(6)  # Identity matrix for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
     mod = mdb.models[modelName]
@@ -569,9 +575,9 @@ def Extract_parameterdata():
 """              ALT OVER ER FUNKSJONER           """
 #Flag
 Runjob = 1
-#Sample=[5, 10, 25,50]
+#Sample=
 
-Sample=[10, 25,50]
+Sample=[0, 5, 10, 25,50]
 for m in range(0,len(Sample)):
     #Modelleringsvariabler
     nf=Sample[m]

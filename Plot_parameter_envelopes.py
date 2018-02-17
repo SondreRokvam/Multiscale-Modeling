@@ -8,8 +8,9 @@ import math
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
 
-def Get_sweeps(Samples):
-    g = open(Envelope+str(nf*Samples)+'.txt', "r")
+def Get_sweeps():
+    g = open(Envelope, "r")
+    print(Envelope)
     tekst =g.read()
     g.close()
     lines=tekst.split('\n')
@@ -19,248 +20,163 @@ def to_xy(Values):
     x = list()
     y = list()
     for i in range(0,len(Values)):
-        x.append(math.cos(phi*i))
-        y.append(math.sin(phi*i))
+        x.append(math.cos(phi*i)*Values[i])
+        y.append(math.sin(phi*i)*Values[i])
     return x,y
 
-
-def invert(thing):
+def inverted(thing):
     Yield =1
-    for b in range(0,len(Steg)):
+    for b in range(0,len(thing)):
         thing[b] =Yield/thing[b]
     return thing
 
-#                                           XT   XC   YT   YC   S12
-materialA = ( (140000, 10000, 0.3, 5000), (1200, 800, 50, 150, 75) )
-
-nf=1
+"""%%%%%%%%%%%%%%%%%%%%%%%"""
+"""      Funksjoner       """
 GitHub = 'C:/Multiscale-Modeling/'
-Envelope = GitHub + 'envelope'
+nf=1
+all_plots=1
+one_plots=0
 
-""" Lage RVE modell"""
-Sample=[0,50]
+#Lag plot for følgende:
+Sample=[0,5, 10, 25,50]
 for Samples in Sample:
-    maxMises = list()
-    minMises = list()
-    maxNormSpen = list()
-    minNormSpen = list()
-    maxNormToy = list()
-    minNormToy = list()
-    maxSherSpen = list()
-    maxSherToy = list()
-    maxPrince  =list()
-    minPrince  =list()
-    SweepCases = Get_sweeps(Samples)
+    #Spenninger 12
+    maxMisesStresses = list()       #0
+    minMisesStresses = list()       #1
+    maxPrinceStresses = list()      #2
+    midPrinceStresses = list()      #3
+
+    minPrinceStresses = list()      #4
+    maxTresca = list()              #5
+    minTresca = list()              #6
+    maxPress = list()               #7
+
+    minPress = list()               #8
+    maxINV3 = list()                #9
+    minINV3  = list()               #10
+    maxSherstresses = list()        #11
+
+    #Toyinger 4
+    maxPrinceToyinger = list()      #0
+    midPrinceToyinger = list()      #1
+    minPrinceToyinger = list()      #2
+    maxSherToyinger = list()        #3
+
+    Spenninger=[maxMisesStresses,minMisesStresses, maxPrinceStresses,midPrinceStresses,
+                minPrinceStresses,maxTresca,minTresca,maxPress,
+                minPress,maxINV3,minINV3,maxSherstresses]
+    Toyinger = [maxPrinceToyinger,midPrinceToyinger,minPrinceToyinger,maxSherToyinger]
+
+    Envelope = GitHub + 'envelope'+str(int(nf*Samples))+'.txt'
+    SweepCases = Get_sweeps()
     for line in SweepCases:
         data = line.split('\t')
-        maxMises.append(float(data[0]))
-        minMises.append(float(data[1]))
-        maxNormSpen.append(float(data[2]))
-        minNormSpen.append(float(data[3]))
-        maxNormToy.append(float(data[4]))
-        minNormToy.append(float(data[5]))
-        maxSherSpen.append(float(data[6]))
-        maxSherToy.append(float(data[7]))
-        maxPrince.append(float(data[8]))
-        minPrince.append(float(data[9]))
+        for f in range(0, len(Spenninger)):
+            Spenninger[f].append(float(data[f]))
+        for g in range(0,len(Toyinger)):
+            Toyinger[g].append(float(data[len(Spenninger)+g]))
 
-    Scale = 10 / 9                              #Graf zoom out
 
-    phi = (1 / len(maxMises)) * 2 * math.pi  # Angular stepsize
+    plotinfo =     [['max Mises Stresses',          inverted(Spenninger[0])],
+                    ['min Mises Stresses',          inverted(Spenninger[1])],
+                    ['max Principal Stresses',      inverted(Spenninger[2])],
+                    ['mid Principal Stresses',      inverted(Spenninger[3])],
 
-    Steg = np.arange(0, 2 * math.pi, phi)
+                    ['min Principal Stresses',      inverted(Spenninger[4])],
+                    ['max Tresca Stresses',         inverted(Spenninger[5])],
+                    ['min Tresca Stresses',         inverted(Spenninger[6])],
+                    ['max Press Stresses',          inverted(Spenninger[7])],
 
-    plotinfo =    [['max Mises Stresses',                      invert(maxMises)],
-                    ['min Mises Stresses',                      invert(minMises)],
-                    ['max Principal Stresses',                  invert(maxPrince)],
-                    ['min Principal Stresses',                  invert(minPrince)],
-                    ['max Normal xyz orientated  Stresses',     invert(maxNormSpen)],
-                    ['min Normal xyz orientated  Stresses',     invert(minNormSpen)],
-                    ['max Normal xyz orientated  Toying',       invert(maxNormToy)],
-                    ['min Normal xyz orientated  Toying',       invert(minNormToy)],
-                    ['max Shear  xyz  orientated Stresses',     invert(maxSherSpen)],
-                    ['max Shear  xyz  orientated Toying',       invert(maxSherToy)]]
+                    ['min Press Stresses',          inverted(Spenninger[8])],
+                    ['max INV3 Stresses',           inverted(Spenninger[9])],
+                    ['min INV3 Stresses',           inverted(Spenninger[10])],
+                    ['max Shear Stresses',          inverted(Spenninger[11])],
+
+                    ['max Principal Strains',      inverted(Toyinger[0])],
+                    ['mid Principal Strains',      inverted(Toyinger[1])],
+                    ['min Principal Strains',      inverted(Toyinger[2])],
+                    ['max Shear Strains',          inverted(Toyinger[3])]]
 
     straight_plotaxe = ['R', 'Stress sweep angle']
     angular_plotaxe = ['σ2 (y)', 'σ3 (x)']
 
-    rows =5
-    col = 4
-    fig, ((sx1, sx2,sx3,sx4),(ax1, ax2,ax3,ax4),(dx1, dx2,dx3,dx4),(px1, px2,px3,px4),(fx1, fx2,fx3,fx4)) = plt.subplots(nrows=rows, ncols=col, figsize=(15, 15))
-    a = [sx1, sx2,sx3,sx4,ax1, ax2,ax3,ax4,dx1, dx2,dx3,dx4,px1, px2,px3,px4,fx1, fx2,fx3,fx4]
+    Scale = 10 / 9                                          # Graf zoom out
+    phi = (1 / (len(Spenninger[0])-1)) * 2 * math.pi             # Angular stepsize
+    Steg = np.arange(0, 2 * math.pi+phi, phi)               # Antall datapunkter
 
 
-    for num in range(0,int(len(a)/2)):
-        x,y = to_xy(plotinfo[num][1])
-        my1 = max(max(y),abs(min(y)))*Scale
-        my2 = max(max(plotinfo[num][1]),abs(min(plotinfo[num][1])))
-        mx1 = max(max(x),abs(min(x)))*Scale
-        job1 = a[num]
-        job2 = a[num+1]
-        job1.set_title(plotinfo[num][0])
-        job2.set_title(plotinfo[num][0])
-        job1.set_xlim(-mx1, mx1)
-        job2.set_xlim(-phi, (len(minMises) + 1) * phi)
-        job1.set_ylim(-my1, my1)
-        job2.set_ylim(-my2, my2)
-        job1.set_xticks(np.arange(-mx1, mx1, mx1 / 5))
-        job2.set_xticks(np.arange(-phi, (len(minMises) + 1) * phi,phi))
-        job1.set_yticks(np.arange(-my1, my1, my1 / 5))
-        job2.set_yticks(np.arange(-my2, my2, my2 / 5))
-        job1.set_xlabel(angular_plotaxe[0])
-        job2.set_xlabel(straight_plotaxe[0])
-        job1.set_ylabel(angular_plotaxe[1])
-        job2.set_ylabel(straight_plotaxe[1])
-        job1.grid(True)
-        job2.grid(True)
-        job1.plot(x,y,'b--')
-        job2.plot(Steg,plotinfo[num][1],'b--')
+    if all_plots:
+        fig, axes = plt.subplots(nrows=4, ncols=8,figsize=(30,18))
+        axes_list = [item for sublist in axes for item in sublist]
 
-    """%%%%%%%%%%%%%%%%%%%%%%%
-    Sirkelplot Spenninger
-    for plot in range(0,len(plotinfo)
-    sub_id, Title, xlabel, ylabel, ):
-    sub_id.set_title(Title)
-    maP.set_xlim(-MAP,MAP )
-    maP.set_ylim(-MAP,MAP )
-    maP.set_xticks(np.arange(-MAP, MAP, MAP/5))
-    maP.set_yticks(np.arange(-MAP, MAP, MAP/5))
-    maP.set_xlabel('Sig2 (y)')
-    maP.set_ylabel('Sig3 (z)')
-    maP.grid(True)
-    maP.plot(XmaxPR, YmaxPR,0.0,0.0,'kx')
+        for plot in plotinfo:
+            name = plot[0]
+            R = plot[1]
+            x, y = to_xy(R)
+            my1 = max(max(max(y), abs(min(y))),max(max(x), abs(min(x)))) * Scale
+            mx1 = my1
+            my2 = max(max(R), abs(min(R))) *Scale
+            sx = axes_list.pop(0)
+            lx = axes_list.pop(0)
+            sx.set_title(name+' Angular')
+            lx.set_title(name+' Linear')
+            sx.set_xlim(-mx1, mx1)
+            lx.set_xlim(0, 2 * math.pi)
+            sx.set_ylim(-my1, my1)
+            lx.set_ylim(-my2, my2)
+            sx.set_xticks(np.arange(-mx1, mx1, mx1 / 5))
+            lx.set_xticks(np.arange(0, 2 * math.pi, 2*math.pi/16))
+            sx.set_yticks(np.arange(-my1, my1, my1 / 5))
+            lx.set_yticks(np.arange(-my2, my2, my2 / 5))
+            sx.set_xlabel(angular_plotaxe[0])
+            lx.set_xlabel(straight_plotaxe[0])
+            sx.set_ylabel(angular_plotaxe[1])
+            lx.set_ylabel(straight_plotaxe[1])
+            sx.grid(True)
+            lx.grid(True)
+            sx.plot(x, y, 'b--',0.0,0.0,'kx')
+            lx.plot(Steg, plot[1], 'ro')
 
+        for ax in axes_list:
+            ax.remove()
+        plt.subplots_adjust(hspace=0.5)
+        plt.tight_layout()
+        fig.savefig(GitHub+'graphs/'+'allgraphs'+str(int(Samples*nf))+'.png')
 
-    miP.set_title('min Prince Spenninger')
-    miP.set_xlim(-MIP,MIP )
-    miP.set_ylim(-MIP,MIP )
-    miP.set_xticks(np.arange(-MIP, MIP, MIP/5))
-    miP.set_yticks(np.arange(-MIP, MIP, MIP/5))
-    miP.set_xlabel('Sig2 (y)')
-    miP.set_ylabel('Sig3 (z)')
-    miP.grid(True)
-    miP.plot(XminPR, YminPR,0.0,0.0,'kx')
+    if one_plots:
+        for bob in range(0,len(plotinfo)):
+            fig, (sx,lx) = plt.subplots(nrows=1, ncols=2,figsize=(21,14))
+            plot=plotinfo[bob]
+            name = plot[0]
+            R = plot[1]
+            x, y = to_xy(R)
+            my1 = max(max(max(y), abs(min(y))),max(max(x), abs(min(x)))) * Scale
+            mx1 = my1
+            my2 = max(max(R), abs(min(R))) *Scale
+            sx.set_title(name+' Angular')
+            lx.set_title(name+' Linear')
+            sx.set_xlim(-mx1, mx1)
+            lx.set_xlim(0, 2 * math.pi)
+            sx.set_ylim(-my1, my1)
+            lx.set_ylim(-my2, my2)
+            sx.set_xticks(np.arange(-mx1, mx1, mx1 / 5))
+            lx.set_xticks(np.arange(0, 2 * math.pi, 2*math.pi/16))
+            sx.set_yticks(np.arange(-my1, my1, my1 / 5))
+            lx.set_yticks(np.arange(-my2, my2, my2 / 5))
+            sx.set_xlabel(angular_plotaxe[0])
+            lx.set_xlabel(straight_plotaxe[0])
+            sx.set_ylabel(angular_plotaxe[1])
+            lx.set_ylabel(straight_plotaxe[1])
+            sx.grid(True)
+            lx.grid(True)
+            sx.plot(x, y, 'b--',0.0,0.0,'kx')
+            lx.plot(Steg, plot[1], 'ro')
 
-    sx1.set_title('max og min Mises Spenninger')
-    sx1.set_xlim(-ms,ms )
-    sx1.set_ylim(-ms,ms )
-    sx1.set_xticks(np.arange(-ms, ms, ms/5))
-    sx1.set_yticks(np.arange(-ms, ms, ms/5))
-    sx1.set_xlabel('Sig2 (y)')
-    sx1.set_ylabel('Sig3 (z)')
-    sx1.grid(True)
-    sx1.plot(XmaxM, YmaxM,'r--',XminM, YminM,'b--',0.0,0.0,'kx')
+            plt.subplots_adjust(hspace=0.5)
+            plt.tight_layout()
+            fig.savefig(GitHub+'graphs/'+name+str(int(Samples*nf))+'.png')
+            plt.close(fig)
 
-    sx2.set_title('max og min Normal Spenning')
-    sx2.set_xlim(-ns,ns )
-    sx2.set_ylim(-ns,ns )
-    sx2.set_xticks(np.arange(-ns, ns, ns/5))
-    sx2.set_yticks(np.arange(-ns, ns, ns/5))
-    sx2.set_xlabel('Sig2 (y)')
-    sx2.set_ylabel('Sig3 (z)')
-    sx2.grid(True)
-    sx2.plot(XmaxNS, YmaxNS,'r--',XminNS, YminNS,'b--',0.0,0.0,'kx')
-
-    ax1.set_title('max og min Normal')
-    ax1.set_xlim(-a1,a1 )
-    ax1.set_ylim(-a1,a1 )
-    ax1.set_xticks(np.arange(-a1, a1, a1 / 5))
-    ax1.set_yticks(np.arange(-a1, a1, a1 / 5))
-    ax1.set_xlabel('Epsi2 (y)')
-    ax1.set_ylabel('Epsi3 (z)')
-    ax1.grid(True)
-    ax1.plot(XmaxNT, YmaxNT,'r--',XminNT, YminNT,'b--',0.0,0.0,'kx')
-
-    ST1.set_title('skjer Toyinger')
-    ST1.set_xlim(-a_s,a_s )
-    ST1.set_ylim(-a_s,a_s )
-    ST1.set_xticks(np.arange(-a_s, a_s, a_s / 5))
-    ST1.set_yticks(np.arange(-a_s, a_s, a_s / 5))
-    ST1.set_xlabel('Epsi2 (y)')
-    ST1.set_ylabel('Epsi3 (z)')
-    ST1.grid(True)
-    ST1.plot(XmaxST,YmaxST,'g--',0.0,0.0,'kx')
-
-    ax2.set_title('Shear Stresses')
-    ax2.set_xlim(-a2,a2 )
-    ax2.set_ylim(-a2,a2 )
-    ax2.set_xticks(np.arange(-a2, a2, a2 / 5))
-    ax2.set_yticks(np.arange(-a2, a2, a2 / 5))
-    ax2.set_xlabel('Sig2 (y)')
-    ax2.set_ylabel('Sig3 (z)')
-    ax2.grid(True)
-    ax2.plot(XmaxSS,YmaxSS,'g--',0.0,0.0,'kx')
-
-    Steg=np.arange(0,2*math.pi,phi)
-
-    #invert
-    maxMises = invert(maxMises,Steg)
-    minMises = invert(minMises,Steg)
-    maxNormSpen = invert(maxNormSpen,Steg)
-    minNormSpen = invert(minNormSpen,Steg)
-    maxNormToy = invert(maxNormToy,Steg)
-    minNormToy = invert(minNormToy,Steg)
-    maxSherSpen = invert(maxSherSpen,Steg)
-    maxSherToy = invert(maxSherToy,Steg)
-
-
-    sx3.set_title('max og min Mises')
-    sx3.set_xlim(-phi, (len(minMises)+1)*phi)
-    sx3.set_ylim(-ms, ms)
-    sx3.set_xticks(np.arange(-phi, (len(minMises)+1)*phi, phi))
-    sx3.set_yticks(np.arange(-ms, ms, ms / 5))
-    sx3.set_xlabel('Sweepcases')
-    sx3.set_ylabel('Prop load stress')
-    sx3.grid(True)
-    sx3.plot(Steg,maxMises, 'bo',Steg,minMises,'ro')
-
-    sx4.set_title('max og min Normal Spenning')
-    sx4.set_xlim(-phi, (len(minMises)+1)*phi)
-    sx4.set_ylim(-ns, ns)
-    sx4.set_xticks(np.arange(-phi, (len(minMises)+1)*phi, phi))
-    sx4.set_yticks(np.arange(-ns, ns, ns / 5))
-    sx4.set_xlabel('Sweepcases')
-    sx4.set_ylabel('Prop load stress')
-    sx4.grid(True)
-    sx4.plot(Steg,maxNormSpen, 'ro', Steg,minNormSpen, 'bo')
-
-    ax3.set_title('max og min Normal og skjer Toyinger')
-    ax3.set_xlim(-phi, (len(minMises)+1)*phi )
-    ax3.set_ylim(-a1,a1 )
-    ax3.set_xticks(np.arange(-phi, (len(minMises)+1)*phi, phi))
-    ax3.set_yticks(np.arange(-a1, a1, a1 / 5))
-    ax3.set_xlabel('Sweepcases')
-    ax3.set_ylabel('Prop load Strains')
-    ax3.grid(True)
-    ax3.plot(Steg,maxNormToy,'ro',Steg,minNormToy,'bo')
-
-
-    ST3.set_title('skjer Toyinger')
-    ST3.set_xlim(-phi, (len(minMises)+1)*phi )
-    ST3.set_ylim(-a_s,a_s )
-    ST3.set_xticks(np.arange(-phi, (len(minMises)+1)*phi, phi))
-    ST3.set_yticks(np.arange(-a_s, a_s, a_s / 5))
-    ST3.set_xlabel('Epsi2 (y)')
-    ST3.set_ylabel('Epsi3 (z)')
-    ST3.grid(True)
-    ST3.plot(Steg,maxSherToy,'gx')
-
-
-    ax4.set_title('Shear Stresses')
-    ax4.set_xlim(-phi, (len(minMises)+1)*phi)
-    ax4.set_ylim(-a2,a2 )
-    ax4.set_xticks(np.arange(-phi, (len(minMises)+1)*phi, phi))
-    ax4.set_yticks(np.arange(-a2, a2, a2 / 5))
-    ax4.set_xlabel('Sweepcases')
-    ax4.set_ylabel('Prop load stress')
-    ax4.grid(True)
-    ax4.plot(Steg,maxSherSpen,'gx')
-
-    """
-
-    plt.tight_layout()
-    fig.savefig('D:/graph'+str(int(Samples*nf))+'.png')
-plt.show()
 
 
 

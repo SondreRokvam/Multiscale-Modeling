@@ -212,8 +212,7 @@ def printprog(coord,fvf,nkrasj,books):
     print 'Fiber added! Fiber =', countsjikt(coord), 'av nf = ', nf, 'Koordinater = ', len(coord),' Vf = ',round(
         fvf, 3), ' av ', Vf, ' Krasjes:', nkrasj, 'Tries:', len(books)
 
-GitHub ='C:/Multiscale-Modeling/'
-parameterpath = GitHub+'Parametere.txt'
+#
 
 f = open(parameterpath, 'r')
 tekst = f.read()

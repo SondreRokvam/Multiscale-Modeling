@@ -3,13 +3,13 @@ from math import *
 import numpy as np
 from multiprocessing import cpu_count
 
-numCpus = cpu_count()/2
+numCpus = cpu_count()/4
 
 print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMultiscale modelling on microscale  \nHalve numCpus = ',numCpus
 
 #RVEmodell
 def lagreparametere(Q):
-    g = open(parameterpath+str(int(nf))+'.txt', "w")
+    g = open(parameterpath, "w")
     print '\nQ\tr\tnf\tVf\twiggle\t\tcoordpath\t\t\t\tLoops\trtol\tgtoL\tdL'
     g.write('Q' + '\t' + 'r' + '\t' + 'nf' + '\t' + 'Vf' + '\t' + 'wiggle' + '\t' + 'coordpath' + '\t' + 'iterasjonsgrense' + '\t' + 'rtol' + '\t' + 'gtol' + '\t' + 'dL'+'\n'+
             str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)) # til fiber modellering
@@ -433,7 +433,6 @@ def sweep_sig2_sig3(Compliancematrix,sweepresolution):
         a = a.tolist()
         print a
         sweep.append(a)
-    print sweep
     return sweep
 
 def create_sweepedlastcases(sweep):
@@ -457,75 +456,111 @@ def create_sweepedlastcases(sweep):
     del a, mod, Jobw, case
 
 def Extract_parameterdata():
+    #Spenninger 12
+    maxMisesStresses = list()       #0
+    minMisesStresses = list()       #1
+    maxPrinceStresses = list()      #2
+    midPrinceStresses = list()      #3
 
-    maxMisesStresses = list()
-    minMisesStresses = list()
+    minPrinceStresses = list()      #4
+    maxTresca = list()              #5
+    minTresca = list()              #6
+    maxPress = list()               #7
 
-    maxPrinceStresses = list()
-    minPrinceStresses = list()
+    minPress = list()               #8
+    maxINV3 = list()                #9
+    minINV3  = list()               #10
+    maxSherstresses = list()        #11
 
-    maxnormstresses = list()
-    minnormstresses = list()
+    #Toyinger 4
+    maxPrinceToyinger = list()      #0
+    midPrinceToyinger = list()      #1
+    minPrinceToyinger = list()      #2
+    maxSherToyinger = list()        #3
 
-    maxnormstrains = list()
-    minnormstrains = list()
-
-    maxsherstresses = list()
-    maxsherstrains = list()
+    Spenninger=[maxMisesStresses,minMisesStresses, maxPrinceStresses,midPrinceStresses,
+                minPrinceStresses,maxTresca,minTresca,maxPress,
+                minPress,maxINV3,minINV3,maxSherstresses]
+    Toyinger = [maxPrinceToyinger,midPrinceToyinger,minPrinceToyinger,maxSherToyinger]
 
     print 'Computing stresses for ' + str(sweepcases) + ' sweep cases'
     for case in range(0,sweepcases):
         odb = session.openOdb(workpath + Sweeptoyinger[case] + '.odb')
         nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL).values
         nodalStrains = odb.steps[difstpNm].frames[-1].fieldOutputs['E'].getSubset(position=ELEMENT_NODAL).values
-        Stresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL).values
         if not nf==0:
             Matrix = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
             nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL,
                                                                                        region=Matrix).values
             nodalStrains = odb.steps[difstpNm].frames[-1].fieldOutputs['E'].getSubset(position=ELEMENT_NODAL,
                                                                                       region=Matrix).values
-            Stesses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL,region=Matrix).values
 
-        MisesStresses = list()
-        maxPrince =list()
-        minPrince =list()
-        normstresses = list()
-        sherstresses = list()
-        normstrains=list()
-        sherstrains=list()
+        MisesS = list()
+        maxPrinceS =list()
+        midPrinceS =list()
+        minPrinceS =list()
+        TrescaS =list()
+        PressS =list()
+        INV3S =list()
+        sherS=list()
+
+        maxPrinceT = list()
+        midPrinceT = list()
+        minPrinceT = list()
+        sherT=list()
 
         for j in range(0,len(nodalStresses)):
-            MisesStresses.append(float(Stresses[j].mises))
-            maxPrince.append(float(Stresses[j].maxPrincipal))
-            minPrince.append(float(Stresses[j].minPrincipal))
-            for p in range(0,3):
-                normstresses.append(float(nodalStresses[j].data[p]))
-                sherstresses.append(abs(float(nodalStresses[j].data[p+3])))
-                normstrains.append(float(nodalStrains[j].data[p]))
-                sherstrains.append(abs(float(nodalStrains[j].data[p+3])))
-        odb.close()
-        maxMisesStresses.append(float(max(MisesStresses)))
-        minMisesStresses.append(float(min(MisesStresses)))
-        maxPrinceStresses.append(float(max(maxPrince)))
-        minPrinceStresses.append(float(min(minPrince)))
-        maxnormstresses.append(float(max(normstresses)))
-        minnormstresses.append(float(min(normstresses)))
-        maxnormstresses.append(float(max(normstresses)))
-        minnormstresses.append(float(min(normstresses)))
-        maxnormstrains.append(float(max(normstrains)))
-        minnormstrains.append(float(min(normstrains)))
 
-        maxsherstresses.append(max(sherstresses))
-        maxsherstrains.append(max(sherstrains))
+            MisesS.append(float(nodalStresses[j].mises))
+            maxPrinceS.append(float(nodalStresses[j].maxPrincipal))
+            midPrinceS.append(float(nodalStresses[j].midPrincipal))
+            minPrinceS.append(float(nodalStresses[j].minPrincipal))
+            TrescaS.append(float(nodalStresses[j].tresca))
+            PressS.append(float(nodalStresses[j].press))
+            INV3S.append(float(nodalStresses[j].inv3))
+            sherS.append(sqrt(float(nodalStresses[j].data[3]) ** 2 + float(nodalStresses[j].data[4]) ** 2 + float(nodalStresses[j].data[5]) ** 2))
+
+            maxPrinceT.append(float(nodalStrains[j].maxPrincipal))
+            midPrinceT.append(float(nodalStrains[j].midPrincipal))
+            minPrinceT.append(float(nodalStrains[j].minPrincipal))
+            sherT.append(sqrt(float(nodalStrains[j].data[3])**2+float(nodalStrains[j].data[4])**2+float(nodalStrains[j].data[5])**2))
+        odb.close()
+
+        Spenninger[0].append(float(max(MisesS)))
+        Spenninger[1].append(float(min(MisesS)))
+        Spenninger[2].append(float(max(maxPrinceS)))
+        Spenninger[3].append(float(max(midPrinceS)))
+
+        Spenninger[4].append(float(max(minPrinceS)))
+        Spenninger[5].append(float(max(TrescaS)))
+        Spenninger[6].append(float(min(TrescaS)))
+        Spenninger[7].append(float(max(PressS)))
+
+        Spenninger[8].append(float(min(PressS)))
+        Spenninger[9].append(float(max(INV3S)))
+        Spenninger[10].append(float(min(INV3S)))
+        Spenninger[11].append(float(max(sherS)))
+
+        Toyinger[0].append(float(max(maxPrinceT)))
+        Toyinger[1].append(float(max(midPrinceT)))
+        Toyinger[2].append(float(min(minPrinceT)))
+        Toyinger[3].append(float(max(sherT)))
+
+
+
     g = open(Envelope+str(int(nf))+'.txt', "w")
     for a in range(0, len(maxMisesStresses)):
-        #                 0                                 1                                   2                               3                             4
-        g.write(str(maxMisesStresses[a]) + '\t' + str(minMisesStresses[a]) + '\t' + str(maxnormstresses[a]) + '\t' + str(minnormstresses[a]) + '\t' + str(maxnormstrains[a])
-                + '\t' + str(minnormstrains[a]) + '\t' + str(maxsherstresses[a]) + '\t' + str(maxsherstrains[a]) + '\t' + str(maxPrinceStresses[a]) + '\t' + str(minPrinceStresses[a]))
-        #                  5                                        6                           7                                   8                               9
-        if not a ==len(maxMisesStresses)-1:
-            g.write('\n')
+        #                 0                         1                         2                               3                                  4
+        g.write(str(Spenninger[0][a]) + '\t' + str(Spenninger[1][a]) + '\t' + str(Spenninger[2][a]) + '\t' + str(Spenninger[3][a]) + '\t' + str(Spenninger[4][a])
+            + '\t' + str(Spenninger[5][a]) + '\t' + str(Spenninger[6][a]) + '\t' + str(Spenninger[7][a]) + '\t' + str(Spenninger[8][a])
+            + '\t' + str(Spenninger[9][a]) + '\t' + str(Spenninger[8][a]) + '\t' + str(Spenninger[9][a]) + '\t' + str(Spenninger[10][a]) + '\t' + str(Spenninger[11][a])
+            + '\t' + str(Toyinger[0][a]) + '\t' + str(Toyinger[1][a]) + '\t' + str(Toyinger[2][a]) + '\t' + str(Toyinger[3][a])+'\n')
+
+    a=0 # Complete the Sirkel
+    g.write(str(Spenninger[0][a]) + '\t' + str(Spenninger[1][a]) + '\t' + str(Spenninger[2][a]) + '\t' + str(Spenninger[3][a]) + '\t' + str(Spenninger[4][a])
+            + '\t' + str(Spenninger[5][a]) + '\t' + str(Spenninger[6][a]) + '\t' + str(Spenninger[7][a]) + '\t' + str(Spenninger[8][a])
+            + '\t' + str(Spenninger[9][a]) + '\t' + str(Spenninger[8][a]) + '\t' + str(Spenninger[9][a]) + '\t' + str(Spenninger[10][a]) + '\t' + str(Spenninger[11][a])
+            + '\t' + str(Toyinger[0][a]) + '\t' + str(Toyinger[1][a]) + '\t' + str(Toyinger[2][a]) + '\t' + str(Toyinger[3][a]))
     g.close()
     return
 
@@ -533,17 +568,18 @@ def Extract_parameterdata():
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
 """              ALT OVER ER FUNKSJONER           """
 #Flag
-Runjob = 0
+Runjob = 1
+#Sample=[5, 10, 25,50]
 
-Sample=[0,4,25,50]
-for case in Sample:
+Sample=[10, 25,50]
+for m in range(0,len(Sample)):
     #Modelleringsvariabler
-    nf=case
+    nf=Sample[m]
     Vf = 0.6
     r = 1.0  # radiusene paa fiberne er naa satt til aa vaere uniforme, kan endres til liste med faktisk variasjon i diameter
     n = 1  # sweep variabel 1 naa = antall random seed(n)
     meshsize = r * 0.3
-    sweepcases = 64
+    sweepcases = 128
 
     tykkelse =0.1
 
@@ -571,7 +607,7 @@ for case in Sample:
         # Tekstfiler
         GitHub ='C:/Multiscale-Modeling/'
         Envelope = GitHub+'envelope'
-        parameterpath = GitHub+'Parametere'
+        parameterpath = GitHub+'Parametere.txt'
         coordpath = GitHub+'coordst.txt'
         lagrestiffpath = GitHub+'Stiffness.txt'
         workpath = 'C:/Users/Rockv/Desktop/Temp/'

@@ -340,8 +340,8 @@ def run_Job(Jobe, modelName):
         memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
         modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-        scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2,
-        numDomains=2, numGPUs=0)
+        scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
+        numDomains=1, numGPUs=0)
 
         mdb.jobs[Jobe].submit(consistencyChecking=OFF)
         mdb.jobs[Jobe].waitForCompletion()
@@ -575,9 +575,9 @@ def Extract_parameterdata():
 """              ALT OVER ER FUNKSJONER           """
 #Flag
 Runjob = 1
-#Sample=
+#Sample=[0, 5, 10, 25,50]
 
-Sample=[0, 5, 10, 25,50]
+Sample=[10, 25,50]
 for m in range(0,len(Sample)):
     #Modelleringsvariabler
     nf=Sample[m]

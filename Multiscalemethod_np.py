@@ -3,14 +3,16 @@ from math import *
 import numpy as np
 from multiprocessing import cpu_count
 
-numCpus = 1
+numCpus = cpu_count()/4
 
-print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMultiscale modelling on microscale  \nHalve numCpus = ',numCpus
+print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMultiscale modelling on microscale  \nAllowed numCpus = ',numCpus
 
 #RVEmodell
 def lagreparametere(Q):
     g = open(parameterpath, "w")
-    print '\nQ\tr\tnf\tVf\twiggle\t\tcoordpath\t\t\t\tLoops\trtol\tgtoL\tdL'
+
+    parametere=[Q,r,nf,Vf,wiggle,coordpath,iterasjonsgrense,rtol,gtol,dL]
+    print parametere,'\nQ\tr\tnf\tVf\twiggle\t\tcoordpath\t\t\t\titerasjonsgrense\trtol\tgtoL\tdL'
     g.write('Q' + '\t' + 'r' + '\t' + 'nf' + '\t' + 'Vf' + '\t' + 'wiggle' + '\t' + 'coordpath' + '\t' + 'iterasjonsgrense' + '\t' + 'rtol' + '\t' + 'gtol' + '\t' + 'dL'+'\n'+
             str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)) # til fiber modellering
     g.close()
@@ -537,7 +539,7 @@ def Extract_parameterdata():
         Spenninger[2].append(float(max(maxPrinceS)))
         Spenninger[3].append(float(max(midPrinceS)))
 
-        Spenninger[4].append(float(max(minPrinceS)))
+        Spenninger[4].append(float(min(minPrinceS)))
         Spenninger[5].append(float(max(TrescaS)))
         Spenninger[6].append(float(min(TrescaS)))
         Spenninger[7].append(float(max(PressS)))
@@ -576,8 +578,12 @@ def Extract_parameterdata():
 #Flag
 Runjob = 1
 #Sample=[0, 5, 10, 25,50]
+"""$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
+"""              Micromodelleringsfunksjon av (n) kompositt           """
+#
 
-Sample=[10, 25,50]
+
+Sample=[0, 5, 10, 25,50]
 for m in range(0,len(Sample)):
     #Modelleringsvariabler
     nf=Sample[m]
@@ -616,7 +622,7 @@ for m in range(0,len(Sample)):
         parameterpath = GitHub+'Parametere.txt'
         coordpath = GitHub+'coordst.txt'
         lagrestiffpath = GitHub+'Stiffness.txt'
-        workpath = 'C:/Users/Rockv/Desktop/Temp/'
+        workpath = 'C:/Temp/'
 
 
         """   ABAQUS   """
@@ -630,9 +636,7 @@ for m in range(0,len(Sample)):
 
 
     #
-    """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
-    """              Micromodelleringsfunksjon av (n) kompositt           """
-    #execfile('C:\Multiscale-Modeling\Multiscalemethod_np.py')
+
 
     for Q in range(0,n):
         from abaqus import *

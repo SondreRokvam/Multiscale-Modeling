@@ -35,10 +35,10 @@ def inverted(thing):
 GitHub = 'C:/Multiscale-Modeling/'
 nf=1
 all_plots=1
-one_plots=0
+one_plots=1
 
 #Lag plot for følgende:
-Sample=[0,5, 10, 25,50]
+Sample=[0,5, 10,15, 25,50]
 for Samples in Sample:
     #Spenninger 12
     maxMisesStresses = list()       #0

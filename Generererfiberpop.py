@@ -7,9 +7,9 @@ import os
 
 
 # Beskrivende variabler. Disse kan tweakes paa.
-seed(1)
+seed(0)
 Vf = 0.6
-nf = 50
+nf = 70
 r = 1.0
 rtol = 0.025 * r
 gtol = r * 0.1
@@ -32,9 +32,10 @@ ytrehjornegrense = r+gtol
 indrehjornegrense= r-gtol
 
 #Random forflyttningvariabel
-wiggle = 0.5*r
+wiggle = random()*r
 
 #Klarere filplassering for progresjonsgrafer
+"""
 try:
     fileList = os.listdir(path)
 except OSError:
@@ -52,7 +53,7 @@ try:
     os.mkdir(path)
 except OSError:
     pass
-
+"""
 
 # liste for aa lagre fremgang paa iterasjonene i  prosessen
 books = list()  # keeping records of progress

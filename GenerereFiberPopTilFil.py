@@ -226,6 +226,8 @@ Q, r, nf, Vf, wiggle, coordpath,iterasjonsgrense, rtol, gtol = float(data[0]),fl
 #str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)
 dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5
 seed(Q)
+wiggle=random()*r
+print wiggle
 ytredodgrense = r + gtol
 indredodgrense = r - gtol
 

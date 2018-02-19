@@ -212,7 +212,6 @@ def createModel(xydata):
                             thicknessAssignment=FROM_SECTION)
     #del mod.parts['Part-1'], p, n, mod, region
     print '\nModel created, meshed and assigned properties'
-
 def createCEq():
     mod = mdb.models[modelName]
     a = mod.rootAssembly
@@ -334,7 +333,6 @@ def createCEq():
         counter = counter + 1
 
     print 'Constraint equ. applied'
-
 def run_Job(Jobe, modelName):
     if Runjob:
         mdb.Job(name=Jobe, model=modelName, description='', type=ANALYSIS,
@@ -353,6 +351,8 @@ def run_Job(Jobe, modelName):
                 modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
                 scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
                 numDomains=numCpus, numGPUs=OFF)"""
+
+
 def create_unitstrainslastcases():
     id = np.identity(6)  # Identity matrix for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
     mod = mdb.models[modelName]
@@ -384,7 +384,39 @@ def create_unitstrainslastcases():
 
         run_Job(Enhetstoyinger[i],modelName)
         del exx, eyy, ezz, exy, exz, eyz
+def create_sweepedlastcases(sweep):
 
+    mod = mdb.models[modelName]
+    a = mod.rootAssembly
+    mod.fieldOutputRequests['F-Output-1'].setValues(variables=('S', 'MISES', 'E', 'U', 'ELEDEN'))
+    mod.steps.changeKey(fromName=stepName, toName=difstpNm)
+    print '\nComputing strains for normalized load sweep'
+    #Lagring av output data base filer .odb
+    for case in range(0,sweepcases):
+
+        print '\nLoad at'+str(360*case/sweepcases)+'deg'
+        exx, eyy, ezz, exy, exz, eyz = sweep[case]
+        mod.boundaryConditions['BCX'].setValues(u1=exx, u2=exy, u3=exz)
+        mod.boundaryConditions['BCY'].setValues(u1=exy, u2=eyy, u3=eyz)
+        mod.boundaryConditions['BCZ'].setValues(u1=exz, u2=eyz, u3=ezz)
+        Jobw = Sweeptoyinger[case]
+        run_Job(Jobw, modelName)
+
+    del a, mod, Jobw, case
+
+
+def get_compliance(Stiffmatrix):
+    print '\nCompliancematrix found'
+    try:
+        inverse = np.linalg.inv(Stiffmatrix)
+    except np.linalg.LinAlgError:
+        # Not invertible. Skip this one.
+        print 'ERROR in inverting with numpy'
+        pass    #intended break
+    for a in range(0, 6):
+        print inverse[0][a],'\t', inverse[1][a],'\t', inverse[2][a],'\t', inverse[3][a],'\t',inverse[4][a],'\t', inverse[5][a]
+    inverse = inverse.tolist()
+    return inverse
 def get_stiffness():
     stiffmatrix = []
     for i in range(0,6):
@@ -414,18 +446,6 @@ def get_stiffness():
     g.close()
     return stiffmatrix
 
-def get_compliance(Stiffmatrix):
-    print '\nCompliancematrix found'
-    try:
-        inverse = np.linalg.inv(Stiffmatrix)
-    except np.linalg.LinAlgError:
-        # Not invertible. Skip this one.
-        print 'ERROR in inverting with numpy'
-        pass    #intended break
-    for a in range(0, 6):
-        print inverse[0][a],'\t', inverse[1][a],'\t', inverse[2][a],'\t', inverse[3][a],'\t',inverse[4][a],'\t', inverse[5][a]
-    inverse = inverse.tolist()
-    return inverse
 
 def sweep_sig2_sig3(Compliancematrix,sweepresolution):
     sweep=list()
@@ -443,25 +463,8 @@ def sweep_sig2_sig3(Compliancematrix,sweepresolution):
         sweep.append(a)
     return sweep
 
-def create_sweepedlastcases(sweep):
 
-    mod = mdb.models[modelName]
-    a = mod.rootAssembly
-    mod.fieldOutputRequests['F-Output-1'].setValues(variables=('S', 'MISES', 'E', 'U', 'ELEDEN'))
-    mod.steps.changeKey(fromName=stepName, toName=difstpNm)
-    print '\nComputing strains for normalized load sweep'
-    #Lagring av output data base filer .odb
-    for case in range(0,sweepcases):
 
-        print '\nLoad at'+str(360*case/sweepcases)+'deg'
-        exx, eyy, ezz, exy, exz, eyz = sweep[case]
-        mod.boundaryConditions['BCX'].setValues(u1=exx, u2=exy, u3=exz)
-        mod.boundaryConditions['BCY'].setValues(u1=exy, u2=eyy, u3=eyz)
-        mod.boundaryConditions['BCZ'].setValues(u1=exz, u2=eyz, u3=ezz)
-        Jobw = Sweeptoyinger[case]
-        run_Job(Jobw, modelName)
-
-    del a, mod, Jobw, case
 
 def Extract_parameterdata():
     #Spenninger 12
@@ -638,7 +641,7 @@ for m in range(0,len(Sample)):
     #
 
 
-    for Q in range(1,n):
+    for Q in range(2,n):
         from abaqus import *
         from abaqusConstants import *
         from odbAccess import *

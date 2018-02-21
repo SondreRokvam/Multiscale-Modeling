@@ -340,8 +340,8 @@ def run_Job(Jobe, modelName):
         memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
         modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-        scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
-        numDomains=1, numGPUs=0)
+        scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
+        numDomains=numCpus, numGPUs=1)
 
         mdb.jobs[Jobe].submit(consistencyChecking=OFF)
         mdb.jobs[Jobe].waitForCompletion()
@@ -381,7 +381,7 @@ def create_unitstrainslastcases():
         mod.DisplacementBC(name='BCZ', createStepName=stepName,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-
+        print Enhetstoyinger[i]
         run_Job(Enhetstoyinger[i],modelName)
         del exx, eyy, ezz, exy, exz, eyz
 def create_sweepedlastcases(sweep):
@@ -586,7 +586,7 @@ Runjob = 1
 #
 
 
-Sample=[50]
+Sample=[55]
 for m in range(0,len(Sample)):
     #Modelleringsvariabler
     nf=Sample[m]
@@ -641,7 +641,7 @@ for m in range(0,len(Sample)):
     #
 
 
-    for Q in range(2,n):
+    for Q in range(3,n):
         from abaqus import *
         from abaqusConstants import *
         from odbAccess import *

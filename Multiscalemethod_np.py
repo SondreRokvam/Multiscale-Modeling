@@ -3,7 +3,7 @@ from math import *
 import numpy as np
 from multiprocessing import cpu_count
 
-numCpus = cpu_count()/4
+numCpus = 8
 
 print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMultiscale modelling on microscale  \nAllowed numCpus = ',numCpus
 
@@ -647,8 +647,8 @@ for m in range(0,len(Sample)):
         wiggle = random()*r                    # Omplasseringsgrenser for fiberomplassering
 
         #Abaqus navn
-        Enhetstoyinger = ['Exx' + str(nf) + '_' + str(Q), 'Eyy' + str(nf) + '_' + str(Q), 'Ezz' + str(nf) + '_' + str(Q),
-                          'Exy' + str(nf) + '_' + str(Q), 'Exz' + str(nf) + '_' + str(Q), 'Eyz' + str(nf) + '_' + str(Q)]
+        Enhetstoyinger = ['Exx' + str(int(nf)) + '_' + str(int(Q)), 'Eyy'+ str(int(nf)) + '_' + str(int(Q)), 'Ezz'+ str(int(nf)) + '_' + str(int(Q)),
+                          'Exy'+ str(int(nf)) + '_' + str(int(Q)), 'Exz'+ str(int(nf)) + '_' + str(int(Q)), 'Eyz'+ str(int(nf)) + '_' + str(int(Q))]
                             # Enhetstoyingene fra 0 til 5. Alle 6
 
 

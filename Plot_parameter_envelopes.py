@@ -113,9 +113,14 @@ for Samples in Sample:
             name = plot[0]
             R = plot[1]
             x, y = to_xy(R)
-            my1 = max(max(max(y), abs(min(y))),max(max(x), abs(min(x)))) * Scale
+
+            my1 = 2  # max(max(max(y), abs(min(y))),max(max(x), abs(min(x)))) * Scale
             mx1 = my1
-            my2 = max(max(R), abs(min(R))) *Scale
+            my2 = my1  # max(max(R), abs(min(R))) *Scale
+            if my1 * 2 < min(max(max(y), abs(min(y))), max(max(x), abs(min(x)))):
+                my1 = min(max(max(y), abs(min(y))), max(max(x), abs(min(x))))*Scale**2
+                mx1 = my1
+                my2 = my1
             sx = axes_list.pop(0)
             lx = axes_list.pop(0)
             sx.set_title(name+' Angular')

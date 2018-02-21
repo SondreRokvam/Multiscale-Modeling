@@ -8,8 +8,8 @@ import os
 
 # Beskrivende variabler. Disse kan tweakes paa.
 seed(0)
-Vf = 0.6
-nf = 70
+Vf = 0.7
+nf = 200
 r = 1.0
 rtol = 0.025 * r
 gtol = r * 0.1

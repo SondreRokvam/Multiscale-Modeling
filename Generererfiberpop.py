@@ -10,7 +10,9 @@ import os
 seed(0)
 Vf = 0.7
 nf = 200
-r = 1.0
+ravg = 1
+radiuses = list()
+rvar= (random()-0.5)*ravg*0.1
 rtol = 0.025 * r
 gtol = r * 0.1
 dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5
@@ -96,6 +98,7 @@ def modelleresnitt():
         #genererer fiberkoordinater til ny fiber
         x = dL * random() - dL * 0.5
         y = dL * random() - dL * 0.5
+
         # sjekker krasj med andre fiber og hjorne dodzone
         if not krasj(x, y) and (sqrt((abs(x)-dL/2)**2 + (abs(x)-dL/2)**2)<ytrehjornegrense or sqrt((abs(x)-dL/2)**2 + (abs(x)-dL/2)**2)>indrehjornegrense):
             # Er koordinatet i hjornet? Krasjer det med punkt i et annet hjorne?

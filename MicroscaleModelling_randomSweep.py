@@ -579,7 +579,8 @@ def Extract_parameterdata():
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
 """              ALT OVER ER FUNKSJONER           """
 #Flag
-Runjob = 1
+Runjobs = 1
+LinearDeformation
 #Sample=[0, 5, 10, 25,50]
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
 """              Micromodelleringsfunksjon av (n) kompositt           """

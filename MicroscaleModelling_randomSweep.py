@@ -33,9 +33,8 @@ def hentePopulation(coordpath):
     print 'Antall fiber = ',int(nf),'\tAntall fiberkoordinater = '+str(len(xy))
     return xy
 
-#Abaqus
-
-def createModel(xydata):
+#Abaqus operations
+def createNoInterfaceModel(xydata):
     import section
     import regionToolset
     import displayGroupMdbToolset as dgm
@@ -91,10 +90,11 @@ def createModel(xydata):
         s1.setPrimaryObject(option=SUPERIMPOSE)
         p.projectReferencesOntoSketch(sketch=s1, filter=COPLANAR_EDGES)
 
-        rcos45 = r * cos(45.0 * pi / 180.0)
+
         for data in xydata:
             x = data[0]
             y = data[1]
+            rcos45 = r * cos(45.0 * pi / 180.0)
             done = 0
             if done == 0 and x >= dx:
                 s1.CircleByCenterPerimeter(center=(x, y), point1=(x + r, y))
@@ -212,6 +212,9 @@ def createModel(xydata):
                             thicknessAssignment=FROM_SECTION)
     #del mod.parts['Part-1'], p, n, mod, region
     print '\nModel created, meshed and assigned properties'
+
+def create InterfaceModel(xydata)
+
 def createCEq():
     mod = mdb.models[modelName]
     a = mod.rootAssembly
@@ -333,8 +336,11 @@ def createCEq():
         counter = counter + 1
 
     print 'Constraint equ. applied'
+"""%%%%%%%%%%%%%%%%%%%%%"""
+"""     SIMULATIONS     """
+
 def run_Job(Jobe, modelName):
-    if Runjob:
+    if Runjobs:
         mdb.Job(name=Jobe, model=modelName, description='', type=ANALYSIS,
         atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
         memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
@@ -353,7 +359,8 @@ def run_Job(Jobe, modelName):
                 numDomains=numCpus, numGPUs=OFF)"""
 
 
-def create_unitstrainslastcases():
+# Linear
+def create_Linearunitstrainslastcases():
     id = np.identity(6)  # Identity matrix for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
     mod = mdb.models[modelName]
     a = mod.rootAssembly
@@ -384,7 +391,7 @@ def create_unitstrainslastcases():
         print Enhetstoyinger[i]
         run_Job(Enhetstoyinger[i],modelName)
         del exx, eyy, ezz, exy, exz, eyz
-def create_sweepedlastcases(sweep):
+def create_Linearsweepedlastcases(sweep):
 
     mod = mdb.models[modelName]
     a = mod.rootAssembly
@@ -404,19 +411,6 @@ def create_sweepedlastcases(sweep):
 
     del a, mod, Jobw, case
 
-
-def get_compliance(Stiffmatrix):
-    print '\nCompliancematrix found'
-    try:
-        inverse = np.linalg.inv(Stiffmatrix)
-    except np.linalg.LinAlgError:
-        # Not invertible. Skip this one.
-        print 'ERROR in inverting with numpy'
-        pass    #intended break
-    for a in range(0, 6):
-        print inverse[0][a],'\t', inverse[1][a],'\t', inverse[2][a],'\t', inverse[3][a],'\t',inverse[4][a],'\t', inverse[5][a]
-    inverse = inverse.tolist()
-    return inverse
 def get_stiffness():
     stiffmatrix = []
     for i in range(0,6):
@@ -445,7 +439,18 @@ def get_stiffness():
     g.write('\n')
     g.close()
     return stiffmatrix
-
+def get_compliance(Stiffmatrix):
+    print '\nCompliancematrix found'
+    try:
+        inverse = np.linalg.inv(Stiffmatrix)
+    except np.linalg.LinAlgError:
+        # Not invertible. Skip this one.
+        print 'ERROR in inverting with numpy'
+        pass    #intended break
+    for a in range(0, 6):
+        print inverse[0][a],'\t', inverse[1][a],'\t', inverse[2][a],'\t', inverse[3][a],'\t',inverse[4][a],'\t', inverse[5][a]
+    inverse = inverse.tolist()
+    return inverse
 
 def sweep_sig2_sig3(Compliancematrix,sweepresolution):
     sweep=list()
@@ -463,9 +468,12 @@ def sweep_sig2_sig3(Compliancematrix,sweepresolution):
         sweep.append(a)
     return sweep
 
+#nonLinear jobs
 
+"""yeah"""
+#
 
-
+# Post processing of data
 def Extract_parameterdata():
     #Spenninger 12
     maxMisesStresses = list()       #0
@@ -580,22 +588,25 @@ def Extract_parameterdata():
 """              ALT OVER ER FUNKSJONER           """
 #Flag
 Runjobs = 1
-LinearDeformation
+nonLinearDeformation=0
+Interface =0
+
+"""              Micromodellering i Abaqus                  """
+
+"""         execfile('C:\Multiscale-Modeling\MicroscaleModelling_randomSweep.py')              
+"""
 #Sample=[0, 5, 10, 25,50]
-"""$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
-"""              Micromodelleringsfunksjon av (n) kompositt           """
-#
 
-
-Sample=[55]
+Sample=[15]
 for m in range(0,len(Sample)):
     #Modelleringsvariabler
     nf=Sample[m]
     Vf = 0.6
     r = 1.0  # radiusene paa fiberne er naa satt til aa vaere uniforme, kan endres til liste med faktisk variasjon i diameter
+
     n = 10  # sweep variabel 1 naa = antall random seed(n)
     meshsize = r * 0.3
-    sweepcases = 36
+    sweepcases = 16
 
     tykkelse =0.1
 
@@ -622,11 +633,13 @@ for m in range(0,len(Sample)):
 
         # Tekstfiler
         GitHub ='C:/Multiscale-Modeling/'
-        Envelope = GitHub+'envelope'
-        parameterpath = GitHub+'Parametere.txt'
-        coordpath = GitHub+'coordst.txt'
-        lagrestiffpath = GitHub+'Stiffness.txt'
-        workpath = 'C:/Temp/'
+        Tekstfiler = 'textfiles/'
+
+        Envelope = GitHub+Tekstfiler+'envelope'         #   Parameteravhengig - Resten av navnet i legges på funksjonen
+        parameterpath = GitHub+'Parametere.txt'         #   Skrives ned for chaining  til ett annet script
+        coordpath = GitHub+'coordst.txt'                #   Hentes fra genererefiberPop chaining  til ett annet script
+        lagrestiffpath = GitHub+'Stiffness.txt'         #   Skrives ned statistikk til ett annet script
+        workpath = 'C:/Temp/'                           #   Abaqus arbeidsmappe
 
 
         """   ABAQUS   """
@@ -639,9 +652,7 @@ for m in range(0,len(Sample)):
         sweepresolution = 2*pi / sweepcases #stepsize
 
 
-    #
-
-
+    """RVE_MODELLERING"""
     for Q in range(3,n):
         from abaqus import *
         from abaqusConstants import *
@@ -655,7 +666,6 @@ for m in range(0,len(Sample)):
                           'Exy' + str(nf) + '_' + str(Q), 'Exz' + str(nf) + '_' + str(Q), 'Eyz' + str(nf) + '_' + str(Q)]
                             # Enhetstoyingene fra 0 til 5. Alle 6
 
-
         Sweeptoyinger = [''] * sweepcases
         for g in range(0,sweepcases):
             Sweeptoyinger[g] = ('Sweep_strain'+ str(nf) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
@@ -667,33 +677,36 @@ for m in range(0,len(Sample)):
 
         """Prosess"""
 
+
+
+        #Fiber populasjon?
         xydata = None
-
-        # Maa vi ha fiber populasjon?
         if not (nf==0):
-            # create a random population
-            execfile(GitHub+'GenerereFiberPopTilFil.py')                                        #modellereRVEsnitt()
-            # hente fibercoordinater
-            xydata= hentePopulation(coordpath)
+            execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
+            xydata= hentePopulation(coordpath)                      # hente fibercoordinater
         print '\n', xydata ,'\n\n'
-        # Lage Abaqus strain-cases
-        createModel( xydata)
-        createCEq()
-        create_unitstrainslastcases()
 
-        #Faa ut stiffnessmatrix
+        # Lag Abaqus Model versjon 1
+        if Interface:
+            print 'yeah'
+        else:
+            createNoInterfaceModel(xydata)
 
-        Stiffmatrix=get_stiffness()
+        createCEq()                                                  # Lag constrain equations
 
-        #Finne strains for sweep stress caser
+        if nonLinearDeformation:
+            print 'yeah'
 
-        Compliancematrix = get_compliance(Stiffmatrix)
-        sweepstrains = sweep_sig2_sig3(Compliancematrix,sweepresolution)
+        else:
+            create_Linearunitstrainslastcases()                      # Lag linear strain cases. Set boundary condition and create job.
+            Stiffmatrix = get_stiffness()                            # Faa ut stiffnessmatrix
 
-        # Abaqus Sweep Cases
-        create_sweepedlastcases(sweepstrains)
-        Extract_parameterdata()
+            Compliancematrix = get_compliance(Stiffmatrix)                          # Inverter til compliance materix
+            sweepstrains = sweep_sig2_sig3(Compliancematrix, sweepresolution)       # Finne strains for sweep stress case
 
+            create_Linearsweepedlastcases(sweepstrains)                             # Lag linear sweep strain cases. Set boundary condition and create job.
 
-        print 'torke'
+        #Extract_parameterdata()                                                    # Abaqus Save Odb data to textfile for envelopes
+
+        print 'bob'
 

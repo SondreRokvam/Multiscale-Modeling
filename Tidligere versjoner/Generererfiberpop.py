@@ -7,6 +7,7 @@ import os
 
 
 # Beskrivende variabler. Disse kan tweakes paa.
+print Q
 seed(0)
 Vf = 0.7
 nf = 200

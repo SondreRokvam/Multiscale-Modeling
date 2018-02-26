@@ -2,11 +2,12 @@ from random import *
 from math import *
 import numpy as np
 from multiprocessing import cpu_count
-
 numCpus = cpu_count()/4
+print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
+       'Multiscale Modelling, Microscale  \n'
+       'Allowed numCpus = ',numCpus)
 
-print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nMultiscale modelling on microscale  \nAllowed numCpus = ',numCpus
-
+"""                 FUNKSJONER                """
 #RVEmodell
 def lagreparametere(Q):
     g = open(parameterpath, "w")
@@ -52,7 +53,6 @@ def createNoInterfaceModel(xydata):
     import displayGroupOdbToolset as dgo
     import connectorBehavior
     Mdb()  #reset
-    #
 
     model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lag model
     del mdb.models['Model-1']                                       # Slett standard model
@@ -472,7 +472,6 @@ def sweep_sig2_sig3(Compliancematrix,sweepresolution):
 #nonLinear jobs
 
 """yeah"""
-#
 
 # Post processing of data
 def Extract_parameterdata():
@@ -585,17 +584,19 @@ def Extract_parameterdata():
     return
 
 
-"""$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
-"""              ALT OVER ER FUNKSJONER           """
+"""$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
+"""          GLOBALE VARIABLER                                                   """
+
 #Flag
 Runjobs = 0
 nonLinearDeformation=0
 Interface =0
-
-"""              Micromodellering i Abaqus                  """
+Fibervariation =0
 
 """         execfile('C:\Multiscale-Modeling\MicroscaleModelling_randomSweep.py')              
+
 """
+"""Start"""
 #Sample=[0, 5, 10, 25,50]
 
 Sample=[15]
@@ -603,7 +604,8 @@ for m in range(0,len(Sample)):
     #Modelleringsvariabler
     nf=Sample[m]
     Vf = 0.6
-    r = 1.0  # radiusene paa fiberne er naa satt til aa vaere uniforme, kan endres til liste med faktisk variasjon i diameter
+    r = 1.0             # Radiusene paa fiberne settes forst til aa vaere uniform.
+    if Fibervariation:      #Radiusene fordeles med variasjoner
 
     n = 10  # sweep variabel 1 naa = antall random seed(n)
     meshsize = r * 0.3
@@ -681,8 +683,6 @@ for m in range(0,len(Sample)):
         lagreparametere(Q)
 
         """Prosess"""
-
-
 
         #Fiber populasjon?
         xydata = None

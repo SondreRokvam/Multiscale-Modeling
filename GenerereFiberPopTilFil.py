@@ -213,7 +213,17 @@ def printprog(coord,fvf,nkrasj,books):
         fvf, 3), ' av ', Vf, ' Krasjes:', nkrasj, 'Tries:', len(books)
 
 #
-
+print coordpath
+print coordpath
+print coordpath
+print coordpath
+print coordpath
+print coordpath
+print coordpath
+print coordpath
+print coordpath
+print coordpath
+print coordpath
 f = open(parameterpath, 'r')
 tekst = f.read()
 

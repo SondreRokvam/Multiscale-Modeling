@@ -213,7 +213,8 @@ def createNoInterfaceModel(xydata):
     #del mod.parts['Part-1'], p, n, mod, region
     print '\nModel created, meshed and assigned properties'
 
-def create InterfaceModel(xydata)
+def createInterfaceModel(xydata):
+    print 'lol'
 
 def createCEq():
     mod = mdb.models[modelName]
@@ -587,7 +588,7 @@ def Extract_parameterdata():
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
 """              ALT OVER ER FUNKSJONER           """
 #Flag
-Runjobs = 1
+Runjobs = 0
 nonLinearDeformation=0
 Interface =0
 
@@ -612,15 +613,16 @@ for m in range(0,len(Sample)):
 
     #Andre variabler
     if 1:
-        #Er RVE tomt?
+
+
+        # #Er RVE tomt?
         if nf ==0 or Vf==0: # Fiberfri RVE
             nf=0
             Vf=0
             dL = 6
 
         else:
-            dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5 # RVE storrelsen er satt til aa vaere relativ av nf og V
-
+            dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5  # RVE storrelsen er satt til aa vaere relativ av nf og V
 
         #RVE_Modelleringsparametere
         rtol = 0.025 * r        #Mellomfiber toleranse
@@ -631,11 +633,15 @@ for m in range(0,len(Sample)):
 
         iterasjonsgrense =10000
 
+
+        # Composite sweep stresses
+        sweepresolution = 2 * pi / sweepcases  # stepsize
+
         # Tekstfiler
         GitHub ='C:/Multiscale-Modeling/'
         Tekstfiler = 'textfiles/'
 
-        Envelope = GitHub+Tekstfiler+'envelope'         #   Parameteravhengig - Resten av navnet i legges på funksjonen
+        Envelope = GitHub+Tekstfiler+'envelope'         #   Parameteravhengig - Spesifikt navn legges til i funksjonen
         parameterpath = GitHub+'Parametere.txt'         #   Skrives ned for chaining  til ett annet script
         coordpath = GitHub+'coordst.txt'                #   Hentes fra genererefiberPop chaining  til ett annet script
         lagrestiffpath = GitHub+'Stiffness.txt'         #   Skrives ned statistikk til ett annet script
@@ -648,8 +654,7 @@ for m in range(0,len(Sample)):
         stepName = 'Enhetstoyninger'
         difstpNm = 'Lasttoyinger'
 
-        #Composite sweep stresses
-        sweepresolution = 2*pi / sweepcases #stepsize
+
 
 
     """RVE_MODELLERING"""

@@ -17,6 +17,7 @@ def lese(FilePath):
         data.append(dataer)         #legger dataene inn i liste
     print(len(data))
     return data
+
 FilePath =r"C:/Multiscale-Modeling/FiberRadiuser.txt"
 
 rads =lese(FilePath)

@@ -17,7 +17,6 @@ def lagreparametere(Q):
     g.write('Q' + '\t' + 'r' + '\t' + 'nf' + '\t' + 'Vf' + '\t' + 'wiggle' + '\t' + 'coordpath' + '\t' + 'iterasjonsgrense' + '\t' + 'rtol' + '\t' + 'gtol' + '\t' + 'dL'+'\n'+
             str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)) # til fiber modellering
     g.close()
-
 def hentePopulation(coordpath):
     #Les fiber matrix populasjon
     xy=list()
@@ -25,12 +24,13 @@ def hentePopulation(coordpath):
     tekst = f.read()
     f.close()
     lines = tekst.split('\n')
-    #lagre koordinater til stottefil
+
     for line in lines:
         data = line.split('\t')
-        a = float(data[0])
-        b = float(data[1])
-        xy.append([a,b])
+        a = float(data[0])  #   X
+        b = float(data[1])  #   Y
+        c = float(data[2])  #   R
+        xy.append([a,b,c])  #   lagre til liste
     print 'Antall fiber = ',int(nf),'\tAntall fiberkoordinater = '+str(len(xy))
     return xy
 
@@ -94,6 +94,9 @@ def createNoInterfaceModel(xydata):
         for data in xydata:
             x = data[0]
             y = data[1]
+            r=rmean
+            if Fibervariation:
+                r=data[2]
             rcos45 = r * cos(45.0 * pi / 180.0)
             done = 0
             if done == 0 and x >= dx:
@@ -131,9 +134,7 @@ def createNoInterfaceModel(xydata):
         s1.unsetPrimaryObject()
         #del model.sketches['__profile__'], f, pickedFaces, e1, d2, f1, e, t
         #del s1, model
-        #Partioned planar shell
 
-        # mesh
 
         p = mod.parts['Part-1']
         p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
@@ -159,10 +160,15 @@ def createNoInterfaceModel(xydata):
         p.Set(name='AllE', elements=p.elements)
         x = xydata[0][0]
         y = xydata[0][1]
+        r=rmean
+        if Fibervariation:
+            r = xydata[0][2]
         fiber = p.elements.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
         for i in range(1, len(xydata)):
             x = xydata[i][0]
             y = xydata[i][1]
+            if Fibervariation:
+                r = xydata[i][2]
             temp = p.elements.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
             fiber = fiber + temp
         p.Set(name='Fibers', elements=fiber)
@@ -212,10 +218,8 @@ def createNoInterfaceModel(xydata):
                             thicknessAssignment=FROM_SECTION)
     #del mod.parts['Part-1'], p, n, mod, region
     print '\nModel created, meshed and assigned properties'
-
 def createInterfaceModel(xydata):
     print 'lol'
-
 def createCEq():
     mod = mdb.models[modelName]
     a = mod.rootAssembly
@@ -358,7 +362,6 @@ def run_Job(Jobe, modelName):
                 modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
                 scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
                 numDomains=numCpus, numGPUs=OFF)"""
-
 
 # Linear
 def create_Linearunitstrainslastcases():
@@ -583,15 +586,17 @@ def Extract_parameterdata():
     g.close()
     return
 
-
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
 """          GLOBALE VARIABLER                                                   """
 
 #Flag
-Runjobs = 0
+Runjobs = 1
 nonLinearDeformation=0
 Interface =0
-Fibervariation =0
+Fibervariation =1
+
+
+
 
 """         execfile('C:\Multiscale-Modeling\MicroscaleModelling_randomSweep.py')              
 
@@ -599,23 +604,24 @@ Fibervariation =0
 """Start"""
 #Sample=[0, 5, 10, 25,50]
 
-Sample=[15]
+Sample=[20]
 for m in range(0,len(Sample)):
-    #Modelleringsvariabler
+
+    n = 10  #Sweep variabel: fra 0 til n antall random seeds
+
+    # Modelleringsvariabler
     nf=Sample[m]
     Vf = 0.6
-    r = 1.0             # Radiusene paa fiberne settes forst til aa vaere uniform.
-    if Fibervariation:      #Radiusene fordeles med variasjoner
 
-    n = 10  # sweep variabel 1 naa = antall random seed(n)
-    meshsize = r * 0.3
-    sweepcases = 16
+    rmean = 8.7096              # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
+    Rstdiv = 0.6374         # Standard avvik fra gjennomsnittsradius.
 
-    tykkelse =0.1
+    Rclearing = 0.025
+    meshsize = rmean * 0.3
+    sweepcases = 2
 
     #Andre variabler
     if 1:
-
 
         # #Er RVE tomt?
         if nf ==0 or Vf==0: # Fiberfri RVE
@@ -624,14 +630,15 @@ for m in range(0,len(Sample)):
             dL = 6
 
         else:
-            dL = ((nf * pi * r ** 2) / (Vf)) ** 0.5  # RVE storrelsen er satt til aa vaere relativ av nf og V
-
+            dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5  # RVE storrelsen er satt til aa vaere relativ av nf og V
+        tykkelse = 0.01 * dL
         #RVE_Modelleringsparametere
-        rtol = 0.025 * r        #Mellomfiber toleranse
-        gtol = 0.025 * r        #Dodsone klaring toleranse
+        r = rmean
 
-        ytredodgrense = r+gtol  #Dodzone avstand, lengst fra kantene
-        indredodgrense= r-gtol  #Dodzone avstand, naermest kantene
+        rtol = Rclearing * r        #Mellomfiber toleranse
+        gtol = Rclearing * r        #Dodsone klaring toleranse
+        ytredodgrense = r + gtol  # Dodzone avstand, lengst fra kantene
+        indredodgrense = r - gtol  # Dodzone avstand, naermest kantene
 
         iterasjonsgrense =10000
 
@@ -660,13 +667,13 @@ for m in range(0,len(Sample)):
 
 
     """RVE_MODELLERING"""
-    for Q in range(3,n):
+    for Q in range(0,n):
         from abaqus import *
         from abaqusConstants import *
         from odbAccess import *
 
         seed(Q)                                 # Q er randomfunksjonensnokkelen
-        wiggle = random()*r                    # Omplasseringsgrenser for fiberomplassering
+        wiggle = random()*rmean                    # Omplasseringsgrenser for fiberomplassering
 
         #Abaqus navn
         Enhetstoyinger = ['Exx' + str(nf) + '_' + str(Q), 'Eyy' + str(nf) + '_' + str(Q), 'Ezz' + str(nf) + '_' + str(Q),
@@ -689,10 +696,9 @@ for m in range(0,len(Sample)):
         if not (nf==0):
             execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
             xydata= hentePopulation(coordpath)                      # hente fibercoordinater
-        print '\n', xydata ,'\n\n'
 
         # Lag Abaqus Model versjon 1
-        if Interface:
+        if Interface :
             print 'yeah'
         else:
             createNoInterfaceModel(xydata)

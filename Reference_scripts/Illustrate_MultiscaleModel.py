@@ -26,7 +26,8 @@ def hentePopulation():
         data = line.split('\t')
         a = float(data[0])
         b = float(data[1])
-        xy.append([a,b])
+        c = float(data[2])
+        xy.append([a,b,c])
     return xy
 
 def saveplot():
@@ -40,8 +41,7 @@ def saveplot():
     if a:
         fiberlist = list()
         for i in range(0, len(coord)):
-            # plt.scatter(coord[i][0],coord[i][1], s=pi*(r*10)**2)
-            circle = plt.Circle((coord[i][0], coord[i][1]), r)
+            circle = plt.Circle((coord[i][0], coord[i][1]), coord[i][2])
             fiberlist.append(circle)
         p = PatchCollection(fiberlist, alpha=0.8)
         sx.add_collection(p)
@@ -55,4 +55,5 @@ coordpath = GitHub+'coordst.txt'
 a,dL,r= henteParametere()
 if a:
     coord =hentePopulation()
+    print(coord)
 saveplot()

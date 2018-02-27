@@ -35,7 +35,7 @@ def hentePopulation(coordpath):
     return xy
 
 #Abaqus operations
-def createNoInterfaceModel(xydata):
+def createModel(xydata):
     import section
     import regionToolset
     import displayGroupMdbToolset as dgm
@@ -218,8 +218,7 @@ def createNoInterfaceModel(xydata):
                             thicknessAssignment=FROM_SECTION)
     #del mod.parts['Part-1'], p, n, mod, region
     print '\nModel created, meshed and assigned properties'
-def createInterfaceModel(xydata):
-    print 'lol'
+
 def createCEq():
     mod = mdb.models[modelName]
     a = mod.rootAssembly
@@ -456,7 +455,7 @@ def get_compliance(Stiffmatrix):
     inverse = inverse.tolist()
     return inverse
 
-def sweep_sig2_sig3(Compliancematrix,sweepresolution):
+def get_sweepstrains_sig2_sig3(Compliancematrix,sweepresolution):
     sweep=list()
     x= np.arange(0,2*pi,sweepresolution)
     x =x.tolist()
@@ -590,10 +589,10 @@ def Extract_parameterdata():
 """          GLOBALE VARIABLER                                                   """
 
 #Flag
-Runjobs = 1
-nonLinearDeformation=0
-Interface =0
-Fibervariation =1
+Runjobs = 1                     # Bestemmer om jobber, startes eller ikke
+nonLinearDeformation=0          # Linear eller ikkelinear analyse?
+Interface =0                    # Interface paa eller av
+Fibervariation =1               # Skal fiberene variere eller ikke?
 
 
 
@@ -616,8 +615,8 @@ for m in range(0,len(Sample)):
     rmean = 8.7096              # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
     Rstdiv = 0.6374         # Standard avvik fra gjennomsnittsradius.
 
-    Rclearing = 0.025
-    meshsize = rmean * 0.3
+    Rclearing = 0.025       # Prosent avstand mellom fibere og fra kanter og sider
+    meshsize = rmean * 0.3  # meshresolution, mindre koeffisient er mindre og flere elementer
     sweepcases = 2
 
     #Andre variabler
@@ -628,12 +627,17 @@ for m in range(0,len(Sample)):
             nf=0
             Vf=0
             dL = 6
+        if not Vf ==0:
 
-        else:
             dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5  # RVE storrelsen er satt til aa vaere relativ av nf og V
-        tykkelse = 0.01 * dL
+
+
+
+
+
         #RVE_Modelleringsparametere
         r = rmean
+        tykkelse = 0.01 * dL
 
         rtol = Rclearing * r        #Mellomfiber toleranse
         gtol = Rclearing * r        #Dodsone klaring toleranse
@@ -697,27 +701,22 @@ for m in range(0,len(Sample)):
             execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
             xydata= hentePopulation(coordpath)                      # hente fibercoordinater
 
-        # Lag Abaqus Model versjon 1
-        if Interface :
-            print 'yeah'
-        else:
-            createNoInterfaceModel(xydata)
-
-        createCEq()                                                  # Lag constrain equations
+        # Lag Abaqus Model
+        createModel(xydata)                                                    # Lag model for testing med onsket fiber og interface.
+        createCEq()                                                            # Lag constrain equations
 
         if nonLinearDeformation:
             print 'yeah'
 
         else:
-            create_Linearunitstrainslastcases()                      # Lag linear strain cases. Set boundary condition and create job.
-            Stiffmatrix = get_stiffness()                            # Faa ut stiffnessmatrix
+            create_Linearunitstrainslastcases()                                             # Lag linear strain cases. Set boundary condition and create job.
+            Stiffmatrix = get_stiffness()                                                   # Faa ut stiffnessmatrix
 
-            Compliancematrix = get_compliance(Stiffmatrix)                          # Inverter til compliance materix
-            sweepstrains = sweep_sig2_sig3(Compliancematrix, sweepresolution)       # Finne strains for sweep stress case
+            Compliancematrix = get_compliance(Stiffmatrix)                                  # Inverter til compliance materix
+            sweepstrains = get_sweepstrains_sig2_sig3(Compliancematrix, sweepresolution)    # Finne strains for sweep stress case
+            create_Linearsweepedlastcases(sweepstrains)                                     # Lag linear sweep strain cases. Set boundary condition and create job.
 
-            create_Linearsweepedlastcases(sweepstrains)                             # Lag linear sweep strain cases. Set boundary condition and create job.
-
-        #Extract_parameterdata()                                                    # Abaqus Save Odb data to textfile for envelopes
+        #Extract_parameterdata()                                                            # Abaqus Save Odb data to textfile for envelopes
 
         print 'bob'
 

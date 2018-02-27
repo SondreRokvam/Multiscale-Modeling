@@ -161,7 +161,7 @@ def krasj(x, y,rf, coord):
         if Fibervariation:  # Radiusene fordeles med variasjoner
             xp, yp, r=c[0], c[1], (c[2]+rf)/2
             rtol = Rclearing * r  # Mellomfiber toleranse
-        if sqrt((x - xp) ** 2 + (y - yp) ** 2) < 2 * (r + rtol):
+        if sqrt((x - xp) ** 2 + (y - yp) ** 2) < 2 * r + rtol:
             return True
 
     return False

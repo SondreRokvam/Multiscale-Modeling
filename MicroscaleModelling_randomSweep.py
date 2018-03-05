@@ -190,20 +190,19 @@ def createModel(xydata):
                     r = xydata[i][2]
                 temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r*(1+rinterface) + 0.01)
                 IFfaces = IFfaces + temp
-            p.Set(name='IFfiber', faces=IFfaces)                      # Lag interface og matrix set
+            p.Set(name='IFfiber', faces=IFfaces)                                                # Lag interface og matrix set
 
             p.SetByBoolean(name='Interface', sets=(p.sets['IFfiber'], p.sets['Ffiber'],), operation=DIFFERENCE)
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFfiber'],), operation=DIFFERENCE)
             p = mod.parts['Part-1']
             p.seedPart(size=1.9, deviationFactor=0.1, minSizeFactor=0.1)
             p.generateMesh(regions = p.sets['Matrix'].faces)
-            p.seedEdgeBySize(edges=p.sets['Interface'].edges, size=1.88335, deviationFactor=0.1,
-                                 minSizeFactor=0.1, constraint=FINER)
+            p.setMeshControls(regions=p.sets['Interface'].faces, elemShape=QUAD)
             p.generateMesh(regions=p.sets['Interface'].faces)
-            del a
             p.setMeshControls(regions = p.sets['Ffiber'].faces, elemShape=TRI)
+
             p.generateMesh(regions = p.sets['Ffiber'].faces)
-            del mod.parts['Part-1'].sets['Alt'],mod.parts['Part-1'].sets['Matrix'],mod.parts['Part-1'].sets['Interface'],mod.parts['Part-1'].sets['Ffiber']
+            del mod.parts['Part-1'].sets['Alt'],mod.parts['Part-1'].sets['Matrix'],mod.parts['Part-1'].sets['Interface'],mod.parts['Part-1'].sets['Ffiber'],mod.parts['Part-1'].sets['IFfiber']
         else:
             f = p.faces
             pickedFaces = f.findAt(((0.0, 0.0, 0.0),))
@@ -283,7 +282,7 @@ def createModel(xydata):
         p.deleteNode(nodes=nodes)                                                                                   # Deleted shell nodes
         p.Set(name='Matrix', elements=p.elements)                                                                   # Lag set for Matrix
                                                                                                                     # Angi materialegenskaper
-    mod.Material(name='resin')
+    mod.Material(name='resin')                                                                  #Assign Properties and sections
     mod.materials['resin'].Elastic(table=((3500.0, 0.33),))
     mod.materials['resin'].Density(table=((1.2e-09,),))
     mod.HomogeneousSolidSection(name='SSmatrix', material='resin', thickness=None)
@@ -335,12 +334,10 @@ def createModel(xydata):
         p.SectionAssignment(region=region, sectionName='SSmatrix', offset=0.0,
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
-
     # del mod.parts['Part-1'], p, n, mod, region
     # del model.sketches['__profile__'], f, pickedFaces, e1, f1, e, t
     # del s1, model,x,y
     print '\nModel created, meshed and assigned properties'
-    del a
 
 def createCEq():
     mod = mdb.models[modelName]
@@ -709,11 +706,12 @@ def Extract_parameterdata():
 
 #Flag
 
-noFiber = 0                         # Overstyrer antall fiber til 0
 Runjobs = 0                         # Bestemmer om jobber skal kjores
-Interface = 1                       # Interface paa fibere eller ikke?
-Fibervariation = 1                  # Skal fiberene variere eller ikke?
 nonLinearDeformation = 0            # Linear eller nonlinear analyse?
+
+noFiber = 0                         # Overstyrer antall fiber til 0
+Fibervariation = 1                  # Skal fiber radius variere eller ikke?
+Interface = 1                       # Interface paa fibere?
 
 
 """Start"""
@@ -810,6 +808,7 @@ for m in range(0,len(Sample)):
 
         if nonLinearDeformation:
             print 'yeah'
+            del WORK
 
         else:
             create_Linearunitstrainslastcases()                                             # Lag linear strain cases. Set boundary condition and create job.

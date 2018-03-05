@@ -722,7 +722,7 @@ def Extract_parameterdata():
 #Flag
 
 Runjobs = 0                         # Bestemmer om jobber skal kjores
-nonLinearDeformation = 0            # Linear eller nonlinear analyse?
+nonLinearDeformation = 1            # Linear eller nonlinear analyse?
 
 noFiber = 0                         # Overstyrer antall fiber til 0
 Fibervariation = 1                  # Skal fiber radius variere eller ikke?
@@ -811,8 +811,8 @@ for m in range(0,len(Sample)):
 
         """Prosess"""
 
-        #Fiber populasjon?
-        xydata = None
+
+        xydata = None                                                       #Fiber populasjon?
         if not (nf==0):
             execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
             xydata= hentePopulation(coordpath)                      # hente fibercoordinater
@@ -823,7 +823,7 @@ for m in range(0,len(Sample)):
 
         if nonLinearDeformation:
             print 'yeah'
-            del WORK
+            del noWORK
 
         else:
             create_Linearunitstrainslastcases()                                             # Lag linear strain cases. Set boundary condition and create job.

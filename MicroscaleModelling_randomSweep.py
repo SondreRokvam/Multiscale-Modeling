@@ -200,10 +200,10 @@ def createModel(xydata):
             p.seedEdgeBySize(edges=p.sets['Interface'].edges, size=1.88335, deviationFactor=0.1,
                                  minSizeFactor=0.1, constraint=FINER)
             p.generateMesh(regions=p.sets['Interface'].faces)
+            del a
             p.setMeshControls(regions = p.sets['Ffiber'].faces, elemShape=TRI)
             p.generateMesh(regions = p.sets['Ffiber'].faces)
             del mod.parts['Part-1'].sets['Alt'],mod.parts['Part-1'].sets['Matrix'],mod.parts['Part-1'].sets['Interface'],mod.parts['Part-1'].sets['Ffiber']
-            del a
         else:
             f = p.faces
             pickedFaces = f.findAt(((0.0, 0.0, 0.0),))

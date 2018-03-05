@@ -66,32 +66,28 @@ def createModel(xydata):
     s1 = model.ConstrainedSketch(name='__profile__',sheetSize=2*dL)
     s1.setPrimaryObject(option=STANDALONE)
 
-    #Tegne Firkant
+    #Tegne RVE sketch -Firkant
     s1.Line(point1=(-dx, -dy), point2=(dx, -dy))
     s1.Line(point1=(dx, -dy), point2=(dx, dy))
     s1.Line(point1=(dx,dy), point2=(-dx,dy))
     s1.Line(point1=(-dx,dy), point2=(-dx,-dy))
     p = mod.Part(name='Part-1', dimensionality=THREE_D,
-        type=DEFORMABLE_BODY)
+                 type=DEFORMABLE_BODY)
     p = model.parts['Part-1']
     p.BaseShell(sketch=s1)
     s1.unsetPrimaryObject()
     #del mod.sketches['__profile__']
 
-    if not nf == 0:
-        f1, e, = p.faces, p.edges
-        t = p.MakeSketchTransform(sketchPlane=f1.findAt(coordinates=(0.0,
-                                                                     0.0, 0.0), normal=(0.0, 0.0, 1.0)),
-                                  sketchUpEdge=e.findAt(
-                                      coordinates=(dx, 0.0, 0.0)), sketchPlaneSide=SIDE1, origin=(0.0,
-                                                                                                  0.0, 0.0))
-        s1 = model.ConstrainedSketch(name='__profile__',
-                                     sheetSize=2*dL, gridSpacing=dL / 25.0, transform=t)
+    if not nf == 0:                                                                                                     # If: Om ingen fiber? Uten fiber ingen interface
+        f1, e = p.faces, p.edges
+        t = p.MakeSketchTransform(sketchPlane=f1.findAt(coordinates=(0.0,0.0, 0.0), normal=(0.0, 0.0, 1.0)),
+                                  sketchUpEdge=e.findAt(coordinates=(dx, 0.0, 0.0)), sketchPlaneSide=SIDE1, origin=(0.0,0.0, 0.0))
+        s1 = model.ConstrainedSketch(name='__profile__', sheetSize=2*dL, gridSpacing=dL / 25.0, transform=t)
         s1.setPrimaryObject(option=SUPERIMPOSE)
         p.projectReferencesOntoSketch(sketch=s1, filter=COPLANAR_EDGES)
 
-
-        for data in xydata:
+                                                                                                                            # Partionere og meshe RVE fibere med eller uten interface
+        for data in xydata:     #Tegne inn fiber aa partionere
             x = data[0]
             y = data[1]
             r=rmean
@@ -124,100 +120,235 @@ def createModel(xydata):
             if done == 0 and x <= 0 and y >= 0:
                 s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rcos45, y - rcos45))
                 done = 1
+        if Interface:       #Tegne inn fiber interfaces aa partionere
+            for data in xydata:
+                x = data[0]
+                y = data[1]
+                r=rmean
+                if Fibervariation:
+                    r=data[2]
+                r=r*(1+rinterface)
+                rcos45 = r * cos(45.0 * pi / 180.0)
+                done = 0
+                if done == 0 and x >= dx:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x + r, y))
+                    done = 1
+                if done == 0 and x <= -dx:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x - r, y))
+                    done = 1
+                if done == 0 and y >= dx:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y + r))
+                    done = 1
+                if done == 0 and y <= -dx:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y - r))
+                    done = 1
 
-        # Create partioned planar shell from sketch
-        f = p.faces
-        pickedFaces = f.findAt(((0.0, 0.0, 0.0),))
-        e1, d2 = p.edges, p.datums
-        p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,
-                                                                    0.0)), faces=pickedFaces, sketch=s1)
-        s1.unsetPrimaryObject()
-        #del model.sketches['__profile__'], f, pickedFaces, e1, d2, f1, e, t
-        #del s1, model
+                if done == 0 and x >= 0 and y >= 0:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rcos45, y - rcos45))
+                    done = 1
+                if done == 0 and x >= 0 and y <= 0:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rcos45, y + rcos45))
+                    done = 1
+                if done == 0 and x <= 0 and y <= 0:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rcos45, y + rcos45))
+                    done = 1
+                if done == 0 and x <= 0 and y >= 0:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rcos45, y - rcos45))
+                    done = 1
+            f = p.faces                                                                                                     # Create partioned planar shell from sketch
+            pF = f.findAt(((0.0, 0.0, 0.0),))
+            e1= p.edges
+            p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,0.0)), faces=pF, sketch=s1)        # Selve partioneringen
+            s1.unsetPrimaryObject()
+            # Lag set for fiber, interface, matrix og Alt
+            p.Set(faces=f, name='Alt')                                             # Lag Alt set
+            x = xydata[0][0]
+            y = xydata[0][1]
+            r = rmean
+            if Fibervariation:
+                r = xydata[0][2]
+            Ffaces= f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
+            for i in range(1, len(xydata)):
+                x = xydata[i][0]
+                y = xydata[i][1]
+                if Fibervariation:
+                    r = xydata[i][2]
+                temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
+                Ffaces = Ffaces + temp
+            p.Set(name='Ffiber', faces=Ffaces)            # Lag fiber set
 
+            x = xydata[0][0]
+            y = xydata[0][1]
+            r = rmean
+            if Fibervariation:
+                r = xydata[0][2]
+            IFfaces= f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r*(1+rinterface) + 0.01)
+            for i in range(1, len(xydata)):
+                x = xydata[i][0]
+                y = xydata[i][1]
+                if Fibervariation:
+                    r = xydata[i][2]
+                temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r*(1+rinterface) + 0.01)
+                IFfaces = IFfaces + temp
+            p.Set(name='IFfiber', faces=IFfaces)            # Lag interface og matrix set
 
-        p = mod.parts['Part-1']
-        p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
-        p = mod.parts['Part-1']
-        p.generateMesh()
-        p = mod.parts['Part-1']
-        # meshed
-
+            p.SetByBoolean(name='Interface', sets=(p.sets['IFfiber'], p.sets['Ffiber'],), operation=DIFFERENCE)
+            p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFfiber'],), operation=DIFFERENCE)
+            del mdb.models['Model-A'].parts['Part-1'].sets['IFfiber']
+            p = mod.parts['Part-1']
+            p.seedEdgeBySize(edges=p.sets['Interface'].edges, size=meshsize, deviationFactor=0.1, minSizeFactor=0.1, constraint=FINER)
+            p.generateMesh(regions=p.sets['Interface'].faces)
+            f = p.faces
+            for i in range(0, len(xydata)):
+                pickedRegions = p.sets['Interface'].faces
+                print pickedRegions
+                p.generateMesh(regions=pickedRegions)
+            del a
+            p.generateMesh(regions=p.sets['Interface'].faces)
+            p.generateMesh(regions = p.sets['Matrix'].faces)
+            p.setMeshControls(regions = p.sets['Ffiber'].faces, elemShape=TRI)
+            p.generateMesh(regions = p.sets['Ffiber'].faces)
+            del mdb.models['Model-A'].parts['Part-1'].sets['Alt']
+            del mdb.models['Model-A'].parts['Part-1'].sets['Matrix']
+            del mdb.models['Model-A'].parts['Part-1'].sets['Interface']
+            del mdb.models['Model-A'].parts['Part-1'].sets['Ffiber']
+        else:
+            f = p.faces
+            pickedFaces = f.findAt(((0.0, 0.0, 0.0),))
+            e1 = p.edges                                                                                                   # Create partioned planar shell from sketch
+            p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,
+                                                                        0.0)), faces=pickedFaces, sketch=s1)
+            s1.unsetPrimaryObject()
+            p = mod.parts['Part-1']
+            p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)                                                   # Generate mesh
+            p.generateMesh()
         mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
-        pickedElemFacesSourceSide = mod.parts['Part-1'].elementFaces
-        vector = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
-        p.generateBottomUpExtrudedMesh(elemFacesSourceSide=pickedElemFacesSourceSide,
-                                       extrudeVector=vector, numberOfLayers=2)
-        p = mod.parts['Part-1']
+        elFace = mod.parts['Part-1'].elementFaces                                                                             # Extrude mesh
+        v = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
+        p.generateBottomUpExtrudedMesh(elemFacesSourceSide=elFace,extrudeVector=v, numberOfLayers=2)
+        p = mod.parts['Part-1']                                                                                               # Delete shell nodes of part
         n = p.nodes
         nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
         p.deleteNode(nodes=nodes)
-        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
-        # Created extruded mesh part
+        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)                                                                    # Make orphan mesh
 
-        # This is where the fibers are chosen and put together in set
-        p = mod.parts['Part-1-mesh-1']
-        p.Set(name='AllE', elements=p.elements)
-        x = xydata[0][0]
-        y = xydata[0][1]
-        r=rmean
-        if Fibervariation:
+        p = mod.parts['Part-1-mesh-1']                                                                                    # Lage Set
+        e = p.elements
+        p.Set(name='Alle', elements=e)                                                                                  # Lage set, meshe og lage material set
+        if Interface:                                                               #IF Interface -  Lag elementset for fiber, interface og matrix
+            x = xydata[0][0]
+            y = xydata[0][1]
             r = xydata[0][2]
-        fiber = p.elements.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
-        for i in range(1, len(xydata)):
-            x = xydata[i][0]
-            y = xydata[i][1]
-            if Fibervariation:
+            Felements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
+            for i in range(1, len(xydata)):
+                x = xydata[i][0]
+                y = xydata[i][1]
                 r = xydata[i][2]
-            temp = p.elements.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
-            fiber = fiber + temp
-        p.Set(name='Fibers', elements=fiber)
-        p.SetByBoolean(name='Matrix', sets=(p.sets['AllE'], p.sets['Fibers'],), operation=DIFFERENCE)
+                temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
+                Felements = Felements + temp
+            p.Set(name='Fibers', elements=Felements)                                                                            # Fiber set made
 
-        mod.Material(name='glass')
-        mod.materials['glass'].Elastic(table=((70000.0, 0.22),))
-        mod.Material(name='resin')
-        mod.materials['resin'].Elastic(table=((3500.0, 0.33),))
-        mod.HomogeneousSolidSection(name='Fibers', material='glass',
-                                                      thickness=None)
-        mod.HomogeneousSolidSection(name='matrix', material='resin',
-                                                      thickness=None)
+            x = xydata[0][0]
+            y = xydata[0][1]
+            r = xydata[0][2]
+            IFelements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + 0.01)
+            for i in range(1, len(xydata)):
+                x = xydata[i][0]
+                y = xydata[i][1]
+                r = xydata[i][2]
+                temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + 0.01)
+                IFelements = IFelements + temp
+            p.Set(name='IandF', elements=IFelements)                                                                             # Fiber+fiberinterface set made
 
+            p.SetByBoolean(name='Interfaces', sets=(p.sets['IandF'], p.sets['Fibers'],), operation=DIFFERENCE)
+            p.SetByBoolean(name='Matrix', sets=(p.sets['Alle'], p.sets['IandF'],), operation=DIFFERENCE)                      # Lag matrix og interface set
+            del mod.parts['Part-1-mesh-1'].sets['IandF']
+        else:                                               #IF no interface -  Lag elementset for fiber og matrix.
+            x = xydata[0][0]
+            y = xydata[0][1]
+            r = xydata[0][2]
+            Felements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.001)
+            for i in range(1, len(xydata)):
+                x = xydata[i][0]
+                y = xydata[i][1]
+                r = xydata[i][2]
+                temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.001)
+                Felements = Felements + temp
+            p.Set(name='Fibers', elements=Felements)                                                                                    # Fiber set made
+            p.SetByBoolean(name='Matrix', sets=(p.sets['Alle'], p.sets['Fibers'],), operation=DIFFERENCE)                               # Lag matrix set
+        del mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['Alle']
+    else:                                                     # If: Om ingen fiber i modell
+        p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)                                           #Meshe
+        p.generateMesh()
+        mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
+        elFace = mod.parts['Part-1'].elementFaces                                                                     # Extrude mesh
+        v = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
+        p.generateBottomUpExtrudedMesh(elemFacesSourceSide=elFace,extrudeVector=v, numberOfLayers=2)
+        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)                                                         # Make orphan mesh
         p = mod.parts['Part-1-mesh-1']
+        n = p.nodes
+        nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
+        p.deleteNode(nodes=nodes)                                                                                   # Deleted shell nodes
+        p.Set(name='Matrix', elements=p.elements)                                                                   # Lag set for Matrix
+                                                                                                                    # Angi materialegenskaper
+    mod.Material(name='resin')
+    mod.materials['resin'].Elastic(table=((3500.0, 0.33),))
+    mod.materials['resin'].Density(table=((1.2e-09,),))
+    mod.HomogeneousSolidSection(name='SSmatrix', material='resin', thickness=None)
+    if not nf == 0:
+        mod.Material(name='glass')
+        mod.materials['glass'].Elastic(table=((90000.0, 0.22),))
+        mod.materials['glass'].Density(table=((2.55e-09,),))
+        if Interface:
+            mod.Material(name='interface')
+            mod.materials['interface'].Elastic(type=TRACTION, table=((100.0, 100.0, 100.0), ))
+            mod.materials['interface'].Density(table=((1.2e-09,),))
+            if nonLinearDeformation:
+                mod.materials['interface'].QuadsDamageInitiation(table=((0.042, 0.063, 0.063),))
+                mod.materials['interface'].quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
+                                                                                 power=1.2,
+                                                                                 table=((0.0028, 0.0078, 0.0078),))
+            mdb.models['Model-A'].CohesiveSection(name='SSbond', material='interface',
+                                                  response=TRACTION_SEPARATION, initialThicknessType=GEOMETRY,
+                                                  outOfPlaneThickness=None)
+            region = p.sets['Interfaces']
+            p.SectionAssignment(region=region, sectionName='SSbond', offset=0.0,
+                                offsetType=MIDDLE_SURFACE, offsetField='',
+                                thicknessAssignment=FROM_SECTION)
+        if nonLinearDeformation:
+            mod.materials['interface'].QuadsDamageInitiation(table=((0.042, 0.063, 0.063),))
+            mod.materials['interface'].quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK, power=1.2, table=((0.0028, 0.0078,0.0078),))
+            mod.materials['resin'].ConcreteDamagedPlasticity(table=((0.1, 0.1, 1.16, 0.89, 0.0001), ))
+            mod.materials['resin'].concreteDamagedPlasticity.ConcreteCompressionHardening(table=((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)))
+            mod.materials['resin'].concreteDamagedPlasticity.ConcreteTensionStiffening(table=((0.6, 0.09), ), type=GFI)
+            mod.materials['resin'].concreteDamagedPlasticity.ConcreteTensionDamage(table=((0.0, 0.0), (0.9, 1.487)), type=DISPLACEMENT)
+            mod.materials['resin'].concreteDamagedPlasticity.ConcreteCompressionDamage(table=((0.0, 0.0), (0.0, 0.32), (0.9, 0.55)))
+        mod.HomogeneousSolidSection(name='SSfibers', material='glass', thickness=None)
         region = p.sets['Fibers']
-        p.SectionAssignment(region=region, sectionName='Fibers', offset=0.0,
+        p.SectionAssignment(region=region, sectionName='SSfibers', offset=0.0,
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
         region = p.sets['Matrix']
-        p.SectionAssignment(region=region, sectionName='matrix', offset=0.0,
+        p.SectionAssignment(region=region, sectionName='SSmatrix', offset=0.0,
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
-        del x, y
     else:
-        p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
-        p.generateMesh()
-        mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
-        pickedElemFacesSourceSide = mod.parts['Part-1'].elementFaces
-        vector = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
-        p.generateBottomUpExtrudedMesh(elemFacesSourceSide=pickedElemFacesSourceSide,
-                                       extrudeVector=vector, numberOfLayers=2)
-        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)
-        # extruded mesh and make orphan mesh
-        p = mod.parts['Part-1-mesh-1']
-        n = p.nodes
-        nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
-        p.deleteNode(nodes=nodes)
-        # delete shell nodes
-        p.Set(name='AllE', elements=p.elements)
-        mod.Material(name='resin')
-        mod.materials['resin'].Elastic(table=((3500.0, 0.33),))
-        mod.HomogeneousSolidSection(name='Matrix', material='resin', thickness=None)
-        region = p.sets['AllE']
-        p.SectionAssignment(region=region, sectionName='Matrix', offset=0.0,
+        if nonLinearDeformation:
+            mod.materials['resin'].ConcreteDamagedPlasticity(table=((0.1, 0.1, 1.16, 0.89, 0.0001), ))
+            mod.materials['resin'].concreteDamagedPlasticity.ConcreteCompressionHardening(table=((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)))
+            mod.materials['resin'].concreteDamagedPlasticity.ConcreteTensionStiffening(table=((0.6, 0.09), ), type=GFI)
+            mod.materials['resin'].concreteDamagedPlasticity.ConcreteTensionDamage(table=((0.0, 0.0), (0.9, 1.487)), type=DISPLACEMENT)
+            mod.materials['resin'].concreteDamagedPlasticity.ConcreteCompressionDamage(table=((0.0, 0.0), (0.0, 0.32), (0.9, 0.55)))
+        region = p.sets['Matrix']
+        p.SectionAssignment(region=region, sectionName='SSmatrix', offset=0.0,
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
-    #del mod.parts['Part-1'], p, n, mod, region
+
+    # del mod.parts['Part-1'], p, n, mod, region
+    # del model.sketches['__profile__'], f, pickedFaces, e1, f1, e, t
+    # del s1, model,x,y
     print '\nModel created, meshed and assigned properties'
+    del a
 
 def createCEq():
     mod = mdb.models[modelName]
@@ -471,10 +602,6 @@ def get_sweepstrains_sig2_sig3(Compliancematrix,sweepresolution):
         sweep.append(a)
     return sweep
 
-#nonLinear jobs
-
-"""yeah"""
-
 # Post processing of data
 def Extract_parameterdata():
     #Spenninger 12
@@ -589,75 +716,64 @@ def Extract_parameterdata():
 """          GLOBALE VARIABLER                                                   """
 
 #Flag
-Runjobs = 1                     # Bestemmer om jobber, startes eller ikke
-nonLinearDeformation=0          # Linear eller ikkelinear analyse?
-Interface =0                    # Interface paa eller av
-Fibervariation =1               # Skal fiberene variere eller ikke?
+
+noFiber = 0                         # Overstyrer antall fiber til 0
+Runjobs = 0                         # Bestemmer om jobber skal kjores
+Interface = 0                       # Interface paa fibere eller ikke?
+Fibervariation = 1                  # Skal fiberene variere eller ikke?
+nonLinearDeformation = 0            # Linear eller nonlinear analyse?
 
 
-
-
-"""         execfile('C:\Multiscale-Modeling\MicroscaleModelling_randomSweep.py')              
-
-"""
 """Start"""
 #Sample=[0, 5, 10, 25,50]
 
 Sample=[20]
 for m in range(0,len(Sample)):
-
-    n = 10  #Sweep variabel: fra 0 til n antall random seeds
-
-    # Modelleringsvariabler
-    nf=Sample[m]
+    n = 1                                                                # Sweep variabel: fra 0 til n antall random seeds
+    nf=Sample[m]                                                         # Modelleringsvariabler
     Vf = 0.6
 
-    rmean = 8.7096              # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
-    Rstdiv = 0.6374         # Standard avvik fra gjennomsnittsradius.
+    rmean = 8.7096                                                       # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
+    Rstdiv = 0.6374                                                      # Standard avvik fra gjennomsnittsradius.
+    Rclearing = 0.025                                                    # Prosent avstand mellom fibere og fra kanter og sider
 
-    Rclearing = 0.025       # Prosent avstand mellom fibere og fra kanter og sider
-    meshsize = rmean * 0.3  # meshresolution, mindre koeffisient er mindre og flere elementer
+    FiberSirkelResolution = 16                                           # 2*pi/FiberSirkelResolution
+    meshsize = rmean * 0.21                                              # Meshresolution, mindre koeffisient er mindre og flere elementer
     sweepcases = 2
 
     #Andre variabler
-    if 1:
+    if True:            # For aa kunne kollapse variabler
+                                                                    # Er RVE tomt? RVE_Modelleringsparametere
+        if nf == 0 or Vf == 0 or noFiber:                   # Fiberfri RVE
+            nf = 0
+            Vf = 0
+            dL = rmean*3
+        if not nf == 0:
+            dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5                 # RVE storrelsen er satt til aa vaere relativ av nf og V
 
-        # #Er RVE tomt?
-        if nf ==0 or Vf==0: # Fiberfri RVE
-            nf=0
-            Vf=0
-            dL = 6
-        if not Vf ==0:
+        tykkelse = 0.01 * dL                                                       # RVE tykkelse
 
-            dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5  # RVE storrelsen er satt til aa vaere relativ av nf og V
+        r = rmean                                                                  # Tykkelse paa RVE
+        rtol = Rclearing * r                                                       # Mellomfiber toleranse
+        rinterface = 0.001/2                                                       # Interface tykkelse    0.1% av diameteren    0.05%av radius
 
+        gtol = Rclearing * r                                                       # Dodsone toleranse
+        ytredodgrense = r + gtol                                                   # Dodzone avstand, lengst fra kantene
+        indredodgrense = r - gtol                                                  # Dodzone avstand, naermest kantene
 
+        iterasjonsgrense = 10000                                                   # iterasjonsgrense
 
-
-
-        #RVE_Modelleringsparametere
-        r = rmean
-        tykkelse = 0.01 * dL
-
-        rtol = Rclearing * r        #Mellomfiber toleranse
-        gtol = Rclearing * r        #Dodsone klaring toleranse
-        ytredodgrense = r + gtol  # Dodzone avstand, lengst fra kantene
-        indredodgrense = r - gtol  # Dodzone avstand, naermest kantene
-
-        iterasjonsgrense =10000
-
-
-        # Composite sweep stresses
         sweepresolution = 2 * pi / sweepcases  # stepsize
 
         # Tekstfiler
+
         GitHub ='C:/Multiscale-Modeling/'
         Tekstfiler = 'textfiles/'
 
-        Envelope = GitHub+Tekstfiler+'envelope'         #   Parameteravhengig - Spesifikt navn legges til i funksjonen
-        parameterpath = GitHub+'Parametere.txt'         #   Skrives ned for chaining  til ett annet script
-        coordpath = GitHub+'coordst.txt'                #   Hentes fra genererefiberPop chaining  til ett annet script
-        lagrestiffpath = GitHub+'Stiffness.txt'         #   Skrives ned statistikk til ett annet script
+        Envelope = GitHub + Tekstfiler + 'envelope'         #   Parameteravhengig - Spesifikt navn legges til i funksjonen
+        parameterpath = GitHub + 'Parametere.txt'         #   Skrives ned for chaining  til ett annet script
+        coordpath = GitHub + 'coordst.txt'                #   Hentes fra genererefiberPop chaining  til ett annet script
+        lagrestiffpath = GitHub + 'Stiffness.txt'         #   Skrives ned statistikk til ett annet script
         workpath = 'C:/Temp/'                           #   Abaqus arbeidsmappe
 
 
@@ -667,27 +783,22 @@ for m in range(0,len(Sample)):
         stepName = 'Enhetstoyninger'
         difstpNm = 'Lasttoyinger'
 
-
-
-
     """RVE_MODELLERING"""
     for Q in range(0,n):
         from abaqus import *
         from abaqusConstants import *
         from odbAccess import *
 
-        seed(Q)                                 # Q er randomfunksjonensnokkelen
-        wiggle = random()*rmean                    # Omplasseringsgrenser for fiberomplassering
+        seed(Q)                                     # Q er randomfunksjonensnokkelen
+        wiggle = random() * rmean                     # Omplasseringsgrenser for fiberomplassering
 
-        #Abaqus navn
+        #Abaqus
         Enhetstoyinger = ['Exx' + str(nf) + '_' + str(Q), 'Eyy' + str(nf) + '_' + str(Q), 'Ezz' + str(nf) + '_' + str(Q),
                           'Exy' + str(nf) + '_' + str(Q), 'Exz' + str(nf) + '_' + str(Q), 'Eyz' + str(nf) + '_' + str(Q)]
-                            # Enhetstoyingene fra 0 til 5. Alle 6
-
+                                                    # Enhetstoyingene fra 0 til 5. Alle 6
         Sweeptoyinger = [''] * sweepcases
         for g in range(0,sweepcases):
             Sweeptoyinger[g] = ('Sweep_strain'+ str(nf) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
-
 
         #Lagre parametere til stottefiler
 

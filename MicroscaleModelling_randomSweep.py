@@ -159,8 +159,8 @@ def createModel(xydata):
             pF = f.findAt(((0.0, 0.0, 0.0),))
             e1= p.edges
             p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,0.0)), faces=pF, sketch=s1)        # Selve partioneringen
-            s1.unsetPrimaryObject()
-            # Lag set for fiber, interface, matrix og Alt
+            s1.unsetPrimaryObject()                                                                              # Lag set for fiber, interface, matrix og Alt
+            f = p.faces
             p.Set(faces=f, name='Alt')                                             # Lag Alt set
             x = xydata[0][0]
             y = xydata[0][1]
@@ -175,7 +175,7 @@ def createModel(xydata):
                     r = xydata[i][2]
                 temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
                 Ffaces = Ffaces + temp
-            p.Set(name='Ffiber', faces=Ffaces)            # Lag fiber set
+            p.Set(name='Ffiber', faces=Ffaces)                          # Lag fiber set
 
             x = xydata[0][0]
             y = xydata[0][1]
@@ -190,28 +190,20 @@ def createModel(xydata):
                     r = xydata[i][2]
                 temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r*(1+rinterface) + 0.01)
                 IFfaces = IFfaces + temp
-            p.Set(name='IFfiber', faces=IFfaces)            # Lag interface og matrix set
+            p.Set(name='IFfiber', faces=IFfaces)                      # Lag interface og matrix set
 
             p.SetByBoolean(name='Interface', sets=(p.sets['IFfiber'], p.sets['Ffiber'],), operation=DIFFERENCE)
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFfiber'],), operation=DIFFERENCE)
-            del mdb.models['Model-A'].parts['Part-1'].sets['IFfiber']
             p = mod.parts['Part-1']
-            p.seedEdgeBySize(edges=p.sets['Interface'].edges, size=meshsize, deviationFactor=0.1, minSizeFactor=0.1, constraint=FINER)
-            p.generateMesh(regions=p.sets['Interface'].faces)
-            f = p.faces
-            for i in range(0, len(xydata)):
-                pickedRegions = p.sets['Interface'].faces
-                print pickedRegions
-                p.generateMesh(regions=pickedRegions)
-            del a
-            p.generateMesh(regions=p.sets['Interface'].faces)
+            p.seedPart(size=1.9, deviationFactor=0.1, minSizeFactor=0.1)
             p.generateMesh(regions = p.sets['Matrix'].faces)
+            p.seedEdgeBySize(edges=p.sets['Interface'].edges, size=1.88335, deviationFactor=0.1,
+                                 minSizeFactor=0.1, constraint=FINER)
+            p.generateMesh(regions=p.sets['Interface'].faces)
             p.setMeshControls(regions = p.sets['Ffiber'].faces, elemShape=TRI)
             p.generateMesh(regions = p.sets['Ffiber'].faces)
-            del mdb.models['Model-A'].parts['Part-1'].sets['Alt']
-            del mdb.models['Model-A'].parts['Part-1'].sets['Matrix']
-            del mdb.models['Model-A'].parts['Part-1'].sets['Interface']
-            del mdb.models['Model-A'].parts['Part-1'].sets['Ffiber']
+            del mod.parts['Part-1'].sets['Alt'],mod.parts['Part-1'].sets['Matrix'],mod.parts['Part-1'].sets['Interface'],mod.parts['Part-1'].sets['Ffiber']
+            del a
         else:
             f = p.faces
             pickedFaces = f.findAt(((0.0, 0.0, 0.0),))
@@ -719,7 +711,7 @@ def Extract_parameterdata():
 
 noFiber = 0                         # Overstyrer antall fiber til 0
 Runjobs = 0                         # Bestemmer om jobber skal kjores
-Interface = 0                       # Interface paa fibere eller ikke?
+Interface = 1                       # Interface paa fibere eller ikke?
 Fibervariation = 1                  # Skal fiberene variere eller ikke?
 nonLinearDeformation = 0            # Linear eller nonlinear analyse?
 
@@ -755,7 +747,7 @@ for m in range(0,len(Sample)):
 
         r = rmean                                                                  # Tykkelse paa RVE
         rtol = Rclearing * r                                                       # Mellomfiber toleranse
-        rinterface = 0.001/2                                                       # Interface tykkelse    0.1% av diameteren    0.05%av radius
+        rinterface = 0.01/2                                                       # Interface tykkelse    1% av diameteren    0.5%av radius
 
         gtol = Rclearing * r                                                       # Dodsone toleranse
         ytredodgrense = r + gtol                                                   # Dodzone avstand, lengst fra kantene

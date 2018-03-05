@@ -195,20 +195,28 @@ def createModel(xydata):
             p.SetByBoolean(name='Interface', sets=(p.sets['IFfiber'], p.sets['Ffiber'],), operation=DIFFERENCE)
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFfiber'],), operation=DIFFERENCE)
             p = mod.parts['Part-1']
+
+
+
             p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
-            p.seedEdgeBySize(edges=p.edges, size=meshsize, deviationFactor=0.05,
+            p.seedEdgeBySize(edges=p.edges, size=meshsize, deviationFactor=0.1,
                              constraint=FINER)
+            p.setMeshControls(regions=p.sets['Interface'].faces, elemShape=QUAD, algorithm=MEDIAL_AXIS, minTransition=OFF)
+            """for ma in p.sets['Interface'].faces:
+                mesh =[]
+                mesh.append(ma)
+                p.setMeshControls(regions=(mesh), elemShape=QUAD, algorithm=MEDIAL_AXIS, minTransition=OFF)
+                p.generateMesh(regions=(mesh))"""
+            p.generateMesh(regions = p.sets['Matrix'].faces)
             for ma in p.sets['Interface'].faces:
                 mesh =[]
                 mesh.append(ma)
-                p.setMeshControls(regions=(mesh), elemShape=QUAD, algorithm=MEDIAL_AXIS)
+                p.setMeshControls(regions=(mesh), elemShape=QUAD, algorithm=MEDIAL_AXIS, minTransition=OFF)
                 p.generateMesh(regions=(mesh))
-
-            del A
-            p.generateMesh(regions = p.sets['Matrix'].faces)
-
             p.setMeshControls(regions=p.sets['Ffiber'].faces, elemShape=TRI)
             p.generateMesh(regions = p.sets['Ffiber'].faces)
+            p.deleteMesh(regions=p.sets['Interface'].faces)
+            p.generateMesh(regions=p.sets['Interface'].faces)
             del mod.parts['Part-1'].sets['Alt'],mod.parts['Part-1'].sets['Matrix'],mod.parts['Part-1'].sets['Interface'],mod.parts['Part-1'].sets['Ffiber'],mod.parts['Part-1'].sets['IFfiber']
         else:
             f = p.faces

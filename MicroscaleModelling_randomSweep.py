@@ -9,14 +9,7 @@ print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
 
 """                 FUNKSJONER                """
 #RVEmodell
-def lagreparametere(Q):
-    g = open(parameterpath, "w")
 
-    parametere=[Q,r,nf,Vf,wiggle,coordpath,iterasjonsgrense,rtol,gtol,dL]
-    print parametere,'\nQ\tr\tnf\tVf\twiggle\t\tcoordpath\t\t\t\titerasjonsgrense\trtol\tgtoL\tdL'
-    g.write('Q' + '\t' + 'r' + '\t' + 'nf' + '\t' + 'Vf' + '\t' + 'wiggle' + '\t' + 'coordpath' + '\t' + 'iterasjonsgrense' + '\t' + 'rtol' + '\t' + 'gtol' + '\t' + 'dL'+'\n'+
-            str(Q) + '\t' + str(r) + '\t' + str(nf) + '\t' + str(Vf) + '\t' + str(wiggle) + '\t' + coordpath + '\t' + str(iterasjonsgrense) + '\t' + str(rtol) + '\t' +str(gtol)+ '\t' +str(dL)) # til fiber modellering
-    g.close()
 def hentePopulation(coordpath):
     #Les fiber matrix populasjon
     xy=list()
@@ -71,9 +64,9 @@ def createModel(xydata):
     s1.Line(point1=(dx, -dy), point2=(dx, dy))
     s1.Line(point1=(dx,dy), point2=(-dx,dy))
     s1.Line(point1=(-dx,dy), point2=(-dx,-dy))
-    p = mod.Part(name='Part-1', dimensionality=THREE_D,
+    p = mod.Part(name=partName, dimensionality=THREE_D,
                  type=DEFORMABLE_BODY)
-    p = model.parts['Part-1']
+    p = model.parts[partName]
     p.BaseShell(sketch=s1)
     s1.unsetPrimaryObject()
     #del mod.sketches['__profile__']
@@ -194,7 +187,7 @@ def createModel(xydata):
 
             p.SetByBoolean(name='Interface', sets=(p.sets['IFfiber'], p.sets['Ffiber'],), operation=DIFFERENCE)
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFfiber'],), operation=DIFFERENCE)
-            p = mod.parts['Part-1']
+            p = mod.parts[partName]
 
 
 
@@ -217,7 +210,7 @@ def createModel(xydata):
             p.generateMesh(regions = p.sets['Ffiber'].faces)
             p.deleteMesh(regions=p.sets['Interface'].faces)
             p.generateMesh(regions=p.sets['Interface'].faces)
-            del mod.parts['Part-1'].sets['Alt'],mod.parts['Part-1'].sets['Matrix'],mod.parts['Part-1'].sets['Interface'],mod.parts['Part-1'].sets['Ffiber'],mod.parts['Part-1'].sets['IFfiber']
+            del mod.parts[partName].sets['Alt'],mod.parts[partName].sets['Matrix'],mod.parts[partName].sets['Interface'],mod.parts[partName].sets['Ffiber'],mod.parts[partName].sets['IFfiber']
         else:
             f = p.faces
             pickedFaces = f.findAt(((0.0, 0.0, 0.0),))
@@ -225,20 +218,20 @@ def createModel(xydata):
             p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,
                                                                         0.0)), faces=pickedFaces, sketch=s1)
             s1.unsetPrimaryObject()
-            p = mod.parts['Part-1']
+            p = mod.parts[partName]
             p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)                                                   # Generate mesh
             p.generateMesh()
         mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
-        elFace = mod.parts['Part-1'].elementFaces                                                                             # Extrude mesh
+        elFace = mod.parts[partName].elementFaces                                                                             # Extrude mesh
         v = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
         p.generateBottomUpExtrudedMesh(elemFacesSourceSide=elFace,extrudeVector=v, numberOfLayers=2)
-        p = mod.parts['Part-1']                                                                                               # Delete shell nodes of part
+        p = mod.parts[partName]                                                                                               # Delete shell nodes of part
         n = p.nodes
         nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
         p.deleteNode(nodes=nodes)
-        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)                                                                    # Make orphan mesh
+        p.PartFromMesh(name=meshPartName, copySets=True)                                                                    # Make orphan mesh
 
-        p = mod.parts['Part-1-mesh-1']                                                                                    # Lage Set
+        p = mod.parts[meshPartName]                                                                                    # Lage Set
         e = p.elements
         p.Set(name='Alle', elements=e)                                                                                  # Lage set, meshe og lage material set
         if Interface:                                                               #IF Interface -  Lag elementset for fiber, interface og matrix
@@ -268,7 +261,7 @@ def createModel(xydata):
 
             p.SetByBoolean(name='Interfaces', sets=(p.sets['IandF'], p.sets['Fibers'],), operation=DIFFERENCE)
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alle'], p.sets['IandF'],), operation=DIFFERENCE)                      # Lag matrix og interface set
-            del mod.parts['Part-1-mesh-1'].sets['IandF']
+            del mod.parts[meshPartName].sets['IandF']
         else:                                               #IF no interface -  Lag elementset for fiber og matrix.
             x = xydata[0][0]
             y = xydata[0][1]
@@ -282,16 +275,16 @@ def createModel(xydata):
                 Felements = Felements + temp
             p.Set(name='Fibers', elements=Felements)                                                                                    # Fiber set made
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alle'], p.sets['Fibers'],), operation=DIFFERENCE)                               # Lag matrix set
-        del mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['Alle']
+        del mdb.models['Model-A'].parts[meshPartName].sets['Alle']
     else:                                                     # If: Om ingen fiber i modell
         p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)                                           #Meshe
         p.generateMesh()
         mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
-        elFace = mod.parts['Part-1'].elementFaces                                                                     # Extrude mesh
+        elFace = mod.parts[partName].elementFaces                                                                     # Extrude mesh
         v = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
         p.generateBottomUpExtrudedMesh(elemFacesSourceSide=elFace,extrudeVector=v, numberOfLayers=2)
-        p.PartFromMesh(name='Part-1-mesh-1', copySets=True)                                                         # Make orphan mesh
-        p = mod.parts['Part-1-mesh-1']
+        p.PartFromMesh(name=meshPartName, copySets=True)                                                         # Make orphan mesh
+        p = mod.parts[meshPartName]
         n = p.nodes
         nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
         p.deleteNode(nodes=nodes)                                                                                   # Deleted shell nodes
@@ -349,7 +342,7 @@ def createModel(xydata):
         p.SectionAssignment(region=region, sectionName='SSmatrix', offset=0.0,
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
-    # del mod.parts['Part-1'], p, n, mod, region
+    # del mod.parts[partName], p, n, mod, region
     # del model.sketches['__profile__'], f, pickedFaces, e1, f1, e, t
     # del s1, model,x,y
     print '\nModel created, meshed and assigned properties'
@@ -358,7 +351,7 @@ def createCEq():
     mod = mdb.models[modelName]
     a = mod.rootAssembly
     a.DatumCsysByDefault(CARTESIAN)
-    p = mdb.models[modelName].parts['Part-1-mesh-1']
+    p = mdb.models[modelName].parts[meshPartName]
     a.Instance(name=instanceName, part=p, dependent=ON)
 
     # Flytte modellen til origo og sette x i fiberretning.
@@ -721,8 +714,8 @@ def Extract_parameterdata():
 
 #Flag
 
-Runjobs = 0                         # Bestemmer om jobber skal kjores
-nonLinearDeformation = 1            # Linear eller nonlinear analyse?
+Runjobs = 1                         # Bestemmer om jobber skal kjores
+nonLinearDeformation = 0           # Linear eller nonlinear analyse?
 
 noFiber = 0                         # Overstyrer antall fiber til 0
 Fibervariation = 1                  # Skal fiber radius variere eller ikke?
@@ -738,27 +731,25 @@ for m in range(0,len(Sample)):
     nf=Sample[m]                                                         # Modelleringsvariabler
     Vf = 0.6
 
-    rmean = 8.7096                                                       # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
+    rmean = 8.7096                              # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
     Rstdiv = 0.6374                                                      # Standard avvik fra gjennomsnittsradius.
     Rclearing = 0.025                                                    # Prosent avstand mellom fibere og fra kanter og sider
 
     FiberSirkelResolution = 32                                           # 2*pi/FiberSirkelResolution
     meshsize = rmean * 2*pi/FiberSirkelResolution                        # Meshresolution, mindre koeffisient er mindre og flere elementer
-    sweepcases = 2
+    sweepcases = 2                                                       # Opplosning paa Stress case
 
-    #Andre variabler
-    if True:            # For aa kunne kollapse variabler
-                                                                    # Er RVE tomt? RVE_Modelleringsparametere
+    # Instilliger
+    if True:                     # For aa kunne kollapse variabler
         if nf == 0 or Vf == 0 or noFiber:                   # Fiberfri RVE
             nf = 0
             Vf = 0
             dL = rmean*3
-        if not nf == 0:
+        if not nf == 0:                              # Er RVE tomt? RVE_Modelleringsparametere
             dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5                 # RVE storrelsen er satt til aa vaere relativ av nf og V
 
         tykkelse = 0.01 * dL                                                       # RVE tykkelse
-
-        r = rmean                                                                  # Tykkelse paa RVE
+        r = rmean                                                                  # r er er variable som brukes for aa beholde en mean
         rtol = Rclearing * r                                                       # Mellomfiber toleranse
         rinterface = 0.01/2                                                       # Interface tykkelse    1% av diameteren    0.5%av radius
 
@@ -767,26 +758,25 @@ for m in range(0,len(Sample)):
         indredodgrense = r - gtol                                                  # Dodzone avstand, naermest kantene
 
         iterasjonsgrense = 10000                                                   # iterasjonsgrense
-
-        sweepresolution = 2 * pi / sweepcases  # stepsize
+        sweepresolution = 2 * pi / sweepcases                                      # stepsize paa Stress sweeps
 
         # Tekstfiler
-
         GitHub ='C:/Multiscale-Modeling/'
         Tekstfiler = 'textfiles/'
 
         Envelope = GitHub + Tekstfiler + 'envelope'         #   Parameteravhengig - Spesifikt navn legges til i funksjonen
-        parameterpath = GitHub + 'Parametere.txt'         #   Skrives ned for chaining  til ett annet script
-        coordpath = GitHub + 'coordst.txt'                #   Hentes fra genererefiberPop chaining  til ett annet script
-        lagrestiffpath = GitHub + 'Stiffness.txt'         #   Skrives ned statistikk til ett annet script
-        workpath = 'C:/Temp/'                           #   Abaqus arbeidsmappe
+        parameterpath = GitHub + 'Parametere.txt'           #   Skrives ned for chaining  til ett annet script
+        coordpath = GitHub + 'coordst.txt'                  #   Hentes fra genererefiberPop chaining  til ett annet script
+        lagrestiffpath = GitHub + 'Stiffness.txt'           #   Skrives ned statistikk til ett annet script
+        workpath = 'C:/Temp/'                               #   Abaqus arbeidsmappe
 
-
-        """   ABAQUS   """
-        modelName = 'Model-A'
-        instanceName = 'PART-1-MESH-1-1'
-        stepName = 'Enhetstoyninger'
-        difstpNm = 'Lasttoyinger'
+        """   ABAQUS navn   """
+        modelName =     'Model-A'
+        partName =      'Part-1'
+        meshPartName =  'Part-1-mesh-1'
+        instanceName =  'PART-1-MESH-1-1'
+        stepName =      'Enhetstoyninger'
+        difstpNm =      'Lasttoyinger'
 
     """RVE_MODELLERING"""
     for Q in range(0,n):
@@ -805,21 +795,15 @@ for m in range(0,len(Sample)):
         for g in range(0,sweepcases):
             Sweeptoyinger[g] = ('Sweep_strain'+ str(nf) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
 
-        #Lagre parametere til stottefiler
-
-        lagreparametere(Q)
-
         """Prosess"""
-
-
         xydata = None                                                       #Fiber populasjon?
         if not (nf==0):
             execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
             xydata= hentePopulation(coordpath)                      # hente fibercoordinater
 
         # Lag Abaqus Model
-        createModel(xydata)                                                    # Lag model for testing med onsket fiber og interface.
-        createCEq()                                                            # Lag constrain equations
+        createModel(xydata)                                                            # Lag model for testing med onsket fiber og interface.
+        createCEq()                                                                    # Lag constrain equations
 
         if nonLinearDeformation:
             print 'yeah'

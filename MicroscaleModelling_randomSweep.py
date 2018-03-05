@@ -495,13 +495,10 @@ def create_Linearunitstrainslastcases():
     id = np.identity(6)  # Identity matrix for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
     mod = mdb.models[modelName]
     a = mod.rootAssembly
-
     #Create step Linear step
     mod.StaticStep(name=stepName, previous='Initial')
-
     #Request outputs
     mod.fieldOutputRequests['F-Output-1'].setValues(variables=('S', 'EVOL','U'))
-
     #Run the simulations to create stiffnessmatrix
     print '\nComputing stresses for normalized strains'
     for i in range(0,6):#   arg:   +   ,len(id)+1
@@ -523,7 +520,6 @@ def create_Linearunitstrainslastcases():
         run_Job(Enhetstoyinger[i],modelName)
         del exx, eyy, ezz, exy, exz, eyz
 def create_Linearsweepedlastcases(sweep):
-
     mod = mdb.models[modelName]
     a = mod.rootAssembly
     mod.fieldOutputRequests['F-Output-1'].setValues(variables=('S', 'MISES', 'E', 'U', 'ELEDEN'))
@@ -539,9 +535,7 @@ def create_Linearsweepedlastcases(sweep):
         mod.boundaryConditions['BCZ'].setValues(u1=exz, u2=eyz, u3=ezz)
         Jobw = Sweeptoyinger[case]
         run_Job(Jobw, modelName)
-
     del a, mod, Jobw, case
-
 def get_stiffness():
     stiffmatrix = []
     for i in range(0,6):
@@ -582,7 +576,6 @@ def get_compliance(Stiffmatrix):
         print inverse[0][a],'\t', inverse[1][a],'\t', inverse[2][a],'\t', inverse[3][a],'\t',inverse[4][a],'\t', inverse[5][a]
     inverse = inverse.tolist()
     return inverse
-
 def get_sweepstrains_sig2_sig3(Compliancematrix,sweepresolution):
     sweep=list()
     x= np.arange(0,2*pi,sweepresolution)
@@ -732,7 +725,7 @@ for m in range(0,len(Sample)):
     Vf = 0.6
 
     rmean = 8.7096                              # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
-    Rstdiv = 0.6374                                                      # Standard avvik fra gjennomsnittsradius.
+    Rstdiv = 0.6374                                          # Standard avvik fra gjennomsnittsradius.
     Rclearing = 0.025                                                    # Prosent avstand mellom fibere og fra kanter og sider
 
     FiberSirkelResolution = 32                                           # 2*pi/FiberSirkelResolution

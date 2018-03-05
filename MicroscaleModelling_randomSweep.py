@@ -187,10 +187,8 @@ def createModel(xydata):
 
             p.SetByBoolean(name='Interface', sets=(p.sets['IFfiber'], p.sets['Ffiber'],), operation=DIFFERENCE)
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFfiber'],), operation=DIFFERENCE)
+
             p = mod.parts[partName]
-
-
-
             p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
             p.seedEdgeBySize(edges=p.edges, size=meshsize, deviationFactor=0.1,
                              constraint=FINER)
@@ -200,18 +198,19 @@ def createModel(xydata):
                 mesh.append(ma)
                 p.setMeshControls(regions=(mesh), elemShape=QUAD, algorithm=MEDIAL_AXIS, minTransition=OFF)
                 p.generateMesh(regions=(mesh))"""
-            p.generateMesh(regions = p.sets['Matrix'].faces)
             for ma in p.sets['Interface'].faces:
                 mesh =[]
                 mesh.append(ma)
                 p.setMeshControls(regions=(mesh), elemShape=QUAD, algorithm=MEDIAL_AXIS, minTransition=OFF)
                 p.generateMesh(regions=(mesh))
+            p.generateMesh(regions = p.sets['Matrix'].faces)
             p.setMeshControls(regions=p.sets['Ffiber'].faces, elemShape=TRI)
             p.generateMesh(regions = p.sets['Ffiber'].faces)
-            p.deleteMesh(regions=p.sets['Interface'].faces)
-            p.generateMesh(regions=p.sets['Interface'].faces)
-            del mod.parts[partName].sets['Alt'],mod.parts[partName].sets['Matrix'],mod.parts[partName].sets['Interface'],mod.parts[partName].sets['Ffiber'],mod.parts[partName].sets['IFfiber']
-        else:
+
+            #p.deleteMesh(regions=p.sets['Interface'].faces)
+            #p.generateMesh(regions=p.sets['Interface'].faces)
+            del a, mod.parts[partName].sets['Alt'],mod.parts[partName].sets['Matrix'],mod.parts[partName].sets['Interface'],mod.parts[partName].sets['Ffiber'],mod.parts[partName].sets['IFfiber']
+        else:           # Generate mesh uten interface
             f = p.faces
             pickedFaces = f.findAt(((0.0, 0.0, 0.0),))
             e1 = p.edges                                                                                                   # Create partioned planar shell from sketch
@@ -707,7 +706,7 @@ def Extract_parameterdata():
 
 #Flag
 
-Runjobs = 1                         # Bestemmer om jobber skal kjores
+Runjobs = 0                       # Bestemmer om jobber skal kjores
 nonLinearDeformation = 0           # Linear eller nonlinear analyse?
 
 noFiber = 0                         # Overstyrer antall fiber til 0

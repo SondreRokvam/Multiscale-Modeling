@@ -195,12 +195,19 @@ def createModel(xydata):
             p.SetByBoolean(name='Interface', sets=(p.sets['IFfiber'], p.sets['Ffiber'],), operation=DIFFERENCE)
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFfiber'],), operation=DIFFERENCE)
             p = mod.parts['Part-1']
-            p.seedPart(size=1.9, deviationFactor=0.1, minSizeFactor=0.1)
-            p.generateMesh(regions = p.sets['Matrix'].faces)
-            p.setMeshControls(regions=p.sets['Interface'].faces, elemShape=QUAD)
-            p.generateMesh(regions=p.sets['Interface'].faces)
-            p.setMeshControls(regions = p.sets['Ffiber'].faces, elemShape=TRI)
+            p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
+            p.seedEdgeBySize(edges=p.edges, size=meshsize, deviationFactor=0.05,
+                             constraint=FINER)
+            for ma in p.sets['Interface'].faces:
+                mesh =[]
+                mesh.append(ma)
+                p.setMeshControls(regions=(mesh), elemShape=QUAD, algorithm=MEDIAL_AXIS)
+                p.generateMesh(regions=(mesh))
 
+            del A
+            p.generateMesh(regions = p.sets['Matrix'].faces)
+
+            p.setMeshControls(regions=p.sets['Ffiber'].faces, elemShape=TRI)
             p.generateMesh(regions = p.sets['Ffiber'].faces)
             del mod.parts['Part-1'].sets['Alt'],mod.parts['Part-1'].sets['Matrix'],mod.parts['Part-1'].sets['Interface'],mod.parts['Part-1'].sets['Ffiber'],mod.parts['Part-1'].sets['IFfiber']
         else:
@@ -727,8 +734,8 @@ for m in range(0,len(Sample)):
     Rstdiv = 0.6374                                                      # Standard avvik fra gjennomsnittsradius.
     Rclearing = 0.025                                                    # Prosent avstand mellom fibere og fra kanter og sider
 
-    FiberSirkelResolution = 16                                           # 2*pi/FiberSirkelResolution
-    meshsize = rmean * 0.21                                              # Meshresolution, mindre koeffisient er mindre og flere elementer
+    FiberSirkelResolution = 32                                           # 2*pi/FiberSirkelResolution
+    meshsize = rmean * 2*pi/FiberSirkelResolution                        # Meshresolution, mindre koeffisient er mindre og flere elementer
     sweepcases = 2
 
     #Andre variabler

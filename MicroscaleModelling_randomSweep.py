@@ -189,24 +189,23 @@ def createModel(xydata):
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFfiber'],), operation=DIFFERENCE)
 
             p = mod.parts[partName]
-            p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
-            p.seedEdgeBySize(edges=p.edges, size=meshsize, deviationFactor=0.1,
+
+
+            p.seedEdgeBySize(edges=p.edges, size=meshsize/2, deviationFactor=0.1,
                              constraint=FINER)
-            p.setMeshControls(regions=p.sets['Interface'].faces, elemShape=QUAD, algorithm=MEDIAL_AXIS, minTransition=OFF)
-            """for ma in p.sets['Interface'].faces:
-                mesh =[]
+            for ma in p.sets['Interface'].faces:
+                mesh = []
                 mesh.append(ma)
                 p.setMeshControls(regions=(mesh), elemShape=QUAD, algorithm=MEDIAL_AXIS, minTransition=OFF)
-                p.generateMesh(regions=(mesh))"""
+            p.setMeshControls(regions=(p.sets['Matrix'].faces), elemShape=QUAD)
+            """
             for ma in p.sets['Interface'].faces:
                 mesh =[]
                 mesh.append(ma)
                 p.setMeshControls(regions=(mesh), elemShape=QUAD, algorithm=MEDIAL_AXIS, minTransition=OFF)
-                p.generateMesh(regions=(mesh))
-            p.generateMesh(regions = p.sets['Matrix'].faces)
+                p.generateMesh(regions=(mesh))"""
             p.setMeshControls(regions=p.sets['Ffiber'].faces, elemShape=TRI)
-            p.generateMesh(regions = p.sets['Ffiber'].faces)
-
+            p.generateMesh()
             #p.deleteMesh(regions=p.sets['Interface'].faces)
             #p.generateMesh(regions=p.sets['Interface'].faces)
             del a, mod.parts[partName].sets['Alt'],mod.parts[partName].sets['Matrix'],mod.parts[partName].sets['Interface'],mod.parts[partName].sets['Ffiber'],mod.parts[partName].sets['IFfiber']
@@ -706,18 +705,18 @@ def Extract_parameterdata():
 
 #Flag
 
-Runjobs = 0                       # Bestemmer om jobber skal kjores
-nonLinearDeformation = 0           # Linear eller nonlinear analyse?
+Runjobs = 0                         # Bestemmer om jobber skal kjores
+nonLinearDeformation = 0                # Linear eller nonlinear analyse?
 
 noFiber = 0                         # Overstyrer antall fiber til 0
-Fibervariation = 1                  # Skal fiber radius variere eller ikke?
-Interface = 1                       # Interface paa fibere?
+Fibervariation = 1                      # Skal fiber radius variere eller ikke?
+Interface = 1                               # Interface paa fibere?
 
 
 """Start"""
 #Sample=[0, 5, 10, 25,50]
 
-Sample=[20]
+Sample=[50]
 for m in range(0,len(Sample)):
     n = 1                                                                # Sweep variabel: fra 0 til n antall random seeds
     nf=Sample[m]                                                         # Modelleringsvariabler
@@ -743,7 +742,7 @@ for m in range(0,len(Sample)):
         tykkelse = 0.01 * dL                                                       # RVE tykkelse
         r = rmean                                                                  # r er er variable som brukes for aa beholde en mean
         rtol = Rclearing * r                                                       # Mellomfiber toleranse
-        rinterface = 0.01/2                                                       # Interface tykkelse    1% av diameteren    0.5%av radius
+        rinterface = 0.01                                                          # Interface tykkelse    2% av diameteren    0.5%av radius
 
         gtol = Rclearing * r                                                       # Dodsone toleranse
         ytredodgrense = r + gtol                                                   # Dodzone avstand, lengst fra kantene

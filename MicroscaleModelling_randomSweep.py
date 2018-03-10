@@ -50,7 +50,6 @@ def createModel(xydata):
     model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lag model
     del mdb.models['Model-1']                                       # Slett standard model
 
-
     mod = mdb.models[modelName]
 
     dx=dL/2.0
@@ -77,9 +76,7 @@ def createModel(xydata):
                                   sketchUpEdge=e.findAt(coordinates=(dx, 0.0, 0.0)), sketchPlaneSide=SIDE1, origin=(0.0,0.0, 0.0))
         s1 = model.ConstrainedSketch(name='__profile__', sheetSize=2*dL, gridSpacing=dL / 25.0, transform=t)
         s1.setPrimaryObject(option=SUPERIMPOSE)
-        p.projectReferencesOntoSketch(sketch=s1, filter=COPLANAR_EDGES)
-
-                                                                                                                            # Partionere og meshe RVE fibere med eller uten interface
+        p.projectReferencesOntoSketch(sketch=s1, filter=COPLANAR_EDGES)                                                     # Partionere og meshe RVE fibere med eller uten interface
         for data in xydata:     #Tegne inn fiber aa partionere
             x = data[0]
             y = data[1]
@@ -113,19 +110,101 @@ def createModel(xydata):
             if done == 0 and x <= 0 and y >= 0:
                 s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rcos45, y - rcos45))
                 done = 1
-        if 0:
-            pass
+        if Interface:       #Tegne inn fiber interfaces aa partionere
+            for data in xydata:
+                x = data[0]
+                y = data[1]
+                r=rmean
+                if Fibervariation:
+                    r=data[2]
+                r=r*(1+rinterface)
+                rcos45 = r * cos(45.0 * pi / 180.0)
+                done = 0
+                if done == 0 and x >= dx:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x + r, y))
+                    done = 1
+                if done == 0 and x <= -dx:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x - r, y))
+                    done = 1
+                if done == 0 and y >= dx:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y + r))
+                    done = 1
+                if done == 0 and y <= -dx:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y - r))
+                    done = 1
 
+                if done == 0 and x >= 0 and y >= 0:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rcos45, y - rcos45))
+                    done = 1
+                if done == 0 and x >= 0 and y <= 0:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rcos45, y + rcos45))
+                    done = 1
+                if done == 0 and x <= 0 and y <= 0:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rcos45, y + rcos45))
+                    done = 1
+                if done == 0 and x <= 0 and y >= 0:
+                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rcos45, y - rcos45))
+                    done = 1
+        f = p.faces                                                                                          # Selve partioneringen
+        pF = f.findAt(((0.0, 0.0, 0.0),))
+        e1= p.edges
+        p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,0.0)), faces=pF, sketch=s1)
+        s1.unsetPrimaryObject()
+        p.Set(faces=f, name='Alt')                                                      # Lag set for fiber, interface, matrix og Alt
+        if not noFiber:
+            x = xydata[0][0]
+            y = xydata[0][1]
+            r = rmean
+            if Fibervariation:
+                r = xydata[0][2]
+            Ffaces= f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.001)
+            print len(xydata)
+            for i in range(1, len(xydata)):
+                x = xydata[i][0]
+                y = xydata[i][1]
+                if Fibervariation:
+                    r = xydata[i][2]
+                temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
+                Ffaces = Ffaces + temp
+                print Ffaces
+            p.Set(name='Ffiber', faces=Ffaces)                          # Lag fiber set
+        del a
+        if Interface:
+
+            x = xydata[0][0]
+            y = xydata[0][1]
+            r = rmean
+            if Fibervariation:
+                r = xydata[0][2]
+            IFfaces= f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r*(1+rinterface) + 0.01)
+            for i in range(1, len(xydata)):
+                x = xydata[i][0]
+                y = xydata[i][1]
+                if Fibervariation:
+                    r = xydata[i][2]
+                temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r*(1+rinterface) + 0.01)
+                IFfaces = IFfaces + temp
+            p.Set(name='IFfiber', faces=IFfaces)                                                # Lag interface og matrix set
+
+            p.SetByBoolean(name='Interface', sets=(p.sets['IFfiber'], p.sets['Ffiber'],), operation=DIFFERENCE)
+            p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFfiber'],), operation=DIFFERENCE)
+            #MESHE
+            p = mod.parts[partName]
+            for ma in p.sets['Interface'].faces:
+                print len(p.sets['Interface'].faces)
+                mesh = []
+                mesh.append(ma)
+                p.setMeshControls(regions=mesh, technique=SWEEP)
+            p.setMeshControls(regions=Ffaces, elemShape=TRI)
+            p.generateMesh()
+            #p.deleteMesh(regions=p.sets['Interface'].faces)
+            #p.generateMesh(regions=p.sets['Interface'].faces)
+            del a, mod.parts[partName].sets['Alt'],mod.parts[partName].sets['Matrix'],mod.parts[partName].sets['Interface'],mod.parts[partName].sets['Ffiber'],mod.parts[partName].sets['IFfiber']
         else:           # Generate mesh uten interface
-            f = p.faces
-            pickedFaces = f.findAt(((0.0, 0.0, 0.0),))
-            e1 = p.edges                                                                                                   # Create partioned planar shell from sketch
-            p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,
-                                                                        0.0)), faces=pickedFaces, sketch=s1)
-            s1.unsetPrimaryObject()
             p = mod.parts[partName]
             p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)                                                   # Generate mesh
             p.generateMesh()
+            del a
 
         mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
         elFace = mod.parts[partName].elementFaces                                                                             # Extrude mesh
@@ -625,7 +704,7 @@ Interface = 0                               # Interface paa fibere?
 """Start"""
 #Sample=[0, 5, 10, 25,50]
 
-Sample=[1]
+Sample=[3]
 for m in range(0,len(Sample)):
     n = 1                                                                # Sweep variabel: fra 0 til n antall random seeds
     nf=Sample[m]                                                         # Modelleringsvariabler
@@ -651,7 +730,7 @@ for m in range(0,len(Sample)):
         tykkelse = 0.01 * dL                                                       # RVE tykkelse
         r = rmean                                                                  # r er er variable som brukes for aa beholde en mean
         rtol = Rclearing * r                                                       # Mellomfiber toleranse
-        rinterface = 0.01                                                          # Interface tykkelse    2% av diameteren    0.5%av radius
+        rinterface = 0.02                                                          # Interface tykkelse  2%av radius
 
         gtol = Rclearing * r                                                       # Dodsone toleranse
         ytredodgrense = r + gtol                                                   # Dodzone avstand, lengst fra kantene

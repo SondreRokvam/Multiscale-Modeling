@@ -7,6 +7,24 @@ print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
        'Multiscale Modelling, Microscale  \n'
        'Allowed numCpus = ',numCpus)
 
+# Tekstfiler
+GitHub = 'C:/Multiscale-Modeling/'
+Tekstfiler = 'textfiles/'
+
+Envelope = GitHub + Tekstfiler + 'envelope'             # Parameteravhengig - Spesifikt navn legges til i funksjonen
+parameterpath = GitHub + 'Parametere.txt'               # Skrives ned for chaining  til ett annet script
+coordpath = GitHub + 'coordst.txt'                      # Hentes fra genererefiberPop chaining  til ett annet script
+lagrestiffpath = GitHub + 'Stiffness.txt'               # Skrives ned statistikk til ett annet script
+workpath = 'C:/Temp/'                                   # Abaqus arbeidsmappe
+
+#      ABAQUS navn
+modelName = 'Model-A'
+partName = 'Part-1'
+meshPartName = 'Part-1-mesh-1'
+instanceName = 'PART-1-MESH-1-1'
+stepName = 'Enhetstoyninger'
+difstpNm = 'Lasttoyinger'
+
 """                 FUNKSJONER                """
 #RVEmodell
 
@@ -28,7 +46,7 @@ def hentePopulation(coordpath):
     return xy
 
 #Abaqus operations
-def createModel(xydata):
+def createModel_n_Sets():
     import section
     import regionToolset
     import displayGroupMdbToolset as dgm
@@ -49,13 +67,13 @@ def createModel(xydata):
 
     model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lag model
     del mdb.models['Model-1']                                       # Slett standard model
-
+    global mod
     mod = mdb.models[modelName]
 
     dx=dL/2.0
     dy=dL/2.0
     #Lag sketch
-    s1 = model.ConstrainedSketch(name='__profile__',sheetSize=2*dL)
+    s1 = model.ConstrainedSketch(name='__profile__',sheetSize=3*dL)
     s1.setPrimaryObject(option=STANDALONE)
 
     #Tegne RVE sketch -Firkant
@@ -150,62 +168,61 @@ def createModel(xydata):
         e1= p.edges
         p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,0.0)), faces=pF, sketch=s1)
         s1.unsetPrimaryObject()
-        p.Set(faces=f, name='Alt')                                                      # Lag set for fiber, interface, matrix og Alt
-        if not noFiber:
-            x = xydata[0][0]
-            y = xydata[0][1]
-            r = rmean
+        p.Set(faces=f, name='Alt')                                                      # Lag set for  Alt
+        f = p.faces
+        x = xydata[0][0]
+        y = xydata[0][1]
+        r = rmean
+        if Fibervariation:
+            r = xydata[0][2]
+        Ffaces= f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
+        for i in range(1, len(xydata)):
+            x = xydata[i][0]
+            y = xydata[i][1]
             if Fibervariation:
-                r = xydata[0][2]
-            Ffaces= f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.001)
-            print len(xydata)
-            for i in range(1, len(xydata)):
-                x = xydata[i][0]
-                y = xydata[i][1]
-                if Fibervariation:
-                    r = xydata[i][2]
-                temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
-                Ffaces = Ffaces + temp
-                print Ffaces
-            p.Set(name='Ffiber', faces=Ffaces)                          # Lag fiber set
-        del a
-        if Interface:
+                r = xydata[i][2]
+            temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
+            Ffaces = Ffaces + temp
+        p.Set(name='Ffiber', faces=Ffaces)                                              # Lag set for Fibers
 
+        if Interface:              # Generate mesh med/uten interface set
+            f = p.faces
             x = xydata[0][0]
             y = xydata[0][1]
             r = rmean
             if Fibervariation:
                 r = xydata[0][2]
-            IFfaces= f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r*(1+rinterface) + 0.01)
+            IFfaces= f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r*(1+rinterface) + tol)
             for i in range(1, len(xydata)):
                 x = xydata[i][0]
                 y = xydata[i][1]
                 if Fibervariation:
                     r = xydata[i][2]
-                temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r*(1+rinterface) + 0.01)
+                temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r*(1+rinterface) + tol)
                 IFfaces = IFfaces + temp
-            p.Set(name='IFfiber', faces=IFfaces)                                                # Lag interface og matrix set
-
+            p.Set(name='IFfiber', faces=IFfaces)
             p.SetByBoolean(name='Interface', sets=(p.sets['IFfiber'], p.sets['Ffiber'],), operation=DIFFERENCE)
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFfiber'],), operation=DIFFERENCE)
-            #MESHE
-            p = mod.parts[partName]
-            for ma in p.sets['Interface'].faces:
-                print len(p.sets['Interface'].faces)
-                mesh = []
-                mesh.append(ma)
-                p.setMeshControls(regions=mesh, technique=SWEEP)
-            p.setMeshControls(regions=Ffaces, elemShape=TRI)
-            p.generateMesh()
-            #p.deleteMesh(regions=p.sets['Interface'].faces)
-            #p.generateMesh(regions=p.sets['Interface'].faces)
-            del a, mod.parts[partName].sets['Alt'],mod.parts[partName].sets['Matrix'],mod.parts[partName].sets['Interface'],mod.parts[partName].sets['Ffiber'],mod.parts[partName].sets['IFfiber']
-        else:           # Generate mesh uten interface
-            p = mod.parts[partName]
-            p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)                                                   # Generate mesh
-            p.generateMesh()
-            del a
 
+            p = mod.parts[partName]                                                                          #MESHE
+            for ma in p.sets['Interface'].faces:
+                mosh = []
+                mosh.append(ma)
+                p.setMeshControls(regions=mosh, technique=SWEEP)
+            p.setMeshControls(regions=Ffaces, elemShape=TRI)
+            p = mod.parts[partName]
+            p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
+            del mod.parts[partName].sets['Interface'],mod.parts[partName].sets['IFfiber']
+        else:
+            p = mod.parts[partName]
+            p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['Ffiber'],), operation=DIFFERENCE)
+            p = mod.parts[partName]
+            p.setMeshControls(regions=Ffaces, elemShape=TRI)
+            p = mod.parts[partName]
+            p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
+            p = mod.parts[partName]
+        p.generateMesh()                                                            # Generate mesh
+        del mod.parts[partName].sets['Alt'],mod.parts[partName].sets['Ffiber'],mod.parts[partName].sets['Matrix']
         mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
         elFace = mod.parts[partName].elementFaces                                                                             # Extrude mesh
         v = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
@@ -215,7 +232,14 @@ def createModel(xydata):
         nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
         p.deleteNode(nodes=nodes)
         p.PartFromMesh(name=meshPartName, copySets=True)                                                                    # Make orphan mesh
+        p = mod.parts[meshPartName]
 
+
+        for ie in range(0, len(xydata)):                # Lage fiber  datums for material orientering
+            x = xydata[ie][0]
+            y = xydata[ie][1]
+            p.DatumCsysByThreePoints(name=('Fiber datum ' + str(ie)), coordSysType=CYLINDRICAL,
+                                     origin=(x, y, 0.0), point1=(x + 1.0, y, 0.0), point2=(x + 1.0, y + 1.0, 0.0))
         p = mod.parts[meshPartName]                                                                                    # Lage Set
         e = p.elements
         p.Set(name='Alle', elements=e)                                                                                  # Lage set, meshe og lage material set
@@ -223,35 +247,49 @@ def createModel(xydata):
             x = xydata[0][0]
             y = xydata[0][1]
             r = xydata[0][2]
-            Felements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
+            Felements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
             for i in range(1, len(xydata)):
                 x = xydata[i][0]
                 y = xydata[i][1]
                 r = xydata[i][2]
-                temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.01)
+                temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
                 Felements = Felements + temp
             p.Set(name='Fibers', elements=Felements)                                                                            # Fiber set made
 
             x = xydata[0][0]
             y = xydata[0][1]
             r = xydata[0][2]
-            IFelements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + 0.01)
+            IFelements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
             for i in range(1, len(xydata)):
                 x = xydata[i][0]
                 y = xydata[i][1]
                 r = xydata[i][2]
-                temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + 0.01)
+                temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
                 IFelements = IFelements + temp
             p.Set(name='IandF', elements=IFelements)                                                                             # Fiber+fiberinterface set made
 
             p.SetByBoolean(name='Interfaces', sets=(p.sets['IandF'], p.sets['Fibers'],), operation=DIFFERENCE)
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alle'], p.sets['IandF'],), operation=DIFFERENCE)                      # Lag matrix og interface set
+
+            e = p.sets['Interfaces'].elements
+            x = xydata[0][0]
+            y = xydata[0][1]
+            r = xydata[0][2]
+            Felements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
+            p.Set(name='FiberInt0', elements=Felements)
+            for i in range(1, len(xydata)):
+                x = xydata[i][0]
+                y = xydata[i][1]
+                r = xydata[i][2]
+                temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
+                p.Set(name=('FiberInt'+str(i)), elements=temp)
+            p.setElementType(regions=p.sets['Interfaces'], elemTypes=(mesh.ElemType(elemCode=COH3D8, elemLibrary=STANDARD)    ,))                       # Set cohesive elements
             del mod.parts[meshPartName].sets['IandF']
         else:                                               #IF no interface -  Lag elementset for fiber og matrix.
             x = xydata[0][0]
             y = xydata[0][1]
             r = xydata[0][2]
-            Felements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.001)
+            Felements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
             for i in range(1, len(xydata)):
                 x = xydata[i][0]
                 y = xydata[i][1]
@@ -260,8 +298,7 @@ def createModel(xydata):
                 Felements = Felements + temp
             p.Set(name='Fibers', elements=Felements)                                                                                    # Fiber set made
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alle'], p.sets['Fibers'],), operation=DIFFERENCE)                               # Lag matrix set
-        del mdb.models['Model-A'].parts[meshPartName].sets['Alle']
-        del a
+        del mod.parts[meshPartName].sets['Alle']
     else:                                                     # If: Om ingen fiber i modell
         p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)                                           #Meshe
         p.generateMesh()
@@ -275,11 +312,22 @@ def createModel(xydata):
         nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
         p.deleteNode(nodes=nodes)                                                                                   # Deleted shell nodes
         p.Set(name='Matrix', elements=p.elements)                                                                   # Lag set for Matrix
-                                                                                                                    # Angi materialegenskaper
-    mod.Material(name='resin')                                                                  #Assign Properties and sections
+    p = mod.parts[meshPartName]
+    session.viewports['Viewport: 1'].setValues(displayedObject=p)
+    session.viewports['Viewport: 1'].enableMultipleColors()
+    session.viewports['Viewport: 1'].setColor(initialColor='#BDBDBD')
+    cmap=session.viewports['Viewport: 1'].colorMappings['Set']
+    session.viewports['Viewport: 1'].setColor(colorMapping=cmap)
+    session.viewports['Viewport: 1'].disableMultipleColors()
+
+def create_Properites():                                                                # Angi materialegenskaper
+
+    p = mod.parts[meshPartName]
+
+    mod.Material(name='resin')
     mod.materials['resin'].Elastic(table=((3500.0, 0.33),))
     mod.materials['resin'].Density(table=((1.2e-09,),))
-    mod.HomogeneousSolidSection(name='SSmatrix', material='resin', thickness=None)
+    mod.HomogeneousSolidSection(name='SSmatrix', material='resin', thickness=None)       # Assign Properties and sections
     if not nf == 0:
         mod.Material(name='glass')
         mod.materials['glass'].Elastic(table=((90000.0, 0.22),))
@@ -288,6 +336,20 @@ def createModel(xydata):
             mod.Material(name='interface')
             mod.materials['interface'].Elastic(type=TRACTION, table=((100.0, 100.0, 100.0), ))
             mod.materials['interface'].Density(table=((1.2e-09,),))
+            p = mdb.models['Model-A'].parts['Part-1-mesh-1']
+            for Fdats in range(0, len(xydata)):
+                datId = p.features['Fiber datum ' + str(Fdats)].id
+                fibCsys = p.datums[datId]
+                region = p.sets['FiberInt' + str(Fdats)]
+                mdb.models['Model-A'].parts['Part-1-mesh-1'].MaterialOrientation(region=region,
+                                                                                 orientationType=SYSTEM, axis=AXIS_3,
+                                                                                 localCsys=fibCsys,
+                                                                                 fieldName='',
+                                                                                 additionalRotationType=ROTATION_NONE,
+                                                                                 angle=0.0,
+                                                                                 additionalRotationField='',
+                                                                                 stackDirection=STACK_3)
+
             if nonLinearDeformation:
                 mod.materials['interface'].QuadsDamageInitiation(table=((0.042, 0.063, 0.063),))
                 mod.materials['interface'].quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
@@ -328,13 +390,14 @@ def createModel(xydata):
         p.SectionAssignment(region=region, sectionName='SSmatrix', offset=0.0,
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
+    #del asaas
     # del mod.parts[partName], p, n, mod, region
     # del model.sketches['__profile__'], f, pickedFaces, e1, f1, e, t
     # del s1, model,x,y
+
     print '\nModel created, meshed and assigned properties'
 
 def createCEq():
-    mod = mdb.models[modelName]
     a = mod.rootAssembly
     a.DatumCsysByDefault(CARTESIAN)
     p = mdb.models[modelName].parts[meshPartName]
@@ -344,7 +407,7 @@ def createCEq():
     a.translate(instanceList=(instanceName,), vector=(0.0, 0.0, -tykkelse))
     a.rotate(instanceList=(instanceName,), axisPoint=(0.0, 0.0, 0.0),
              axisDirection=(0.0, 1.0, 0.0), angle=90.0)
-    tol = 0.01
+
 
     allNodes = a.instances[instanceName].nodes
 
@@ -479,7 +542,6 @@ def run_Job(Jobe, modelName):
 # Linear
 def create_Linearunitstrainslastcases():
     id = np.identity(6)  # Identity matrix for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
-    mod = mdb.models[modelName]
     a = mod.rootAssembly
     #Create step Linear step
     mod.StaticStep(name=stepName, previous='Initial')
@@ -521,7 +583,7 @@ def create_Linearsweepedlastcases(sweep):
         mod.boundaryConditions['BCZ'].setValues(u1=exz, u2=eyz, u3=ezz)
         Jobw = Sweeptoyinger[case]
         run_Job(Jobw, modelName)
-    del a, mod, Jobw, case
+    del a, Jobw, case
 def get_stiffness():
     stiffmatrix = []
     for i in range(0,6):
@@ -577,6 +639,33 @@ def get_sweepstrains_sig2_sig3(Compliancematrix,sweepresolution):
         print a
         sweep.append(a)
     return sweep
+
+# nonLinear
+def create_nonLinearsweepedlastcases(Strain):
+    mod = mdb.models[modelName]
+    a = mod.rootAssembly
+    mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
+    mod.fieldOutputRequests['F-Output-1'].setValues(variables=('S', 'MISES', 'E', 'U', 'ELEDEN'))
+    print '\nnon Linear load analysis'
+    # Lagring av output data base filer .odb
+    for case in range(0, 1):
+        exx, eyy, ezz, exy, exz, eyz = Strain
+        mod.DisplacementBC(name='BCX', createStepName=difstpNm,
+                           region=a.sets['RPX'], u1=exx, u2=exy, u3=exz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                           amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+
+        mod.DisplacementBC(name='BCY', createStepName=difstpNm,
+                           region=a.sets['RPY'], u1=exy, u2=eyy, u3=eyz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                           amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+
+        mod.DisplacementBC(name='BCZ', createStepName=difstpNm,
+                           region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                           amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+        """mod.boundaryConditions['BCX'].setValues(u1=exx, u2=exy, u3=exz)
+        mod.boundaryConditions['BCY'].setValues(u1=exy, u2=eyy, u3=eyz)
+        mod.boundaryConditions['BCZ'].setValues(u1=exz, u2=eyz, u3=ezz)"""
+        del noWork
+        run_Job(difstpNm+'lol', modelName)
 
 # Post processing of data
 def Extract_parameterdata():
@@ -693,30 +782,39 @@ def Extract_parameterdata():
 
 #Flag
 
-Runjobs = 0                         # Bestemmer om jobber skal kjores
-nonLinearDeformation = 0                # Linear eller nonlinear analyse?
+Runjobs = 1                         # TRUE/FALSE Bestemmer om jobber skal kjores
+sweepcases = 1              # Opplosning paa stress sweeps
 
-noFiber = 0                         # Overstyrer antall fiber til 0
-Fibervariation = 1                      # Skal fiber radius variere eller ikke?
-Interface = 0                               # Interface paa fibere?
+nonLinearDeformation = 1               # TRUE/FALSE Linear eller nonlinear analyse?
+
+noFiber = 0                         # TRUE/FALSE Overstyrer antall fiber til 0
+
+Fibervariation = 1                      # TRUE/FALSE Skal fiber radius variere eller ikke?
+rmean = 8.7096              # Gjennomsnittradius
+
+Interface = 1                               # TRUE/FALSE Interface paa fibere?
+finiteInterface = 1                           # TRUE/FALSE Interfaceelement  paa fibere?
+                    #Mesh med utgangspunkt i Interface
+FiberSirkelResolution = 32                                  # 2*pi/FiberSirkelResolution
+meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshresolution
 
 
 """Start"""
+#Forste sweepvariabel
+Sample=[2]
 #Sample=[0, 5, 10, 25,50]
-
-Sample=[3]
 for m in range(0,len(Sample)):
-    n = 1                                                                # Sweep variabel: fra 0 til n antall random seeds
-    nf=Sample[m]                                                         # Modelleringsvariabler
+    n = 1                                                                # Sweep variabel: fra 0 til n antall random seeds for iterasjon
+    #         RVE Modelleringsvariabler
+    nf=Sample[m]
     Vf = 0.6
-
-    rmean = 8.7096                              # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
+    rmean = 8.7096                                      # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
     Rstdiv = 0.6374                                          # Standard avvik fra gjennomsnittsradius.
-    Rclearing = 0.025                                                    # Prosent avstand mellom fibere og fra kanter og sider
 
-    FiberSirkelResolution = 32                                           # 2*pi/FiberSirkelResolution
-    meshsize = rmean * 2*pi/FiberSirkelResolution                        # Meshresolution, mindre koeffisient er mindre og flere elementer
-    sweepcases = 2                                                       # Opplosning paa Stress case
+    Rclearing = 0.025                                                    # Prosent avstand av r mellom fibere og fra kanter og sider
+    rinterface = 0.0002                                                    # Prosent avstand av r paa interfacetykkelse
+    tol = rinterface/2
+    RVEt =   0.01                                                         # Proporsjonal forskjell mellom bredde of RVE tykkelse
 
     # Instilliger
     if True:                     # For aa kunne kollapse variabler
@@ -727,10 +825,10 @@ for m in range(0,len(Sample)):
         if not nf == 0:                              # Er RVE tomt? RVE_Modelleringsparametere
             dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5                 # RVE storrelsen er satt til aa vaere relativ av nf og V
 
-        tykkelse = 0.01 * dL                                                       # RVE tykkelse
+        tykkelse = RVEt * dL                                                       # RVE tykkelse
         r = rmean                                                                  # r er er variable som brukes for aa beholde en mean
+
         rtol = Rclearing * r                                                       # Mellomfiber toleranse
-        rinterface = 0.02                                                          # Interface tykkelse  2%av radius
 
         gtol = Rclearing * r                                                       # Dodsone toleranse
         ytredodgrense = r + gtol                                                   # Dodzone avstand, lengst fra kantene
@@ -738,24 +836,9 @@ for m in range(0,len(Sample)):
 
         iterasjonsgrense = 10000                                                   # iterasjonsgrense
         sweepresolution = 2 * pi / sweepcases                                      # stepsize paa Stress sweeps
+        if finiteInterface:
+            print 'Aspect ratio for Interface elements = ' + str(round(meshsize / (rinterface * rmean), 2)) + '    Interface elements thickness = ' + str(float(rinterface * rmean))
 
-        # Tekstfiler
-        GitHub ='C:/Multiscale-Modeling/'
-        Tekstfiler = 'textfiles/'
-
-        Envelope = GitHub + Tekstfiler + 'envelope'         #   Parameteravhengig - Spesifikt navn legges til i funksjonen
-        parameterpath = GitHub + 'Parametere.txt'           #   Skrives ned for chaining  til ett annet script
-        coordpath = GitHub + 'coordst.txt'                  #   Hentes fra genererefiberPop chaining  til ett annet script
-        lagrestiffpath = GitHub + 'Stiffness.txt'           #   Skrives ned statistikk til ett annet script
-        workpath = 'C:/Temp/'                               #   Abaqus arbeidsmappe
-
-        """   ABAQUS navn   """
-        modelName =     'Model-A'
-        partName =      'Part-1'
-        meshPartName =  'Part-1-mesh-1'
-        instanceName =  'PART-1-MESH-1-1'
-        stepName =      'Enhetstoyninger'
-        difstpNm =      'Lasttoyinger'
 
     """RVE_MODELLERING"""
     for Q in range(0,n):
@@ -766,7 +849,7 @@ for m in range(0,len(Sample)):
         seed(Q)                                     # Q er randomfunksjonensnokkelen
         wiggle = random() * rmean                     # Omplasseringsgrenser for fiberomplassering
 
-        #Abaqus
+        """RVE og n relative ABAQUS Jobb navn"""
         Enhetstoyinger = ['Exx' + str(nf) + '_' + str(Q), 'Eyy' + str(nf) + '_' + str(Q), 'Ezz' + str(nf) + '_' + str(Q),
                           'Exy' + str(nf) + '_' + str(Q), 'Exz' + str(nf) + '_' + str(Q), 'Eyz' + str(nf) + '_' + str(Q)]
                                                     # Enhetstoyingene fra 0 til 5. Alle 6
@@ -781,14 +864,14 @@ for m in range(0,len(Sample)):
             xydata= hentePopulation(coordpath)                      # hente fibercoordinater
 
         # Lag Abaqus Model
-        createModel(xydata)                                                            # Lag model for testing med onsket fiber og interface.
+        createModel_n_Sets()                                                            # Lag model for testing med onsket fiber og interface.
+        create_Properites()
         createCEq()                                                                    # Lag constrain equations
-
         if nonLinearDeformation:
-            print 'yeah'
+            create_nonLinearsweepedlastcases((0.001,0,0,0,0,0))          #    Lag linear strain cases. Set boundary condition and create job.
             del noWORK
-
         else:
+            del noWORK
             create_Linearunitstrainslastcases()                                             # Lag linear strain cases. Set boundary condition and create job.
             Stiffmatrix = get_stiffness()                                                   # Faa ut stiffnessmatrix
 

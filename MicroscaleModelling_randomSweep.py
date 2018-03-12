@@ -208,7 +208,7 @@ def createModel_n_Sets():
             for ma in p.sets['Interface'].faces:
                 mosh = []
                 mosh.append(ma)
-                p.setMeshControls(regions=mosh, technique=SWEEP)
+                p.setMeshControls(regions=mosh, elemShape=QUAD, technique=SWEEP)
             p.setMeshControls(regions=Ffaces, elemShape=TRI)
             p = mod.parts[partName]
             p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
@@ -319,6 +319,38 @@ def createModel_n_Sets():
     cmap=session.viewports['Viewport: 1'].colorMappings['Set']
     session.viewports['Viewport: 1'].setColor(colorMapping=cmap)
     session.viewports['Viewport: 1'].disableMultipleColors()
+def collapsInterface():
+    p = mod.parts[meshPartName]
+    a = mod.rootAssembly
+    nod = p.nodes
+    count=1
+    for fiba in xydata:
+        x = fiba[0]
+        y = fiba[1]
+        r = rmean
+        if Fibervariation:
+            r = fiba[2]
+        Fod = nod.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r  - tol)
+        Fnod = nod.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface)  - tol)
+        Inod = nod.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
+        p.Set(nodes=Fod, name='noFiber'+str(count)+'nodes')
+        p.Set(nodes=Fnod, name='Fiber'+str(count)+'nodes')
+        p.Set(nodes=Inod, name='FiberInterface' + str(count) + 'nodes')
+        p.SetByBoolean(name='Fiberflate'+ str(count) + 'nodes', sets=(p.sets['Fiber'+str(count)+'nodes'], p.sets['noFiber'+str(count)+'nodes'],), operation=DIFFERENCE)
+        p.SetByBoolean(name='Interface'+ str(count) + 'nodes', sets=(p.sets['FiberInterface' + str(count) + 'nodes'], p.sets['Fiber'+str(count)+'nodes'],), operation=DIFFERENCE)
+        Intnodes = p.sets['Interface'+ str(count) + 'nodes'].nodes
+        Fibnodes = p.sets['Fiberflate'+ str(count) + 'nodes'].nodes
+        for node in Intnodes:
+            das = [node]
+            xns = node.coordinates[0]
+            yns = node.coordinates[1]
+            zns = node.coordinates[2]
+            FN = Fibnodes.getByBoundingCylinder((xns, yns, zns - tol), (xns, yns, zns + tol), 2*r*rinterface)
+            nyx = FN[0].coordinates[0]
+            nyy = FN[0].coordinates[1]
+            p.editNode(nodes=das, coordinate1=nyx, coordinate2=nyy)
+        p.deleteSets(setNames=('noFiber'+str(count)+'nodes', 'Fiber'+str(count)+'nodes','FiberInterface' + str(count) + 'nodes','Fiberflate'+ str(count) + 'nodes','Interface'+ str(count) + 'nodes',))
+        count = count + 1
 
 def create_Properites():                                                                # Angi materialegenskaper
 
@@ -800,7 +832,7 @@ Fibervariation = 1                      # TRUE/FALSE Skal fiber radius variere e
 rmean = 8.7096              # Gjennomsnittradius
 
 Interface = 1                               # TRUE/FALSE Interface paa fibere?
-finiteInterface = 1                           # TRUE/FALSE Interfaceelement  paa fibere?
+Interfacetykkelse = 0                           # TRUE/FALSE 0 volum Interfaceelement  paa fibere?
                     #Mesh med utgangspunkt i Interface
 FiberSirkelResolution = 32                                  # 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshresolution
@@ -843,7 +875,7 @@ for m in range(0,len(Sample)):
 
         iterasjonsgrense = 10000                                                   # iterasjonsgrense
         sweepresolution = 2 * pi / sweepcases                                      # stepsize paa Stress sweeps
-        if finiteInterface:
+        if Interfacetykkelse:
             print 'Aspect ratio for Interface elements = ' + str(round(meshsize / (rinterface * rmean), 2)) + '    Interface elements thickness = ' + str(float(rinterface * rmean))
 
 
@@ -872,6 +904,8 @@ for m in range(0,len(Sample)):
 
         # Lag Abaqus Model
         createModel_n_Sets()                                                            # Lag model for testing med onsket fiber og interface.
+        if not Interfacetykkelse and Interface:
+            collapsInterface()
         create_Properites()
         createCEq()                                                                    # Lag constrain equations
         if nonLinearDeformation:

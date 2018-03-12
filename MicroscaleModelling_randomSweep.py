@@ -821,7 +821,7 @@ def Extract_parameterdata():
 
 #Flag
 
-Runjobs = 1                         # TRUE/FALSE Bestemmer om jobber skal kjores
+Runjobs = 0                         # TRUE/FALSE Bestemmer om jobber skal kjores
 sweepcases = 1              # Opplosning paa stress sweeps
 
 nonLinearDeformation = 1               # TRUE/FALSE Linear eller nonlinear analyse?
@@ -840,7 +840,7 @@ meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshresolution
 
 """Start"""
 #Forste sweepvariabel
-Sample=[10]
+Sample=[1]
 #Sample=[0, 5, 10, 25,50]
 for m in range(0,len(Sample)):
     n = 1                                                                # Sweep variabel: fra 0 til n antall random seeds for iterasjon

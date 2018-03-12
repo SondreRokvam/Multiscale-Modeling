@@ -641,12 +641,19 @@ def get_sweepstrains_sig2_sig3(Compliancematrix,sweepresolution):
     return sweep
 
 # nonLinear
-def create_nonLinearsweepedlastcases(Strain):
+def create_nonLinearsweepedlastcases(Strain,bob):
     mod = mdb.models[modelName]
-    a = mod.rootAssembly
     mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
-    del asdasdas
-    mod.fieldOutputRequests['F-Output-1'].setValues(variables=('DAMAGEC','DAMAGET','LE','MISES','PE','PEEQ','RT','S','SDEG','STATUS','STATUSXFEM','U'))
+    a = mod.rootAssembly
+    mod.fieldOutputRequests['F-Output-1'].setValues(variables=('DAMAGEC', 'DAMAGET', 'LE', 'MISES', 'PE', 'PEEQ', 'RT', 'S', 'SDEG','STATUS', 'STATUSXFEM', 'U'), timeInterval=0.05)
+    mod.historyOutputRequests['H-Output-1'].setValues(variables=(
+        'ALLDMD', 'ALLIE', 'ALLSD'))
+    a.SetByBoolean(name='RPS', sets=(a.sets['RPX'], a.sets['RPY'],a.sets['RPZ'],))
+    regDef=mdb.models['Model-A'].rootAssembly.sets['RPS']
+    mod.HistoryOutputRequest(name='H-Output-2', 
+        createStepName='Lasttoyinger', variables=('RT', 'UT'), 
+        region=regDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
+    
     print '\nnon Linear load analysis'
     # Lagring av output data base filer .odb
     for case in range(0, 1):
@@ -665,8 +672,7 @@ def create_nonLinearsweepedlastcases(Strain):
         """mod.boundaryConditions['BCX'].setValues(u1=exx, u2=exy, u3=exz)
         mod.boundaryConditions['BCY'].setValues(u1=exy, u2=eyy, u3=eyz)
         mod.boundaryConditions['BCZ'].setValues(u1=exz, u2=eyz, u3=ezz)"""
-        del noWork
-        run_Job(difstpNm+'lol', modelName)
+        run_Job(bob+'lol', modelName)
 
 # Post processing of data
 def Extract_parameterdata():
@@ -802,7 +808,7 @@ meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshresolution
 
 """Start"""
 #Forste sweepvariabel
-Sample=[2]
+Sample=[10]
 #Sample=[0, 5, 10, 25,50]
 for m in range(0,len(Sample)):
     n = 1                                                                # Sweep variabel: fra 0 til n antall random seeds for iterasjon
@@ -813,7 +819,7 @@ for m in range(0,len(Sample)):
     Rstdiv = 0.6374                                          # Standard avvik fra gjennomsnittsradius.
 
     Rclearing = 0.025                                                    # Prosent avstand av r mellom fibere og fra kanter og sider
-    rinterface = 0.0002                                                    # Prosent avstand av r paa interfacetykkelse
+    rinterface = 0.002                                                    # Prosent avstand av r paa interfacetykkelse
     tol = rinterface/2
     RVEt =   0.01                                                         # Proporsjonal forskjell mellom bredde of RVE tykkelse
 
@@ -869,10 +875,13 @@ for m in range(0,len(Sample)):
         create_Properites()
         createCEq()                                                                    # Lag constrain equations
         if nonLinearDeformation:
-            create_nonLinearsweepedlastcases((0.001,0,0,0,0,0))          #    Lag linear strain cases. Set boundary condition and create job.
+                    #exx, eyy, exx, exy, exz, eyz
+            Case=[(0,0.001,0,0,0,0),(0,0,0,0.001,0,0)]
+            create_nonLinearsweepedlastcases(Case[0],'caseEyy')          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[1],'caseExy')          #    Lag linear strain cases. Set boundary condition and create job.
             del noWORK
         else:
-            del noWORK
+            del noDoLinearWork
             create_Linearunitstrainslastcases()                                             # Lag linear strain cases. Set boundary condition and create job.
             Stiffmatrix = get_stiffness()                                                   # Faa ut stiffnessmatrix
 

@@ -645,7 +645,8 @@ def create_nonLinearsweepedlastcases(Strain):
     mod = mdb.models[modelName]
     a = mod.rootAssembly
     mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
-    mod.fieldOutputRequests['F-Output-1'].setValues(variables=('S', 'MISES', 'E', 'U', 'ELEDEN'))
+    del asdasdas
+    mod.fieldOutputRequests['F-Output-1'].setValues(variables=('DAMAGEC','DAMAGET','LE','MISES','PE','PEEQ','RT','S','SDEG','STATUS','STATUSXFEM','U'))
     print '\nnon Linear load analysis'
     # Lagring av output data base filer .odb
     for case in range(0, 1):

@@ -382,21 +382,23 @@ def create_Properites():                                                        
                                                                                  additionalRotationField='',
                                                                                  stackDirection=STACK_3)
 
-            if nonLinearDeformation:
-                mod.materials['interface'].QuadsDamageInitiation(table=((0.042, 0.063, 0.063),))
-                mod.materials['interface'].quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
-                                                                                 power=1.2,
-                                                                                 table=((0.0028, 0.0078, 0.0078),))
+#            if nonLinearDeformation:
+#                mod.materials['interface'].QuadsDamageInitiation(table=((0.042, 0.063, 0.063),))
+#                mod.materials['interface'].quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
+#                                                                                 power=1.2,
+#                                                                                 table=((0.0028, 0.0078, 0.0078),))
             mdb.models['Model-A'].CohesiveSection(name='SSbond', material='interface',
-                                                  response=TRACTION_SEPARATION, initialThicknessType=GEOMETRY,
-                                                  outOfPlaneThickness=None)
+                                                  response=TRACTION_SEPARATION, initialThicknessType=SPECIFY, 
+                                                  initialThickness=0.01*rmean,outOfPlaneThickness=None)
+#            mdb.models['Model-A'].CohesiveSection(name='SSbond', material='interface',
+#                                                  response=TRACTION_SEPARATION, initialThicknessType=GEOMETRY,outOfPlaneThickness=None)
             region = p.sets['Interfaces']
             p.SectionAssignment(region=region, sectionName='SSbond', offset=0.0,
                                 offsetType=MIDDLE_SURFACE, offsetField='',
                                 thicknessAssignment=FROM_SECTION)
         if nonLinearDeformation:
-            mod.materials['interface'].QuadsDamageInitiation(table=((0.042, 0.063, 0.063),))
-            mod.materials['interface'].quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK, power=1.2, table=((0.0028, 0.0078,0.0078),))
+#            mod.materials['interface'].QuadsDamageInitiation(table=((0.042, 0.063, 0.063),))
+#            mod.materials['interface'].quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK, power=1.2, table=((0.0028, 0.0078,0.0078),))
             mod.materials['resin'].ConcreteDamagedPlasticity(table=((0.1, 0.1, 1.16, 0.89, 0.0001), ))
             mod.materials['resin'].concreteDamagedPlasticity.ConcreteCompressionHardening(table=((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)))
             mod.materials['resin'].concreteDamagedPlasticity.ConcreteTensionStiffening(table=((0.6, 0.09), ), type=GFI)
@@ -701,10 +703,37 @@ def create_nonLinearsweepedlastcases(Strain,bob):
         mod.DisplacementBC(name='BCZ', createStepName=difstpNm,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-        """mod.boundaryConditions['BCX'].setValues(u1=exx, u2=exy, u3=exz)
-        mod.boundaryConditions['BCY'].setValues(u1=exy, u2=eyy, u3=eyz)
-        mod.boundaryConditions['BCZ'].setValues(u1=exz, u2=eyz, u3=ezz)"""
+        """
+        a = mod.rootAssembly
+        n1 = a.instances[instanceName].nodes
+        nodes1 = n1.getByBoundingCylinder((-dL, -dL, 0 - tol), (-dL, -dL, tol), tykkelse/2)
+        navn = 'hjorne1'
+        a.Set(nodes=nodes1, name=navn)
+        mdb.models['Model-A'].DisplacementBC(name='BC-4', createStepName='Initial', 
+            region=a.sets[navn], u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, 
+            amplitude=UNSET, distributionType=UNIFORM, fieldName='', 
+            localCsys=None)
+        
+    
+        nodes1 = n1.getByBoundingCylinder((+dL, -dL, 0 - tol), (+dL, -dL, tol), tykkelse/2)
+        navn = 'hjorne2'
+        a.Set(nodes=nodes1, name=navn)
+        mdb.models['Model-A'].DisplacementBC(name='BC-5', createStepName='Initial', 
+            region=a.sets[navn], u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, 
+            ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', 
+            localCsys=None)
+    
+        nodes1 = n1.getByBoundingCylinder((+dL, +dL, 0 - tol), (+dL, +dL, tol), tykkelse/2)
+        navn = 'hjorne3'
+        a.Set(nodes=nodes1, name=navn)
+        mdb.models['Model-A'].DisplacementBC(name='BC-6', createStepName='Initial', 
+            region=a.sets[navn], u1=SET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, 
+            ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', 
+        localCsys=None)
+        """
+
         run_Job(bob+'lol', modelName)
+
 
 # Post processing of data
 def Extract_parameterdata():
@@ -821,21 +850,21 @@ def Extract_parameterdata():
 
 #Flag
 
-Runjobs = 0                         # TRUE/FALSE Bestemmer om jobber skal kjores
+Runjobs = 1                         # TRUE/FALSE Bestemmer om jobber skal kjores
 sweepcases = 1              # Opplosning paa stress sweeps
 
 nonLinearDeformation = 1               # TRUE/FALSE Linear eller nonlinear analyse?
 
-noFiber = 0                         # TRUE/FALSE Overstyrer antall fiber til 0
+noFiber = 0                          # TRUE/FALSE Overstyrer antall fiber til 0
 
 Fibervariation = 1                      # TRUE/FALSE Skal fiber radius variere eller ikke?
 rmean = 8.7096              # Gjennomsnittradius
 
 Interface = 1                               # TRUE/FALSE Interface paa fibere?
-Interfacetykkelse = 0                           # TRUE/FALSE 0 volum Interfaceelement  paa fibere?
+Interfacetykkelse = 1                           # TRUE/FALSE 0 volum Interfaceelement  paa fibere?
                     #Mesh med utgangspunkt i Interface
 FiberSirkelResolution = 32                                  # 2*pi/FiberSirkelResolution
-meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshresolution
+meshsize = rmean * 2 * pi / FiberSirkelResolution*5           # Meshresolution
 
 
 """Start"""
@@ -904,13 +933,13 @@ for m in range(0,len(Sample)):
 
         # Lag Abaqus Model
         createModel_n_Sets()                                                            # Lag model for testing med onsket fiber og interface.
-        if not Interfacetykkelse and Interface:
+        if not Interfacetykkelse and Interface and not noFiber:
             collapsInterface()
         create_Properites()
         createCEq()                                                                    # Lag constrain equations
         if nonLinearDeformation:
-                    #exx, eyy, exx, exy, exz, eyz
-            Case=[(0,0.001,0,0,0,0),(0,0,0,0.001,0,0)]
+                    #exx, eyy, ezz, exy, exz, eyz
+            Case=[(0,0.001,0,0,0,0),    (0,-0.001,0,0.001,0,0)]
             create_nonLinearsweepedlastcases(Case[0],'caseEyy')          #    Lag linear strain cases. Set boundary condition and create job.
             create_nonLinearsweepedlastcases(Case[1],'caseExy')          #    Lag linear strain cases. Set boundary condition and create job.
             del noWORK

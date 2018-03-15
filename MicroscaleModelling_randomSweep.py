@@ -207,24 +207,23 @@ def createModel_n_Sets():
             p.Set(name='IFfiber', faces=IFfaces)
             p.SetByBoolean(name='Interface', sets=(p.sets['IFfiber'], p.sets['Ffiber'],), operation=DIFFERENCE)
             p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFfiber'],), operation=DIFFERENCE)
-
-            p = mod.parts[partName]                                                                          #MESHE
+            del mod.parts[partName].sets['IFfiber']
+        else:
+            p = mod.parts[partName]
+            p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['Ffiber'],), operation=DIFFERENCE)
+        # MESHE
+        p = mod.parts[partName]
+        p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
+        p = mod.parts[partName]
+        if Interface:
             for ma in p.sets['Interface'].faces:
                 mosh = []
                 mosh.append(ma)
                 p.setMeshControls(regions=mosh, elemShape=QUAD, technique=SWEEP)
-            p.setMeshControls(regions=Ffaces, elemShape=TRI)
-            p = mod.parts[partName]
-            p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
-            del mod.parts[partName].sets['Interface'],mod.parts[partName].sets['IFfiber']
-        else:
-            p = mod.parts[partName]
-            p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['Ffiber'],), operation=DIFFERENCE)
-            p = mod.parts[partName]
-            p.setMeshControls(regions=Ffaces, elemShape=TRI)
-            p = mod.parts[partName]
-            p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
-            p = mod.parts[partName]
+            del mod.parts[partName].sets['Interface']
+        p = mod.parts[partName]
+        p.setMeshControls(regions=Ffaces, elemShape=TRI)
+        p = mod.parts[partName]
         p.generateMesh()                                                            # Generate mesh
         del mod.parts[partName].sets['Alt'],mod.parts[partName].sets['Ffiber'],mod.parts[partName].sets['Matrix']
         mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
@@ -333,9 +332,9 @@ def collapsInterface():
         r = rmean
         if Fibervariation:
             r = fiba[2]
-        Fod = nod.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r  - tol)
-        Fnod = nod.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface)  - tol)
-        Inod = nod.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
+        Fod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r  - tol)
+        Fnod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface)  - tol)
+        Inod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface) + tol)
         a.Set(nodes=Fod, name='noFiber'+str(count)+'nodes')
         a.Set(nodes=Fnod, name='Fiber'+str(count)+'nodes')
         a.Set(nodes=Inod, name='FiberInterface' + str(count) + 'nodes')
@@ -344,17 +343,19 @@ def collapsInterface():
         Intnodes = a.sets['Interface'+ str(count) + 'nodes'].nodes
         Fibnodes = a.sets['Fiberflate'+ str(count) + 'nodes'].nodes
         for node in Intnodes:
-            das = [node]
+            a = mod.rootAssembly
             xns = node.coordinates[0]
             yns = node.coordinates[1]
             zns = node.coordinates[2]
-            FN = Fibnodes.getByBoundingCylinder((xns, yns, zns - tol), (xns, yns, zns + tol), 2*r*rinterface)
+            FN = Fibnodes.getByBoundingCylinder((xns - tol, yns, zns), (xns + tol, yns, zns), 2*r*rinterface)
             nyx = FN[0].coordinates[0]
             nyy = FN[0].coordinates[1]
-            a.editNode(nodes=das, coordinate1=nyx, coordinate2=nyy)
+            nyz = FN[0].coordinates[2]
+            a.editNode(nodes=[node], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
             a.regenerate()
             a.deleteSets(setNames=('noFiber'+str(count)+'nodes', 'Fiber'+str(count)+'nodes','FiberInterface' + str(count) + 'nodes','Fiberflate'+ str(count) + 'nodes','Interface'+ str(count) + 'nodes',))
         count = count + 1
+
 
 def create_Properites():                                                                # Angi materialegenskaper
 
@@ -488,7 +489,7 @@ def createCEq():
         a.Set(nodes=nodes1, name=name1)
         x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
         name2 = "Xb%i" % (counter)
-        nodes2 = nodesXb.getByBoundingCylinder((xmin-tol, y, z), (xmax+tol, y, z), rinterface)
+        nodes2 = nodesXb.getByBoundingCylinder((x+(xmax-xmin)-tol, y, z), (x+(xmax-xmin)+tol, y, z), tol)
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq11x%i" % (counter),
@@ -514,7 +515,7 @@ def createCEq():
         a.Set(nodes=nodes1, name=name1)
         x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
         name2 = "Yb%i" % (counter)
-        nodes2 = nodesYb.getByBoundingCylinder((x, ymin-tol, z), (x, ymax+tol, z), rinterface)
+        nodes2 = nodesYb.getByBoundingCylinder((x, y+(ymax-ymin)-tol, z), (x, y+(ymax-ymin)+tol, z), tol)
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq12y%i" % (counter),
@@ -540,7 +541,7 @@ def createCEq():
         a.Set(nodes=nodes1, name=name1)
         x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
         name2 = "Zb%i" % (counter)
-        nodes2 = nodesZb.getByBoundingCylinder((x, y, zmin-tol), (x, y, zmax+tol), rinterface)
+        nodes2 = nodesZb.getByBoundingCylinder((x, y, z+(zmax-zmin)-tol), (x, y, z+(zmax-zmin)+tol), tol)
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq13z%i" % (counter),
@@ -554,9 +555,8 @@ def createCEq():
     del x,y,z,allNodes,name1,nodes1,name2,nodes2,nodesXa,nodesXb,nodesYa,nodesYb,nodesZa,nodesZb,counter
 
     print 'Constraint equ. applied'
-    if not Interfacetykkelse and Interface and not noFiber:
-        print 'Collaps Interface elements'
-        collapsInterface()
+
+
 """%%%%%%%%%%%%%%%%%%%%%"""
 """     SIMULATIONS     """
 
@@ -867,15 +867,15 @@ Fibervariation = 1                      # TRUE/FALSE Skal fiber radius variere e
 rmean = 8.7096              # Gjennomsnittradius
 
 Interface = 1                               # TRUE/FALSE Interface paa fibere?
-Interfacetykkelse = 1                           # TRUE/FALSE 0 volum Interfaceelement  paa fibere?
+Interfacetykkelse = 0                           # TRUE/FALSE 0 volum Interfaceelement  paa fibere?
                     #Mesh med utgangspunkt i Interface
-FiberSirkelResolution = 32                                  # 2*pi/FiberSirkelResolution
-meshsize = rmean * 2 * pi / FiberSirkelResolution*5           # Meshresolution
+FiberSirkelResolution = 50                                  # 2*pi/FiberSirkelResolution
+meshsize = rmean * 2 * pi / FiberSirkelResolution          # Meshresolution
 
 
 """Start"""
 #Forste sweepvariabel
-Sample=[1]
+Sample=[2]
 #Sample=[0, 5, 10, 25,50]
 for m in range(0,len(Sample)):
     n = 1                                                                # Sweep variabel: fra 0 til n antall random seeds for iterasjon
@@ -887,7 +887,7 @@ for m in range(0,len(Sample)):
 
     Rclearing = 0.025                                                    # Prosent avstand av r mellom fibere og fra kanter og sider
     rinterface = 0.002                                                    # Prosent avstand av r paa interfacetykkelse ved modellering
-    tol = 2/3*rinterface
+    tol = rinterface*0.6
     RVEt =   0.01                                                         # Proporsjonal forskjell mellom bredde of RVE tykkelse
 
     # Instilliger
@@ -941,6 +941,9 @@ for m in range(0,len(Sample)):
         createModel_n_Sets()                                                            # Lag model for testing med onsket fiber og interface.
         create_Properites()
         createCEq()                                                                    # Lag constrain equations
+        if not Interfacetykkelse and (Interface and not noFiber):
+            print 'Collaps Interface elements'
+            collapsInterface()
         if nonLinearDeformation:
                     #exx, eyy, ezz, exy, exz, eyz
             Case=[(0,0.001,0,0,0,0),    (0,-0.001,0,0.001,0,0)]

@@ -498,7 +498,7 @@ def createCEq():
         a.Set(nodes=nodes1, name=name1)
         x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
         name2 = "Xb%i" % (counter)
-        nodes2 = nodesXb.getByBoundingCylinder((x+(xmax-xmin)-tol, y, z), (x+(xmax-xmin)+tol, y, z), tol)
+        nodes2 = nodesXb.getByBoundingCylinder((-dL,y,z), (dL, y, z), tol)
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq11x%i" % (counter),
@@ -524,7 +524,7 @@ def createCEq():
         a.Set(nodes=nodes1, name=name1)
         x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
         name2 = "Yb%i" % (counter)
-        nodes2 = nodesYb.getByBoundingCylinder((x, y+(ymax-ymin)-tol, z), (x, y+(ymax-ymin)+tol, z), tol)
+        nodes2 = nodesYb.getByBoundingCylinder((x, -dL, z), (x, dL, z), tol)
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq12y%i" % (counter),
@@ -550,7 +550,7 @@ def createCEq():
         a.Set(nodes=nodes1, name=name1)
         x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
         name2 = "Zb%i" % (counter)
-        nodes2 = nodesZb.getByBoundingCylinder((x, y, z+(zmax-zmin)-tol), (x, y, z+(zmax-zmin)+tol), tol)
+        nodes2 = nodesZb.getByBoundingCylinder((x, y, -dL), (x, y, dL), tol)
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq13z%i" % (counter),

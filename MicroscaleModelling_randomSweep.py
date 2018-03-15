@@ -867,7 +867,7 @@ Fibervariation = 1                      # TRUE/FALSE Skal fiber radius variere e
 rmean = 8.7096              # Gjennomsnittradius
 
 Interface = 1                               # TRUE/FALSE Interface paa fibere?
-Interfacetykkelse = 0                           # TRUE/FALSE 0 volum Interfaceelement  paa fibere?
+Interfacetykkelse = 1                           # TRUE/FALSE 0 volum Interfaceelement  paa fibere?
                     #Mesh med utgangspunkt i Interface
 FiberSirkelResolution = 50                                  # 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution          # Meshresolution

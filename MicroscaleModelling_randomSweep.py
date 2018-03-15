@@ -312,7 +312,7 @@ def createModel_n_Sets():
         p.PartFromMesh(name=meshPartName, copySets=True)                                                         # Make orphan mesh
         p = mod.parts[meshPartName]
         n = p.nodes
-        nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
+        nodes = n.getByBoundingBox(-dL, -dL, -tol, dL, dL, tol)
         p.deleteNode(nodes=nodes)                                                                                   # Deleted shell nodes
         p.Set(name='Matrix', elements=p.elements)                                                                   # Lag set for Matrix
     p = mod.parts[meshPartName]
@@ -352,7 +352,7 @@ def create_Properites():  # Angi materialegenskaper
                                                                                  additionalRotationType=ROTATION_NONE,
                                                                                  angle=0.0,
                                                                                  additionalRotationField='',
-                                                                                 stackDirection=STACK_3)
+                                                                                     stackDirection=STACK_3)
 
             if nonLinearDeformation:
                 mod.materials['interface'].QuadsDamageInitiation(table=((0.042, 0.063, 0.063),))
@@ -360,15 +360,13 @@ def create_Properites():  # Angi materialegenskaper
                                                                                             power=1.2,
                                                                                              table=((0.0028, 0.0078, 0.0078),))
             mdb.models['Model-A'].CohesiveSection(name='SSbond', material='interface', response=TRACTION_SEPARATION,
-                                                  initialThicknessType=SPECIFY ,initialThickness=0.01 * rmean, outOfPlaneThickness=None)
+                                                  initialThicknessType=SPECIFY ,initialThickness=0.002 * rmean, outOfPlaneThickness=None)
                                                 # initialThicknessType=GEOMETRY,outOfPlaneThickness=None)
             region = p.sets['Interfaces']
             p.SectionAssignment(region=region, sectionName='SSbond', offset=0.0,
                                 offsetType=MIDDLE_SURFACE, offsetField='',
                                 thicknessAssignment=FROM_SECTION)
         if nonLinearDeformation:
-            mod.materials['interface'].QuadsDamageInitiation(table=((0.042, 0.063, 0.063),))
-            mod.materials['interface'].quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK, power=1.2, table=((0.0028, 0.0078,0.0078),))
             mod.materials['resin'].ConcreteDamagedPlasticity(table=((0.1, 0.1, 1.16, 0.89, 0.0001),))
             mod.materials['resin'].concreteDamagedPlasticity.ConcreteCompressionHardening(
                 table=((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)))
@@ -406,44 +404,6 @@ def create_Properites():  # Angi materialegenskaper
     # del s1, model,x,y
 
     print '\nModel created, meshed and assigned properties'
-
-
-def collapsInterface():
-    a = mod.rootAssembly
-    nod = a.instances[instanceName].nodes
-    count=1
-    for fiba in xydata:
-        x = fiba[0]
-        y = fiba[1]
-        r = rmean
-        if Fibervariation:
-            r = fiba[2]
-        Fod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r  - tol)
-        Fnod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface)  - tol)
-        Inod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface) + tol)
-        a.Set(nodes=Fod, name='noFiber'+str(count)+'nodes')
-        a.Set(nodes=Fnod, name='Fiber'+str(count)+'nodes')
-        a.Set(nodes=Inod, name='FiberInterface' + str(count) + 'nodes')
-        a.SetByBoolean(name='Fiberflate'+ str(count) + 'nodes', sets=(a.sets['Fiber'+str(count)+'nodes'], a.sets['noFiber'+str(count)+'nodes'],), operation=DIFFERENCE)
-        a.SetByBoolean(name='Interface'+ str(count) + 'nodes', sets=(a.sets['FiberInterface' + str(count) + 'nodes'], a.sets['Fiber'+str(count)+'nodes'],), operation=DIFFERENCE)
-        Intnodes = a.sets['Interface'+ str(count) + 'nodes'].nodes
-        Fibnodes = a.sets['Fiberflate'+ str(count) + 'nodes'].nodes
-        for node in Intnodes:
-            a = mod.rootAssembly
-            xns = node.coordinates[0]
-            yns = node.coordinates[1]
-            zns = node.coordinates[2]
-            FN = Fibnodes.getByBoundingCylinder((xns - tol, yns, zns), (xns + tol, yns, zns), 2*r*rinterface)
-            nyx = FN[0].coordinates[0]
-            nyy = FN[0].coordinates[1]
-            nyz = FN[0].coordinates[2]
-            a.editNode(nodes=[node], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
-            a.regenerate()
-            a.deleteSets(setNames=('noFiber'+str(count)+'nodes', 'Fiber'+str(count)+'nodes','FiberInterface' + str(count) + 'nodes','Fiberflate'+ str(count) + 'nodes','Interface'+ str(count) + 'nodes',))
-        count = count + 1
-
-
-
 
 def createCEq():
     a = mod.rootAssembly
@@ -562,8 +522,44 @@ def createCEq():
 
         counter = counter + 1
     del x,y,z,allNodes,name1,nodes1,name2,nodes2,nodesXa,nodesXb,nodesYa,nodesYb,nodesZa,nodesZb,counter
-
     print 'Constraint equ. applied'
+def collapsInterface():
+    a = mod.rootAssembly
+    nod = a.instances[instanceName].nodes
+    count=1
+    for fiba in xydata:
+        x = fiba[0]
+        y = fiba[1]
+        r = rmean
+        if Fibervariation:
+            r = fiba[2]
+        Fod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r  - tol)
+        Fnod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface)  - tol)
+        Inod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface) + tol)
+        a.Set(nodes=Fod, name='noFiber'+str(count)+'nodes')
+        a.Set(nodes=Fnod, name='Fiber'+str(count)+'nodes')
+        a.Set(nodes=Inod, name='FiberInterface' + str(count) + 'nodes')
+        a.SetByBoolean(name='Fiberflate'+ str(count) + 'nodes', sets=(a.sets['Fiber'+str(count)+'nodes'], a.sets['noFiber'+str(count)+'nodes'],), operation=DIFFERENCE)
+        a.SetByBoolean(name='Interface'+ str(count) + 'nodes', sets=(a.sets['FiberInterface' + str(count) + 'nodes'], a.sets['Fiber'+str(count)+'nodes'],), operation=DIFFERENCE)
+        Intnodes = a.sets['Interface'+ str(count) + 'nodes'].nodes
+        Fibnodes = a.sets['Fiberflate'+ str(count) + 'nodes'].nodes
+        for node in Intnodes:
+
+            xns = node.coordinates[0]
+            yns = node.coordinates[1]
+            zns = node.coordinates[2]
+            FN = Fibnodes.getByBoundingCylinder((xns - tol, yns, zns), (xns + tol, yns, zns), 2 * r * rinterface)
+            IN = Intnodes.getByBoundingCylinder((xns - tol, yns, zns), (xns + tol, yns, zns), 2 * r * rinterface)
+            a.Set(nodes=IN, name='IN')
+            a.Set(nodes=FN, name='FN')
+            nyx = round(FN[0].coordinates[0],5)
+            nyy = round(FN[0].coordinates[1],5)
+            nyz = round(FN[0].coordinates[2],5)
+            a.editNode(nodes=a.sets['IN'], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
+            a.editNode(nodes=a.sets['FN'], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
+            a.regenerate()
+            a.deleteSets(setNames=('noFiber'+str(count)+'nodes','IN','FN', 'Fiber'+str(count)+'nodes','FiberInterface' + str(count) + 'nodes','Fiberflate'+ str(count) + 'nodes','Interface'+ str(count) + 'nodes',))
+        count = count + 1
 
 
 """%%%%%%%%%%%%%%%%%%%%%"""
@@ -884,7 +880,7 @@ meshsize = rmean * 2 * pi / FiberSirkelResolution          # Meshresolution
 
 """Start"""
 #Forste sweepvariabel
-Sample=[1]
+Sample=[3]
 #Sample=[0, 5, 10, 25,50]
 for m in range(0,len(Sample)):
     n = 1                                                                # Sweep variabel: fra 0 til n antall random seeds for iterasjon

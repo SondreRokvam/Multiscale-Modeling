@@ -7,15 +7,19 @@ print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
        'Multiscale Modelling, Microscale  \n'
        'Allowed numCpus = ',numCpus)
 
-# Tekstfiler
+# Tekstfiler for databehandling
 GitHub = 'C:/Multiscale-Modeling/'
 Tekstfiler = 'textfiles/'
 
-Envelope = GitHub + Tekstfiler + 'envelope'             # Parameteravhengig - Spesifikt navn legges til i funksjonen
 parameterpath = GitHub + 'Parametere.txt'               # Skrives ned for chaining  til ett annet script
 coordpath = GitHub + 'coordst.txt'                      # Hentes fra genererefiberPop chaining  til ett annet script
-lagrestiffpath = GitHub + 'Stiffness.txt'               # Skrives ned statistikk til ett annet script
+
 workpath = 'C:/Temp/'                                   # Abaqus arbeidsmappe
+
+lagrestiffpath = GitHub + 'Stiffness.txt'               # Skrives ned statistikk til ett annet script
+
+Envelope = GitHub + Tekstfiler + 'envelope'             # Parameteravhengig - Spesifikt navn legges til i funksjonen
+
 
 #      ABAQUS navn
 modelName = 'Model-A'
@@ -456,6 +460,7 @@ def createCEq():
         ymin = min(ymin, y)
         zmin = min(zmin, z)
 
+    print xmax, ymax, zmax, xmin, ymin, zmin
     # Creating reference point
 
     a.ReferencePoint(point=(xmin - 0.2 * (xmax - xmin), 0.0, 0.0))
@@ -483,8 +488,7 @@ def createCEq():
         a.Set(nodes=nodes1, name=name1)
         x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
         name2 = "Xb%i" % (counter)
-        nodes2 = nodesXb.getByBoundingBox(x + (xmax - xmin) - tol, y - tol, z - tol, x + (xmax - xmin) + tol, y + tol,
-                                          z + tol)
+        nodes2 = nodesXb.getByBoundingCylinder((x, y, zns - tol), (xns, yns, zns + tol), 2 * r * rinterface)
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq11x%i" % (counter),
@@ -880,8 +884,8 @@ for m in range(0,len(Sample)):
     Rstdiv = 0.6374                                          # Standard avvik fra gjennomsnittsradius.
 
     Rclearing = 0.025                                                    # Prosent avstand av r mellom fibere og fra kanter og sider
-    rinterface = 0.002                                                    # Prosent avstand av r paa interfacetykkelse
-    tol = rinterface/2
+    rinterface = 0.002                                                    # Prosent avstand av r paa interfacetykkelse ved modellering
+    tol = 2/3*rinterface
     RVEt =   0.01                                                         # Proporsjonal forskjell mellom bredde of RVE tykkelse
 
     # Instilliger

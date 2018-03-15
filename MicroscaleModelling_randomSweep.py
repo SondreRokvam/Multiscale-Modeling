@@ -324,9 +324,8 @@ def createModel_n_Sets():
     session.viewports['Viewport: 1'].setColor(colorMapping=cmap)
     session.viewports['Viewport: 1'].disableMultipleColors()
 def collapsInterface():
-    p = mod.parts[meshPartName]
     a = mod.rootAssembly
-    nod = p.nodes
+    nod = a.instances[instanceName].nodes
     count=1
     for fiba in xydata:
         x = fiba[0]
@@ -337,13 +336,13 @@ def collapsInterface():
         Fod = nod.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r  - tol)
         Fnod = nod.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface)  - tol)
         Inod = nod.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
-        p.Set(nodes=Fod, name='noFiber'+str(count)+'nodes')
-        p.Set(nodes=Fnod, name='Fiber'+str(count)+'nodes')
-        p.Set(nodes=Inod, name='FiberInterface' + str(count) + 'nodes')
-        p.SetByBoolean(name='Fiberflate'+ str(count) + 'nodes', sets=(p.sets['Fiber'+str(count)+'nodes'], p.sets['noFiber'+str(count)+'nodes'],), operation=DIFFERENCE)
-        p.SetByBoolean(name='Interface'+ str(count) + 'nodes', sets=(p.sets['FiberInterface' + str(count) + 'nodes'], p.sets['Fiber'+str(count)+'nodes'],), operation=DIFFERENCE)
-        Intnodes = p.sets['Interface'+ str(count) + 'nodes'].nodes
-        Fibnodes = p.sets['Fiberflate'+ str(count) + 'nodes'].nodes
+        a.Set(nodes=Fod, name='noFiber'+str(count)+'nodes')
+        a.Set(nodes=Fnod, name='Fiber'+str(count)+'nodes')
+        a.Set(nodes=Inod, name='FiberInterface' + str(count) + 'nodes')
+        a.SetByBoolean(name='Fiberflate'+ str(count) + 'nodes', sets=(a.sets['Fiber'+str(count)+'nodes'], a.sets['noFiber'+str(count)+'nodes'],), operation=DIFFERENCE)
+        a.SetByBoolean(name='Interface'+ str(count) + 'nodes', sets=(a.sets['FiberInterface' + str(count) + 'nodes'], a.sets['Fiber'+str(count)+'nodes'],), operation=DIFFERENCE)
+        Intnodes = a.sets['Interface'+ str(count) + 'nodes'].nodes
+        Fibnodes = a.sets['Fiberflate'+ str(count) + 'nodes'].nodes
         for node in Intnodes:
             das = [node]
             xns = node.coordinates[0]
@@ -352,8 +351,9 @@ def collapsInterface():
             FN = Fibnodes.getByBoundingCylinder((xns, yns, zns - tol), (xns, yns, zns + tol), 2*r*rinterface)
             nyx = FN[0].coordinates[0]
             nyy = FN[0].coordinates[1]
-            p.editNode(nodes=das, coordinate1=nyx, coordinate2=nyy)
-        p.deleteSets(setNames=('noFiber'+str(count)+'nodes', 'Fiber'+str(count)+'nodes','FiberInterface' + str(count) + 'nodes','Fiberflate'+ str(count) + 'nodes','Interface'+ str(count) + 'nodes',))
+            a.editNode(nodes=das, coordinate1=nyx, coordinate2=nyy)
+            a.regenerate()
+            a.deleteSets(setNames=('noFiber'+str(count)+'nodes', 'Fiber'+str(count)+'nodes','FiberInterface' + str(count) + 'nodes','Fiberflate'+ str(count) + 'nodes','Interface'+ str(count) + 'nodes',))
         count = count + 1
 
 def create_Properites():                                                                # Angi materialegenskaper
@@ -488,7 +488,7 @@ def createCEq():
         a.Set(nodes=nodes1, name=name1)
         x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
         name2 = "Xb%i" % (counter)
-        nodes2 = nodesXb.getByBoundingCylinder((x, y, zns - tol), (xns, yns, zns + tol), 2 * r * rinterface)
+        nodes2 = nodesXb.getByBoundingCylinder((xmin-tol, y, z), (xmax+tol, y, z), rinterface)
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq11x%i" % (counter),
@@ -514,8 +514,7 @@ def createCEq():
         a.Set(nodes=nodes1, name=name1)
         x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
         name2 = "Yb%i" % (counter)
-        nodes2 = nodesYb.getByBoundingBox(x - tol, y + (ymax - ymin) - tol, z - tol, x + tol, y + (ymax - ymin) + tol,
-                                          z + tol)
+        nodes2 = nodesYb.getByBoundingCylinder((x, ymin-tol, z), (x, ymax+tol, z), rinterface)
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq12y%i" % (counter),
@@ -541,8 +540,7 @@ def createCEq():
         a.Set(nodes=nodes1, name=name1)
         x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
         name2 = "Zb%i" % (counter)
-        nodes2 = nodesZb.getByBoundingBox(x - tol, y - tol, z + (zmax - zmin) - tol, x + tol, y + tol,
-                                          z + (zmax - zmin) + tol)
+        nodes2 = nodesZb.getByBoundingCylinder((x, y, zmin-tol), (x, y, zmax+tol), rinterface)
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq13z%i" % (counter),
@@ -553,8 +551,12 @@ def createCEq():
                      terms=((1.0, name2, 3), (-1.0, name1, 3), (-(zmax - zmin), 'RPZ', 3),))  # 33
 
         counter = counter + 1
+    del x,y,z,allNodes,name1,nodes1,name2,nodes2,nodesXa,nodesXb,nodesYa,nodesYb,nodesZa,nodesZb,counter
 
     print 'Constraint equ. applied'
+    if not Interfacetykkelse and Interface and not noFiber:
+        print 'Collaps Interface elements'
+        collapsInterface()
 """%%%%%%%%%%%%%%%%%%%%%"""
 """     SIMULATIONS     """
 
@@ -937,8 +939,6 @@ for m in range(0,len(Sample)):
 
         # Lag Abaqus Model
         createModel_n_Sets()                                                            # Lag model for testing med onsket fiber og interface.
-        if not Interfacetykkelse and Interface and not noFiber:
-            collapsInterface()
         create_Properites()
         createCEq()                                                                    # Lag constrain equations
         if nonLinearDeformation:

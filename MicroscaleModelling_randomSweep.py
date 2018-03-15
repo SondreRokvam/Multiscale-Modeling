@@ -409,13 +409,10 @@ def createCEq():
     a = mod.rootAssembly
     a.DatumCsysByDefault(CARTESIAN)
     p = mdb.models[modelName].parts[meshPartName]
-    a.Instance(name=instanceName, part=p, dependent=ON)
-
-    # Flytte modellen til origo og sette x i fiberretning.
+    a.Instance(name=instanceName, part=p, dependent=ON)             # Hente modell til assembly, flytte modellen til origo og rotere rundt y til x er i fiberretning.
     a.translate(instanceList=(instanceName,), vector=(0.0, 0.0, -tykkelse))
     a.rotate(instanceList=(instanceName,), axisPoint=(0.0, 0.0, 0.0),
              axisDirection=(0.0, 1.0, 0.0), angle=90.0)
-
 
     allNodes = a.instances[instanceName].nodes
 
@@ -430,8 +427,7 @@ def createCEq():
         ymin = min(ymin, y)
         zmin = min(zmin, z)
 
-    print xmax, ymax, zmax, xmin, ymin, zmin
-    # Creating reference point
+    # Creating reference points
 
     a.ReferencePoint(point=(xmin - 0.2 * (xmax - xmin), 0.0, 0.0))
     refPoints = (a.referencePoints[a.features['RP-1'].id],)

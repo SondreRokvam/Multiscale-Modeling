@@ -947,7 +947,7 @@ for m in range(0,len(Sample)):
             collapsInterface()
         if nonLinearDeformation:
                     #exx, eyy, ezz, exy, exz, eyz
-            Case=[(0,0.001,0,0,0,0),    (0,-0.001,0,0.001,0,0)]
+            Case=[(0,0.001,0,0,0,0),    (0,-0.001,0,0,0,0),    (0,0,0,0.001,0,0),    (0,-0.001,0,0.001,0,0)]
             create_nonLinearsweepedlastcases(Case[0],'caseEyy')          #    Lag linear strain cases. Set boundary condition and create job.
             create_nonLinearsweepedlastcases(Case[1],'caseExy')          #    Lag linear strain cases. Set boundary condition and create job.
             del noWORK

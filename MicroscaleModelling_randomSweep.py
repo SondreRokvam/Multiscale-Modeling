@@ -8,38 +8,30 @@ print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
        'Allowed numCpus = ',numCpus)
 
 # Tekstfiler for databehandling
-GitHub = 'C:/Multiscale-Modeling/'
-Tekstfiler = 'textfiles/'
+GitHub, workpath = 'C:/Temp/','C:/Multiscale-Modeling/'
+Tekstfiler, Abaqus = 'textfiles/', 'Abaqus_steg/'
 
 parameterpath = GitHub + 'Parametere.txt'               # Skrives ned for chaining  til ett annet script
 coordpath = GitHub + 'coordst.txt'                      # Hentes fra genererefiberPop chaining  til ett annet script
 
-workpath = 'C:/Temp/'                                   # Abaqus arbeidsmappe
-
 lagrestiffpath = GitHub + 'Stiffness.txt'               # Skrives ned statistikk til ett annet script
-
 Envelope = GitHub + Tekstfiler + 'envelope'             # Parameteravhengig - Spesifikt navn legges til i funksjonen
 
-
-#      ABAQUS navn
+# ABAQUS navn
 modelName = 'Model-A'
-partName = 'Part-1'
-meshPartName = 'Part-1-mesh-1'
+partName,meshPartName = 'Part-1','Part-1-mesh-1'
+
 instanceName = 'PART-1-MESH-1-1'
-stepName = 'Enhetstoyninger'
-difstpNm = 'Lasttoyinger'
+stepName, difstpNm = 'Enhetstoyninger','Lasttoyinger'
 
 """                 FUNKSJONER                """
 #RVEmodell
-
-def hentePopulation(coordpath):
-    #Les fiber matrix populasjon
+def hentePopulation():                 #Les fiber matrix populasjon
     xy=list()
     f = open(coordpath,'r')
     tekst = f.read()
     f.close()
     lines = tekst.split('\n')
-
     for line in lines:
         data = line.split('\t')
         a = float(data[0])  #   X
@@ -50,282 +42,39 @@ def hentePopulation(coordpath):
     return xy
 
 #Abaqus operations
-def createModel_n_Sets():
-    import section
-    import regionToolset
-    import displayGroupMdbToolset as dgm
-    import part
-    import material
-    import assembly
-    import step
-    import interaction
-    import load
-    import mesh
-    import job
-    import sketch
-    import visualization
-    import xyPlot
-    import displayGroupOdbToolset as dgo
-    import connectorBehavior
-    Mdb()  #reset
 
-    model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lag model
-    del mdb.models['Model-1']                                       # Slett standard model
-    global mod
-    mod = mdb.models[modelName]
-
-    dx=dL/2.0
-    dy=dL/2.0
+def createPart_n_Ophanmesh():
+    Mdb()  # reset Abaqus
     #Lag sketch
-    s1 = model.ConstrainedSketch(name='__profile__',sheetSize=3*dL)
-    s1.setPrimaryObject(option=STANDALONE)
+    execfile(GitHub+Abaqus+'RVEsketching.py')                                             # Lage 2D RVE fra fiberpopulasjon data
+    del mdb.models['Model-1']                                             # Slett standard part
+    execfile(GitHub+Abaqus+'RVEmeshpart.py')                                              # Meshe 2D RVE  til 3D part og lage orphanmesh
+    print '\nRVEpart created, meshed and Orphanmesh created'
 
-    #Tegne RVE sketch -Firkant
-    s1.Line(point1=(-dx, -dy), point2=(dx, -dy))
-    s1.Line(point1=(dx, -dy), point2=(dx, dy))
-    s1.Line(point1=(dx,dy), point2=(-dx,dy))
-    s1.Line(point1=(-dx,dy), point2=(-dx,-dy))
-    p = mod.Part(name=partName, dimensionality=THREE_D,
-                 type=DEFORMABLE_BODY)
-    p = model.parts[partName]
-    p.BaseShell(sketch=s1)
-    s1.unsetPrimaryObject()
-    #del mod.sketches['__profile__']
-
-    if not nf == 0:                                                                                                     # If: Om ingen fiber? Uten fiber ingen interface
-        f1, e = p.faces, p.edges
-        t = p.MakeSketchTransform(sketchPlane=f1.findAt(coordinates=(0.0,0.0, 0.0), normal=(0.0, 0.0, 1.0)),
-                                  sketchUpEdge=e.findAt(coordinates=(dx, 0.0, 0.0)), sketchPlaneSide=SIDE1, origin=(0.0,0.0, 0.0))
-        s1 = model.ConstrainedSketch(name='__profile__', sheetSize=2*dL, gridSpacing=dL / 25.0, transform=t)
-        s1.setPrimaryObject(option=SUPERIMPOSE)
-        p.projectReferencesOntoSketch(sketch=s1, filter=COPLANAR_EDGES)                                                     # Partionere og meshe RVE fibere med eller uten interface
-        for data in xydata:     #Tegne inn fiber aa partionere
-            x = data[0]
-            y = data[1]
-            r=rmean
-            if Fibervariation:
-                r=data[2]
-            rcos45 = r * cos(45.0 * pi / 180.0)
-            done = 0
-            if done == 0 and x >= dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x + r, y))
-                done = 1
-            if done == 0 and x <= -dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x - r, y))
-                done = 1
-            if done == 0 and y >= dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y + r))
-                done = 1
-            if done == 0 and y <= -dx:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y - r))
-                done = 1
-
-            if done == 0 and x >= 0 and y >= 0:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rcos45, y - rcos45))
-                done = 1
-            if done == 0 and x >= 0 and y <= 0:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rcos45, y + rcos45))
-                done = 1
-            if done == 0 and x <= 0 and y <= 0:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rcos45, y + rcos45))
-                done = 1
-            if done == 0 and x <= 0 and y >= 0:
-                s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rcos45, y - rcos45))
-                done = 1
-        if Interface:       #Tegne inn fiber interfaces aa partionere
-            for data in xydata:
-                x = data[0]
-                y = data[1]
-                r=rmean
-                if Fibervariation:
-                    r=data[2]
-                r=r*(1+rinterface)
-                rcos45 = r * cos(45.0 * pi / 180.0)
-                done = 0
-                if done == 0 and x >= dx:
-                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x + r, y))
-                    done = 1
-                if done == 0 and x <= -dx:
-                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x - r, y))
-                    done = 1
-                if done == 0 and y >= dx:
-                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y + r))
-                    done = 1
-                if done == 0 and y <= -dx:
-                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x, y - r))
-                    done = 1
-
-                if done == 0 and x >= 0 and y >= 0:
-                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rcos45, y - rcos45))
-                    done = 1
-                if done == 0 and x >= 0 and y <= 0:
-                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x - rcos45, y + rcos45))
-                    done = 1
-                if done == 0 and x <= 0 and y <= 0:
-                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rcos45, y + rcos45))
-                    done = 1
-                if done == 0 and x <= 0 and y >= 0:
-                    s1.CircleByCenterPerimeter(center=(x, y), point1=(x + rcos45, y - rcos45))
-                    done = 1
-        f = p.faces                                                                                          # Selve partioneringen
-        pF = f.findAt(((0.0, 0.0, 0.0),))
-        e1= p.edges
-        p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dx, 0.0,0.0)), faces=pF, sketch=s1)
-        s1.unsetPrimaryObject()
-        p.Set(faces=f, name='Alt')                                                      # Lag set for  Alt
-        f = p.faces
-        x = xydata[0][0]
-        y = xydata[0][1]
-        r = rmean
-        if Fibervariation:
-            r = xydata[0][2]
-        Ffaces= f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
-        for i in range(1, len(xydata)):
-            x = xydata[i][0]
-            y = xydata[i][1]
-            if Fibervariation:
-                r = xydata[i][2]
-            temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
-            Ffaces = Ffaces + temp
-        p.Set(name='Ffiber', faces=Ffaces)                                              # Lag set for Fibers
-
-        if Interface:              # Generate mesh med/uten interface set
-            f = p.faces
-            x = xydata[0][0]
-            y = xydata[0][1]
-            r = rmean
-            if Fibervariation:
-                r = xydata[0][2]
-            IFfaces= f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r*(1+rinterface) + tol)
-            for i in range(1, len(xydata)):
-                x = xydata[i][0]
-                y = xydata[i][1]
-                if Fibervariation:
-                    r = xydata[i][2]
-                temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r*(1+rinterface) + tol)
-                IFfaces = IFfaces + temp
-            p.Set(name='IFfiber', faces=IFfaces)
-            p.SetByBoolean(name='Interface', sets=(p.sets['IFfiber'], p.sets['Ffiber'],), operation=DIFFERENCE)
-            p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFfiber'],), operation=DIFFERENCE)
-            del mod.parts[partName].sets['IFfiber']
-        else:
-            p = mod.parts[partName]
-            p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['Ffiber'],), operation=DIFFERENCE)
-        # MESHE
-        p = mod.parts[partName]
-        p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
-        p = mod.parts[partName]
-        if Interface:
-            for ma in p.sets['Interface'].faces:
-                mosh = []
-                mosh.append(ma)
-                p.setMeshControls(regions=mosh, elemShape=QUAD, technique=SWEEP)
-            del mod.parts[partName].sets['Interface']
-        p = mod.parts[partName]
-        p.setMeshControls(regions=Ffaces, elemShape=TRI)
-        p = mod.parts[partName]
-        p.generateMesh()                                                            # Generate mesh
-        del mod.parts[partName].sets['Alt'],mod.parts[partName].sets['Ffiber'],mod.parts[partName].sets['Matrix']
-        mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
-        elFace = mod.parts[partName].elementFaces                                                                             # Extrude mesh
-        v = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
-        p.generateBottomUpExtrudedMesh(elemFacesSourceSide=elFace,extrudeVector=v, numberOfLayers=2)
-        p = mod.parts[partName]                                                                                               # Delete shell nodes of part
-        n = p.nodes
-        nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
-        p.deleteNode(nodes=nodes)
-        p.PartFromMesh(name=meshPartName, copySets=True)                                                                    # Make orphan mesh
-        p = mod.parts[meshPartName]
-
-
-        for ie in range(0, len(xydata)):                # Lage fiber  datums for material orientering
+def createSets_n_Datums():
+    p = mod.parts[meshPartName]
+    execfile(GitHub+Abaqus+'RVEelementsets.py')
+    # Lage cylindriske kordinatsystemer i fiber sentrum
+    if not noFiber and Interface:
+        # Lage fiber datums for material orientering av Interface
+        for ie in range(0, len(xydata)):
             x = xydata[ie][0]
             y = xydata[ie][1]
             p.DatumCsysByThreePoints(name=('Fiber datum ' + str(ie)), coordSysType=CYLINDRICAL,
-                                     origin=(x, y, 0.0), point1=(x + 1.0, y, 0.0), point2=(x + 1.0, y + 1.0, 0.0))
-        p = mod.parts[meshPartName]                                                                                    # Lage Set
-        e = p.elements
-        p.Set(name='Alle', elements=e)                                                                                  # Lage set, meshe og lage material set
-        if Interface:                                                               #IF Interface -  Lag elementset for fiber, interface og matrix
-            x = xydata[0][0]
-            y = xydata[0][1]
-            r = xydata[0][2]
-            Felements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
-            for i in range(1, len(xydata)):
-                x = xydata[i][0]
-                y = xydata[i][1]
-                r = xydata[i][2]
-                temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
-                Felements = Felements + temp
-            p.Set(name='Fibers', elements=Felements)                                                                            # Fiber set made
-
-            x = xydata[0][0]
-            y = xydata[0][1]
-            r = xydata[0][2]
-            IFelements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
-            for i in range(1, len(xydata)):
-                x = xydata[i][0]
-                y = xydata[i][1]
-                r = xydata[i][2]
-                temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
-                IFelements = IFelements + temp
-            p.Set(name='IandF', elements=IFelements)                                                                             # Fiber+fiberinterface set made
-
-            p.SetByBoolean(name='Interfaces', sets=(p.sets['IandF'], p.sets['Fibers'],), operation=DIFFERENCE)
-            p.SetByBoolean(name='Matrix', sets=(p.sets['Alle'], p.sets['IandF'],), operation=DIFFERENCE)                      # Lag matrix og interface set
-
-            e = p.sets['Interfaces'].elements
-            x = xydata[0][0]
-            y = xydata[0][1]
-            r = xydata[0][2]
-            Felements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
-            p.Set(name='FiberInt0', elements=Felements)
-            for i in range(1, len(xydata)):
-                x = xydata[i][0]
-                y = xydata[i][1]
-                r = xydata[i][2]
-                temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
-                p.Set(name=('FiberInt'+str(i)), elements=temp)
-            p.setElementType(regions=p.sets['Interfaces'], elemTypes=(mesh.ElemType(elemCode=COH3D8, elemLibrary=STANDARD)    ,))                       # Set cohesive elements
-            del mod.parts[meshPartName].sets['IandF']
-        else:                                               #IF no interface -  Lag elementset for fiber og matrix.
-            x = xydata[0][0]
-            y = xydata[0][1]
-            r = xydata[0][2]
-            Felements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
-            for i in range(1, len(xydata)):
-                x = xydata[i][0]
-                y = xydata[i][1]
-                r = xydata[i][2]
-                temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + 0.001)
-                Felements = Felements + temp
-            p.Set(name='Fibers', elements=Felements)                                                                                    # Fiber set made
-            p.SetByBoolean(name='Matrix', sets=(p.sets['Alle'], p.sets['Fibers'],), operation=DIFFERENCE)                               # Lag matrix set
-        del mod.parts[meshPartName].sets['Alle']
-    else:                                                     # If: Om ingen fiber i modell
-        p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)                                           #Meshe
-        p.generateMesh()
-        mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
-        elFace = mod.parts[partName].elementFaces                                                                     # Extrude mesh
-        v = ((0.0, 0.0, 0.0), (0.0, 0.0, 2*tykkelse))
-        p.generateBottomUpExtrudedMesh(elemFacesSourceSide=elFace,extrudeVector=v, numberOfLayers=2)
-        p.PartFromMesh(name=meshPartName, copySets=True)                                                         # Make orphan mesh
-        p = mod.parts[meshPartName]
-        n = p.nodes
-        nodes = n.getByBoundingBox(-dL, -dL, -tol, dL, dL, tol)
-        p.deleteNode(nodes=nodes)                                                                                   # Deleted shell nodes
-        p.Set(name='Matrix', elements=p.elements)                                                                   # Lag set for Matrix
-    p = mod.parts[meshPartName]
+                                 origin=(x, y, 0.0), point1=(x + 1.0, y, 0.0), point2=(x + 1.0, y + 1.0, 0.0))
+        # Set cohesive elementtype paa Interface
+        p.setElementType(regions=p.sets['Interfaces'],
+                         elemTypes=(mesh.ElemType(elemCode=COH3D8, elemLibrary=STANDARD),))
+    # Viser modellen for galleriet
     session.viewports['Viewport: 1'].setValues(displayedObject=p)
     session.viewports['Viewport: 1'].enableMultipleColors()
     session.viewports['Viewport: 1'].setColor(initialColor='#BDBDBD')
     cmap=session.viewports['Viewport: 1'].colorMappings['Set']
     session.viewports['Viewport: 1'].setColor(colorMapping=cmap)
     session.viewports['Viewport: 1'].disableMultipleColors()
-
+    print '\nElement sets and Fiber center datums  created' #Element sets for material properties and Fiber center datums for material orientation
 
 def create_Properites():  # Angi materialegenskaper
-
     p = mod.parts[meshPartName]
 
     mod.Material(name='resin')
@@ -398,10 +147,6 @@ def create_Properites():  # Angi materialegenskaper
         p.SectionAssignment(region=region, sectionName='SSmatrix', offset=0.0,
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
-    # del asaas
-    # del mod.parts[partName], p, n, mod, region
-    # del model.sketches['__profile__'], f, pickedFaces, e1, f1, e, t
-    # del s1, model,x,y
 
     print '\nModel created, meshed and assigned properties'
 
@@ -862,7 +607,7 @@ sweepcases = 1              # Opplosning paa stress sweeps
 
 nonLinearDeformation = 1               # TRUE/FALSE Linear eller nonlinear analyse?
 
-noFiber = 0                          # TRUE/FALSE Overstyrer antall fiber til 0
+noFiber = 1                         # TRUE/FALSE Overstyrer antall fiber til 0
 
 Fibervariation = 1                      # TRUE/FALSE Skal fiber radius variere eller ikke?
 rmean = 8.7096              # Gjennomsnittradius
@@ -897,10 +642,11 @@ for m in range(0,len(Sample)):
             nf = 0
             Vf = 0
             dL = rmean*3
+            noFiber = 1
         if not nf == 0:                              # Er RVE tomt? RVE_Modelleringsparametere
             dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5                 # RVE storrelsen er satt til aa vaere relativ av nf og V
 
-        tykkelse = RVEt * dL                                                       # RVE tykkelse
+        tykkelse = float(RVEt * dL)                                                       # RVE tykkelse
         r = rmean                                                                  # r er er variable som brukes for aa beholde en mean
 
         rtol = Rclearing * r                                                       # Mellomfiber toleranse
@@ -920,6 +666,22 @@ for m in range(0,len(Sample)):
         from abaqus import *
         from abaqusConstants import *
         from odbAccess import *
+        import section
+        import regionToolset
+        import displayGroupMdbToolset as dgm
+        import part
+        import material
+        import assembly
+        import step
+        import interaction
+        import load
+        import mesh
+        import job
+        import sketch
+        import visualization
+        import xyPlot
+        import displayGroupOdbToolset as dgo
+        import connectorBehavior
 
         seed(Q)                                     # Q er randomfunksjonensnokkelen
         wiggle = random() * rmean                     # Omplasseringsgrenser for fiberomplassering
@@ -933,13 +695,14 @@ for m in range(0,len(Sample)):
             Sweeptoyinger[g] = ('Sweep_strain'+ str(nf) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
 
         """Prosess"""
-        xydata = None                                                       #Fiber populasjon?
-        if not (nf==0):
+        xydata = None
+        if not noFiber:
             execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
-            xydata= hentePopulation(coordpath)                      # hente fibercoordinater
+            xydata= hentePopulation()                      # hente fibercoordinater
 
-        # Lag Abaqus Model
-        createModel_n_Sets()                                                            # Lag model for testing med onsket fiber og interface.
+        # Abaqus Operasjoner
+        createPart_n_Ophanmesh()                                                            # Lag model for testing med onsket fiber og interface.
+        createSets_n_Datums()
         create_Properites()
         createCEq()                                                                    # Lag constrain equations
         if not Interfacetykkelse and (Interface and not noFiber):

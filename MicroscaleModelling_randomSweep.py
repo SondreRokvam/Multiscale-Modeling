@@ -47,137 +47,17 @@ def createSets_n_Datums():
         # Set cohesive elementtype paa Interface
         p.setElementType(regions=p.sets['Interfaces'],
                          elemTypes=(mesh.ElemType(elemCode=COH3D8, elemLibrary=STANDARD),))
-    # Viser modellen for galleriet
-    session.viewports['Viewport: 1'].setValues(displayedObject=p)
-    session.viewports['Viewport: 1'].enableMultipleColors()
-    session.viewports['Viewport: 1'].setColor(initialColor='#BDBDBD')
-    cmap=session.viewports['Viewport: 1'].colorMappings['Set']
-    session.viewports['Viewport: 1'].setColor(colorMapping=cmap)
-    session.viewports['Viewport: 1'].disableMultipleColors()
     print '\nElement sets and Fiber center datums  created' #Element sets for material properties and Fiber center datums for material orientation
-#Jobb herfra
 def create_Properites():  # Angi materialegenskaper
-    execfile(GitHub + Abaqus + 'RVEmicroProperties.py')
+    execfile(GitHub + Abaqus + 'RVEproperties.py')
     print '\nMaterial properties assigned to element sets in model'
-
 def createCEq():
-    a = mod.rootAssembly
-    a.DatumCsysByDefault(CARTESIAN)
-    p = mdb.models[modelName].parts[meshPartName]
-    a.Instance(name=instanceName, part=p, dependent=ON)             # Hente modell til assembly, flytte modellen til origo og rotere rundt y til x er i fiberretning.
-    a.translate(instanceList=(instanceName,), vector=(0.0, 0.0, -tykkelse))
-    a.rotate(instanceList=(instanceName,), axisPoint=(0.0, 0.0, 0.0),
-             axisDirection=(0.0, 1.0, 0.0), angle=90.0)
-
-    allNodes = a.instances[instanceName].nodes
-
-    # Finding the dimensions
-    xmax, ymax, zmax, xmin, ymin, zmin = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-    for n in allNodes:
-        x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
-        xmax = max(xmax, x)
-        ymax = max(ymax, y)
-        zmax = max(zmax, z)
-        xmin = min(xmin, x)
-        ymin = min(ymin, y)
-        zmin = min(zmin, z)
-
-    # Creating reference points
-
-    a.ReferencePoint(point=(xmin - 0.2 * (xmax - xmin), 0.0, 0.0))
-    refPoints = (a.referencePoints[a.features['RP-1'].id],)
-    a.Set(referencePoints=refPoints, name='RPX')
-
-    a.ReferencePoint(point=(0.0, ymin - 0.2 * (ymax - ymin), 0.0))
-    refPoints = (a.referencePoints[a.features['RP-2'].id],)
-    a.Set(referencePoints=refPoints, name='RPY')
-
-    a.ReferencePoint(point=(0.0, 0.0, zmin - 0.2 * (zmax - zmin)))
-    refPoints = (a.referencePoints[a.features['RP-3'].id],)
-    a.Set(referencePoints=refPoints, name='RPZ')
-
-    # CE between x-normal surfaces:
-
-    nodesXa = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmin - tol, xmin + tol, ymax + tol, zmax + tol)
-    nodesXb = allNodes.getByBoundingBox(xmax - tol, ymin - tol, zmin - tol, xmax + tol, ymax + tol, zmax + tol)
-
-    counter = 0
-
-    for n in nodesXa:
-        name1 = "Xa%i" % (counter)
-        nodes1 = nodesXa[counter:counter + 1]
-        a.Set(nodes=nodes1, name=name1)
-        x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
-        name2 = "Xb%i" % (counter)
-        nodes2 = nodesXb.getByBoundingCylinder((-dL,y,z), (dL, y, z), tol)
-        a.Set(nodes=nodes2, name=name2)
-
-        mod.Equation(name="Cq11x%i" % (counter),
-                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(xmax - xmin), 'RPX', 1),))  # 11
-        mod.Equation(name="Cq21x%i" % (counter),
-                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(xmax - xmin) / 2, 'RPX', 2),))  # 21
-        mod.Equation(name="Cq31x%i" % (counter),
-                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(xmax - xmin) / 2, 'RPX', 3),))  # 31
-
-        counter = counter + 1
-
-        # CE between y-normal surfaces
-    # Note: excluding the nodes at xmax:
-
-    nodesYa = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmin - tol, xmax - tol, ymin + tol, zmax + tol)
-    nodesYb = allNodes.getByBoundingBox(xmin - tol, ymax - tol, zmin - tol, xmax - tol, ymax + tol, zmax + tol)
-
-    counter = 0
-
-    for n in nodesYa:
-        name1 = "Ya%i" % (counter)
-        nodes1 = nodesYa[counter:counter + 1]
-        a.Set(nodes=nodes1, name=name1)
-        x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
-        name2 = "Yb%i" % (counter)
-        nodes2 = nodesYb.getByBoundingCylinder((x, -dL, z), (x, dL, z), tol)
-        a.Set(nodes=nodes2, name=name2)
-
-        mod.Equation(name="Cq12y%i" % (counter),
-                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(ymax - ymin) / 2, 'RPY', 1),))  # 12
-        mod.Equation(name="Cq22y%i" % (counter),
-                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(ymax - ymin), 'RPY', 2),))  # 22
-        mod.Equation(name="Cq32y%i" % (counter),
-                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(ymax - ymin) / 2, 'RPY', 3),))  # 32
-
-        counter = counter + 1
-
-        # CE between z-normal surfaces
-    # Note: excluding the nodes at xmax and ymax :
-
-    nodesZa = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmin - tol, xmax - tol, ymax - tol, zmin + tol)
-    nodesZb = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmax - tol, xmax - tol, ymax - tol, zmax + tol)
-
-    counter = 0
-
-    for n in nodesZa:
-        name1 = "Za%i" % (counter)
-        nodes1 = nodesZa[counter:counter + 1]
-        a.Set(nodes=nodes1, name=name1)
-        x, y, z = n.coordinates[0], n.coordinates[1], n.coordinates[2]
-        name2 = "Zb%i" % (counter)
-        nodes2 = nodesZb.getByBoundingCylinder((x, y, -dL), (x, y, dL), tol)
-        a.Set(nodes=nodes2, name=name2)
-
-        mod.Equation(name="Cq13z%i" % (counter),
-                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(zmax - zmin) / 2, 'RPZ', 1),))  # 13
-        mod.Equation(name="Cq23z%i" % (counter),
-                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(zmax - zmin) / 2, 'RPZ', 2),))  # 23
-        mod.Equation(name="Cq33z%i" % (counter),
-                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(zmax - zmin), 'RPZ', 3),))  # 33
-
-        counter = counter + 1
-    del x,y,z,allNodes,name1,nodes1,name2,nodes2,nodesXa,nodesXb,nodesYa,nodesYb,nodesZa,nodesZb,counter
-    print 'Constraint equ. applied'
+    execfile(GitHub + Abaqus + 'RVE_Assembly_RP_CE.py')
+    print 'Imported to Assembly, Reference points created and constraint equ. applied'
 def collapsInterface():
     a = mod.rootAssembly
     nod = a.instances[instanceName].nodes
-    count=1
+    count=0
     for fiba in xydata:
         x = fiba[0]
         y = fiba[1]
@@ -195,7 +75,6 @@ def collapsInterface():
         Intnodes = a.sets['Interface'+ str(count) + 'nodes'].nodes
         Fibnodes = a.sets['Fiberflate'+ str(count) + 'nodes'].nodes
         for node in Intnodes:
-
             xns = node.coordinates[0]
             yns = node.coordinates[1]
             zns = node.coordinates[2]
@@ -211,7 +90,6 @@ def collapsInterface():
             a.regenerate()
             a.deleteSets(setNames=('noFiber'+str(count)+'nodes','IN','FN', 'Fiber'+str(count)+'nodes','FiberInterface' + str(count) + 'nodes','Fiberflate'+ str(count) + 'nodes','Interface'+ str(count) + 'nodes',))
         count = count + 1
-
 
 
 """         SIMULERINGS FUNKSJONER               """
@@ -526,7 +404,6 @@ for m in range(0,len(Sample)):
         # Abaqus Operasjoner
         createPart_n_Ophanmesh()            # Lage 2D RVE shell fra fiberpopulasjon data, meshe RVE, extrudere til 3D part og lage orphanmesh
         createSets_n_Datums()               # Element sets for material properties and Fiber center datums for material orientation
-
 
         create_Properites()
         createCEq()                                                                    # Lag constrain equations

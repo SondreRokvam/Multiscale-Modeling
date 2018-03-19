@@ -1,6 +1,6 @@
 """Filen er laget for aa bli kjort av microscale scriptet"""
 # Lage Element set for baade Matrix, Fiber og Interface
-if not nf == 0:
+def RVEsets():
     # Alle set
     p = mod.parts[meshPartName]
     e = p.elements
@@ -51,6 +51,10 @@ if not nf == 0:
     else:  # Bare matrix.
         p.SetByBoolean(name='Matrix', sets=(p.sets['Alle'], p.sets['Fibers'],), operation=DIFFERENCE)
     del mod.parts[meshPartName].sets['Alle']
-else:  # Om ingen fiber, bare matrix set
+
+
+if not nf == 0:         # Om fiber i RVE
+    RVEsets()
+else:                   # Om ingen fiber, bare matrix set
     p = mod.parts[meshPartName]
     p.Set(name='Matrix', elements=p.elements)

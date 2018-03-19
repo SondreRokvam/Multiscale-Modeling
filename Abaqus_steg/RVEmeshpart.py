@@ -1,54 +1,50 @@
 """Filen er laget for aa bli kjort av microscale scriptet"""
 # Definerer meshinstillinger og mesher. Lager Orphan mesh part
+
 def LageFiberRegionSetsForMeshing():
-    Fiberset()
-    if Interface:  # Velge alle fiberregionerGenerate mesh med/uten interface set
-        Interface_og_Matrixset()
-    else:   #Lage "Matrix" set.
+    if not nf==0:
+        p = mod.parts[partName]
+        f = p.faces
+        # Velge alle fiberregioner ved loope gjennom fiberdata.
+        x = xydata[0][0]  # En iterasjon utfor loopen grunnet abaqus tull
+        y = xydata[0][1]
+        r = rmean
+        if Fibervariation:
+            r = xydata[0][2]
+        Ffaces = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
+        for i in range(1, len(xydata)):
+            x = xydata[i][0]
+            y = xydata[i][1]
+            if Fibervariation:
+                r = xydata[i][2]
+            temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
+            Ffaces = Ffaces + temp
+        p.Set(name='Ffiber', faces=Ffaces)
+        if Interface:  # Velge alle fiberregionerGenerate mesh med/uten interface set
+            p = mod.parts[partName]
+            f = p.faces
+            p.Set(faces=f, name='Alt')  # Lag set for  Alt
+            # Velge alle fiberregioner ved loope gjennom fiberdata.
+            x = xydata[0][0]  # En iterasjon utfor loopen grunnet abaqus tull
+            y = xydata[0][1]
+            r = rmean
+            if Fibervariation:
+                r = xydata[0][2]
+            IFfaces = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
+            for i in range(1, len(xydata)):
+                x = xydata[i][0]
+                y = xydata[i][1]
+                if Fibervariation:
+                    r = xydata[i][2]
+                temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
+                IFfaces = IFfaces + temp
+            p.Set(name='IFset', faces=IFfaces)
+            p.SetByBoolean(name='Interface', sets=(p.sets['IFset'], p.sets['Ffiber'],), operation=DIFFERENCE)
+            p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFset'],), operation=DIFFERENCE)
+            del mod.parts[partName].sets['IFset']
+    else:   # Bare lage "Matrix" set.
         p = mod.parts[partName]
         p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['Ffiber'],), operation=DIFFERENCE)
-def Fiberset():
-    p = mod.parts[partName]
-    f = p.faces
-    p.Set(faces=f, name='Alt')  # Lag set for  Alt
-    # Velge alle fiberregioner ved loope gjennom fiberdata.
-    x = xydata[0][0]  # En iterasjon utfor loopen grunnet abaqus tull
-    y = xydata[0][1]
-    r = rmean
-    if Fibervariation:
-        r = xydata[0][2]
-    Ffaces = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
-    for i in range(1, len(xydata)):
-        x = xydata[i][0]
-        y = xydata[i][1]
-        if Fibervariation:
-            r = xydata[i][2]
-        temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
-        Ffaces = Ffaces + temp
-    p.Set(name='Ffiber', faces=Ffaces)
-def Interface_og_Matrixset():
-    p = mod.parts[partName]
-    f = p.faces
-    p.Set(faces=f, name='Alt')  # Lag set for  Alt
-    # Velge alle fiberregioner ved loope gjennom fiberdata.
-    x = xydata[0][0]  # En iterasjon utfor loopen grunnet abaqus tull
-    y = xydata[0][1]
-    r = rmean
-    if Fibervariation:
-        r = xydata[0][2]
-    IFfaces = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
-    for i in range(1, len(xydata)):
-        x = xydata[i][0]
-        y = xydata[i][1]
-        if Fibervariation:
-            r = xydata[i][2]
-        temp = f.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
-        IFfaces = IFfaces + temp
-    p.Set(name='IFset', faces=IFfaces)
-    p.SetByBoolean(name='Interface', sets=(p.sets['IFset'], p.sets['Ffiber'],), operation=DIFFERENCE)
-    p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['IFset'],), operation=DIFFERENCE)
-    del mod.parts[partName].sets['IFset']
-
 def meshOrphanRVEpart():
     p = mod.parts[partName]
     p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
@@ -60,7 +56,7 @@ def meshOrphanRVEpart():
             p.setMeshControls(regions=mosh, elemShape=QUAD, technique=SWEEP)
         del mod.parts[partName].sets['Interface']
     p = mod.parts[partName]
-    p.setMeshControls(regions=Ffaces, elemShape=TRI)
+    p.setMeshControls(regions=p.sets['Ffiber'].faces, elemShape=TRI)
     p = mod.parts[partName]
     p.generateMesh()                                                                                     # Generate mesh
 

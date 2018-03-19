@@ -10,10 +10,6 @@ def modellereRVEsnitt():  # Lage fiber populasjon
     hjornepunkt = 0
     senterpunkt = 0
     while nplassert < nf:
-        r = rmean
-        gtol = Rclearing * r  # Dodsone klaring toleranse
-        ytredodgrense = r + gtol  # Dodzone avstand, lengst fra kantene
-        indredodgrense = r - gtol  # Dodzone avstand, naermest kantene
         if Fibervariation:  # Radiusene fordeles med variasjoner
             r= radiuser[int(nplassert)]
             gtol = Rclearing * r  # Dodsone klaring toleranse
@@ -235,5 +231,5 @@ def printprog(coord,fvf,nkrasj,books):
 if Fibervariation:
     radiuser = []
     for fib in range(0, nf):
-        radiuser.append(gauss(r, Rstdiv))
+        radiuser.append(gauss(rmean, Rstdiv))
 modellereRVEsnitt()

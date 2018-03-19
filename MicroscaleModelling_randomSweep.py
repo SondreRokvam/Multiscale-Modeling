@@ -243,6 +243,11 @@ def create_nonLinearsweepedlastcases(Strain,bob):
         mod.DisplacementBC(name='BCZ', createStepName=difstpNm,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+        region = a.sets['Xb0']
+        mod.DisplacementBC(name='BC-4', createStepName='Initial',
+                                             region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                                             amplitude=UNSET, distributionType=UNIFORM, fieldName='',
+                                             localCsys=None)
         """
         a = mod.rootAssembly
         n1 = a.instances[instanceName].nodes
@@ -284,7 +289,7 @@ Runjobs = 1                         # TRUE/FALSE Bestemmer om jobber skal kjores
 
 nonLinearDeformation = 1               # TRUE/FALSE Linear eller nonlinear analyse?
 
-noFiber = 1                         # TRUE/FALSE Overstyrer antall fiber til 0
+noFiber = 0                         # TRUE/FALSE Overstyrer antall fiber til 0
 
 Fibervariation = 1                      # TRUE/FALSE Skal fiber radius variere eller ikke?
 
@@ -293,7 +298,7 @@ Interfacetykkelse = 1                           # TRUE/FALSE 0 volum Interfaceel
 
 """Start"""
 #Forste sweepvariabel
-Sample=[3]
+Sample=[25]
 #Sample=[0, 5, 10, 25,50]
 for m in range(0,len(Sample)):
     # Se variabler
@@ -337,6 +342,11 @@ for m in range(0,len(Sample)):
             iterasjonsgrense = 10000
             # stepsize paa Stress sweep
             sweepresolution = 2 * pi / sweepcases
+            # Fiber detaljier
+            r = rmean
+            gtol = Rclearing * r  # Dodsone klaring toleranse
+            ytredodgrense = r + gtol  # Dodzone avstand, lengst fra kantene
+            indredodgrense = r - gtol  # Dodzone avstand, naermest kantene
 
             if Interfacetykkelse:
                 print 'Aspect ratio for Interface elements = ' + str(round(meshsize / (rinterface * rmean), 2)) + '    Interface elements thickness = ' + str(float(rinterface * rmean))

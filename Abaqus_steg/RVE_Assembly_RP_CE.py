@@ -7,7 +7,7 @@ def Import_n_Transform(a,p):
     a.rotate(instanceList=(instanceName,), axisPoint=(0.0, 0.0, 0.0),  # Rotere rundt y akse saa x er i fiberretning
              axisDirection=(0.0, 1.0, 0.0), angle=90.0)
 
-def RefPoints(a,xmax, ymax, zmax, xmin, ymin, zmin):        # Create X,Y,Z reference points
+def ReferencePoints(a,xmax, ymax, zmax, xmin, ymin, zmin):        # Create X,Y,Z reference points
 
     a.ReferencePoint(point=(xmin - 0.2 * (xmax - xmin), 0.0, 0.0))
     refPoints = (a.referencePoints[a.features['RP-1'].id],)
@@ -21,7 +21,7 @@ def RefPoints(a,xmax, ymax, zmax, xmin, ymin, zmin):        # Create X,Y,Z refer
     refPoints = (a.referencePoints[a.features['RP-3'].id],)
     a.Set(referencePoints=refPoints, name='RPZ')
 
-def ConstraintEquation(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
+def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
     # Constraint Equations between x-normal surfaces: Note: excluding a node for fixing
     nodesXa = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmin - tol, xmin + tol, ymax + tol, zmax + tol)
     nodesXb = allNodes.getByBoundingBox(xmax - tol, ymin - tol, zmin - tol, xmax + tol, ymax + tol, zmax + tol)
@@ -36,7 +36,7 @@ def ConstraintEquation(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
         a.Set(nodes=nodes2, name=name2)
         if counter==0:
             mod.Equation(name="Cq11x%i" % (counter),
-                     terms=((1.0, name2, 1), (-(xmax - xmin), 'RPX', 1),))  # 11
+                         terms=((-1.0, name1, 1), (-(xmax - xmin), 'RPX', 1),))  # 11
         else:
             mod.Equation(name="Cq11x%i" % (counter),
                          terms=((1.0, name2, 1), (-1.0, name1, 1), (-(xmax - xmin), 'RPX', 1),))  # 11
@@ -102,4 +102,4 @@ for n in allNodes:
     xmax, ymax, zmax, xmin, ymin, zmin = max(xmax, x), max(ymax, y), max(zmax, z), min(xmin, x), min(ymin, y), min(zmin, z)
 
 ReferencePoints(a,xmax, ymax, zmax, xmin, ymin, zmin)
-ConstraintEquation(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin)
+ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin)

@@ -32,7 +32,7 @@ if not nf == 0:
                                                                              power=1.2,
                                                                              table=((0.0028, 0.0078, 0.0078),))
         mdb.models['Model-A'].CohesiveSection(name='SSbond', material='interface', response=TRACTION_SEPARATION,
-                                              initialThicknessType=SPECIFY, initialThickness=0.002 * rmean,
+                                              initialThicknessType=SPECIFY, initialThickness=rinterface * rmean,
                                               outOfPlaneThickness=None)
         # initialThicknessType=GEOMETRY,outOfPlaneThickness=None)
         region = p.sets['Interfaces']

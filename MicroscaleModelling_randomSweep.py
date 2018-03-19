@@ -318,8 +318,8 @@ for m in range(0,len(Sample)):
 
         #Toleranser og klaringer
         Rclearing  = 0.025                   # Prosent avstand av r klaring mellom fibere og fra kanter og sider
-        rinterface = 0.002                    # Prosent avstand av r paa interfacetykkelse ved modellering
-        tol = rinterface*0.6                  # Toleranse som er godt mindre en minste modelleringsvariabel
+        rinterface = 0.005                    # Prosent avstand av r paa interfacetykkelse ved modellering
+        tol = rinterface*0.4                  # Toleranse som er godt mindre en minste modelleringsvariabel
 
         # Meshsize fra Interface resolution paa fiberomkrets
         FiberSirkelResolution = 50                              #Standard meshsixer er 2*pi/FiberSirkelResolution

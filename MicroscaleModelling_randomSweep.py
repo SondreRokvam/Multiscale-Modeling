@@ -7,24 +7,8 @@ print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
        'Multiscale Modelling, Microscale  \n'
        'Allowed numCpus = ',numCpus)
 
-# Tekstfiler for databehandling
-GitHub, workpath = 'C:/Temp/','C:/Multiscale-Modeling/'
-Tekstfiler, Abaqus = 'textfiles/', 'Abaqus_steg/'
 
-parameterpath = GitHub + 'Parametere.txt'               # Skrives ned for chaining  til ett annet script
-coordpath = GitHub + 'coordst.txt'                      # Hentes fra genererefiberPop chaining  til ett annet script
-
-lagrestiffpath = GitHub + 'Stiffness.txt'               # Skrives ned statistikk til ett annet script
-Envelope = GitHub + Tekstfiler + 'envelope'             # Parameteravhengig - Spesifikt navn legges til i funksjonen
-
-# ABAQUS navn
-modelName = 'Model-A'
-partName,meshPartName = 'Part-1','Part-1-mesh-1'
-
-instanceName = 'PART-1-MESH-1-1'
-stepName, difstpNm = 'Enhetstoyninger','Lasttoyinger'
-
-"""                 FUNKSJONER                """
+"""         MODELLERINGS FUNKSJONER                """
 #RVEmodell
 def hentePopulation():                 #Les fiber matrix populasjon
     xy=list()
@@ -42,7 +26,6 @@ def hentePopulation():                 #Les fiber matrix populasjon
     return xy
 
 #Abaqus operations
-
 def createPart_n_Ophanmesh():
     Mdb()  # reset Abaqus
     #Lag sketch
@@ -50,7 +33,6 @@ def createPart_n_Ophanmesh():
     del mdb.models['Model-1']                                             # Slett standard part
     execfile(GitHub+Abaqus+'RVEmeshpart.py')                                              # Meshe 2D RVE  til 3D part og lage orphanmesh
     print '\nRVEpart created, meshed and Orphanmesh created'
-
 def createSets_n_Datums():
     p = mod.parts[meshPartName]
     execfile(GitHub+Abaqus+'RVEelementsets.py')
@@ -73,82 +55,10 @@ def createSets_n_Datums():
     session.viewports['Viewport: 1'].setColor(colorMapping=cmap)
     session.viewports['Viewport: 1'].disableMultipleColors()
     print '\nElement sets and Fiber center datums  created' #Element sets for material properties and Fiber center datums for material orientation
-
+#Jobb herfra
 def create_Properites():  # Angi materialegenskaper
-    p = mod.parts[meshPartName]
-
-    mod.Material(name='resin')
-    mod.materials['resin'].Elastic(table=((3500.0, 0.33),))
-    mod.materials['resin'].Density(table=((1.2e-09,),))
-    mod.HomogeneousSolidSection(name='SSmatrix', material='resin', thickness=None)  # Assign Properties and sections
-    if not nf == 0:
-        mod.Material(name='glass')
-        mod.materials['glass'].Elastic(table=((90000.0, 0.22),))
-        mod.materials['glass'].Density(table=((2.55e-09,),))
-        if Interface:
-            mod.Material(name='interface')
-            mod.materials['interface'].Elastic(type=TRACTION, table=((100.0, 100.0, 100.0),))
-            mod.materials['interface'].Density(table=((1.2e-09,),))
-            p = mdb.models['Model-A'].parts['Part-1-mesh-1']
-            for Fdats in range(0, len(xydata)):
-                datId = p.features['Fiber datum ' + str(Fdats)].id
-                fibCsys = p.datums[datId]
-                region = p.sets['FiberInt' + str(Fdats)]
-                mdb.models['Model-A'].parts['Part-1-mesh-1'].MaterialOrientation(region=region,
-                                                                                 orientationType=SYSTEM, axis=AXIS_3,
-                                                                                 localCsys=fibCsys,
-                                                                                 fieldName='',
-                                                                                 additionalRotationType=ROTATION_NONE,
-                                                                                 angle=0.0,
-                                                                                 additionalRotationField='',
-                                                                                     stackDirection=STACK_3)
-
-            if nonLinearDeformation:
-                mod.materials['interface'].QuadsDamageInitiation(table=((0.042, 0.063, 0.063),))
-                mod.materials['interface'].quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
-                                                                                            power=1.2,
-                                                                                             table=((0.0028, 0.0078, 0.0078),))
-            mdb.models['Model-A'].CohesiveSection(name='SSbond', material='interface', response=TRACTION_SEPARATION,
-                                                  initialThicknessType=SPECIFY ,initialThickness=0.002 * rmean, outOfPlaneThickness=None)
-                                                # initialThicknessType=GEOMETRY,outOfPlaneThickness=None)
-            region = p.sets['Interfaces']
-            p.SectionAssignment(region=region, sectionName='SSbond', offset=0.0,
-                                offsetType=MIDDLE_SURFACE, offsetField='',
-                                thicknessAssignment=FROM_SECTION)
-        if nonLinearDeformation:
-            mod.materials['resin'].ConcreteDamagedPlasticity(table=((0.1, 0.1, 1.16, 0.89, 0.0001),))
-            mod.materials['resin'].concreteDamagedPlasticity.ConcreteCompressionHardening(
-                table=((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)))
-            mod.materials['resin'].concreteDamagedPlasticity.ConcreteTensionStiffening(table=((0.6, 0.09),), type=GFI)
-            mod.materials['resin'].concreteDamagedPlasticity.ConcreteTensionDamage(table=((0.0, 0.0), (0.9, 1.487)),
-                                                                                   type=DISPLACEMENT)
-            mod.materials['resin'].concreteDamagedPlasticity.ConcreteCompressionDamage(
-                table=((0.0, 0.0), (0.0, 0.32), (0.9, 0.55)))
-        mod.HomogeneousSolidSection(name='SSfibers', material='glass', thickness=None)
-        region = p.sets['Fibers']
-        p.SectionAssignment(region=region, sectionName='SSfibers', offset=0.0,
-                            offsetType=MIDDLE_SURFACE, offsetField='',
-                            thicknessAssignment=FROM_SECTION)
-        region = p.sets['Matrix']
-        p.SectionAssignment(region=region, sectionName='SSmatrix', offset=0.0,
-                            offsetType=MIDDLE_SURFACE, offsetField='',
-                            thicknessAssignment=FROM_SECTION)
-    else:
-        if nonLinearDeformation:
-            mod.materials['resin'].ConcreteDamagedPlasticity(table=((0.1, 0.1, 1.16, 0.89, 0.0001),))
-            mod.materials['resin'].concreteDamagedPlasticity.ConcreteCompressionHardening(
-                table=((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)))
-            mod.materials['resin'].concreteDamagedPlasticity.ConcreteTensionStiffening(table=((0.6, 0.09),), type=GFI)
-            mod.materials['resin'].concreteDamagedPlasticity.ConcreteTensionDamage(table=((0.0, 0.0), (0.9, 1.487)),
-                                                                                   type=DISPLACEMENT)
-            mod.materials['resin'].concreteDamagedPlasticity.ConcreteCompressionDamage(
-                table=((0.0, 0.0), (0.0, 0.32), (0.9, 0.55)))
-        region = p.sets['Matrix']
-        p.SectionAssignment(region=region, sectionName='SSmatrix', offset=0.0,
-                            offsetType=MIDDLE_SURFACE, offsetField='',
-                            thicknessAssignment=FROM_SECTION)
-
-    print '\nModel created, meshed and assigned properties'
+    execfile(GitHub + Abaqus + 'RVEmicroProperties.py')
+    print '\nMaterial properties assigned to element sets in model'
 
 def createCEq():
     a = mod.rootAssembly
@@ -303,8 +213,8 @@ def collapsInterface():
         count = count + 1
 
 
-"""%%%%%%%%%%%%%%%%%%%%%"""
-"""     SIMULATIONS     """
+
+"""         SIMULERINGS FUNKSJONER               """
 
 def run_Job(Jobe, modelName):
     if Runjobs:
@@ -487,181 +397,92 @@ def create_nonLinearsweepedlastcases(Strain,bob):
         run_Job(bob+'lol', modelName)
 
 
-# Post processing of data
-def Extract_parameterdata():
-    #Spenninger 12
-    maxMisesStresses = list()       #0
-    minMisesStresses = list()       #1
-    maxPrinceStresses = list()      #2
-    midPrinceStresses = list()      #3
 
-    minPrinceStresses = list()      #4
-    maxTresca = list()              #5
-    minTresca = list()              #6
-    maxPress = list()               #7
-
-    minPress = list()               #8
-    maxINV3 = list()                #9
-    minINV3  = list()               #10
-    maxSherstresses = list()        #11
-
-    #Toyinger 4
-    maxPrinceToyinger = list()      #0
-    midPrinceToyinger = list()      #1
-    minPrinceToyinger = list()      #2
-    maxSherToyinger = list()        #3
-
-    Spenninger=[maxMisesStresses,minMisesStresses, maxPrinceStresses,midPrinceStresses,
-                minPrinceStresses,maxTresca,minTresca,maxPress,
-                minPress,maxINV3,minINV3,maxSherstresses]
-    Toyinger = [maxPrinceToyinger,midPrinceToyinger,minPrinceToyinger,maxSherToyinger]
-
-    print 'Computing stresses for ' + str(sweepcases) + ' sweep cases'
-    for case in range(0,sweepcases):
-        odb = session.openOdb(workpath + Sweeptoyinger[case] + '.odb')
-        nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL).values
-        nodalStrains = odb.steps[difstpNm].frames[-1].fieldOutputs['E'].getSubset(position=ELEMENT_NODAL).values
-        if not nf==0:
-            Matrix = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
-            nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL,
-                                                                                       region=Matrix).values
-            nodalStrains = odb.steps[difstpNm].frames[-1].fieldOutputs['E'].getSubset(position=ELEMENT_NODAL,
-                                                                                      region=Matrix).values
-
-        MisesS = list()
-        maxPrinceS =list()
-        midPrinceS =list()
-        minPrinceS =list()
-        TrescaS =list()
-        PressS =list()
-        INV3S =list()
-        sherS=list()
-
-        maxPrinceT = list()
-        midPrinceT = list()
-        minPrinceT = list()
-        sherT=list()
-
-        for j in range(0,len(nodalStresses)):
-
-            MisesS.append(float(nodalStresses[j].mises))
-            maxPrinceS.append(float(nodalStresses[j].maxPrincipal))
-            midPrinceS.append(float(nodalStresses[j].midPrincipal))
-            minPrinceS.append(float(nodalStresses[j].minPrincipal))
-            TrescaS.append(float(nodalStresses[j].tresca))
-            PressS.append(float(nodalStresses[j].press))
-            INV3S.append(float(nodalStresses[j].inv3))
-            sherS.append(sqrt(float(nodalStresses[j].data[3]) ** 2 + float(nodalStresses[j].data[4]) ** 2 + float(nodalStresses[j].data[5]) ** 2))
-
-            maxPrinceT.append(float(nodalStrains[j].maxPrincipal))
-            midPrinceT.append(float(nodalStrains[j].midPrincipal))
-            minPrinceT.append(float(nodalStrains[j].minPrincipal))
-            sherT.append(sqrt(float(nodalStrains[j].data[3])**2+float(nodalStrains[j].data[4])**2+float(nodalStrains[j].data[5])**2))
-        odb.close()
-
-        Spenninger[0].append(float(max(MisesS)))
-        Spenninger[1].append(float(min(MisesS)))
-        Spenninger[2].append(float(max(maxPrinceS)))
-        Spenninger[3].append(float(max(midPrinceS)))
-
-        Spenninger[4].append(float(min(minPrinceS)))
-        Spenninger[5].append(float(max(TrescaS)))
-        Spenninger[6].append(float(min(TrescaS)))
-        Spenninger[7].append(float(max(PressS)))
-
-        Spenninger[8].append(float(min(PressS)))
-        Spenninger[9].append(float(max(INV3S)))
-        Spenninger[10].append(float(min(INV3S)))
-        Spenninger[11].append(float(max(sherS)))
-
-        Toyinger[0].append(float(max(maxPrinceT)))
-        Toyinger[1].append(float(max(midPrinceT)))
-        Toyinger[2].append(float(min(minPrinceT)))
-        Toyinger[3].append(float(max(sherT)))
-
-
-
-    g = open(Envelope+str(int(nf))+'_'+str(int(Q))+'.txt', "w")
-    for a in range(0, len(maxMisesStresses)):
-        #                 0                         1                         2                               3                                  4
-        g.write(str(Spenninger[0][a]) + '\t' + str(Spenninger[1][a]) + '\t' + str(Spenninger[2][a]) + '\t' + str(Spenninger[3][a]) + '\t' + str(Spenninger[4][a])
-            + '\t' + str(Spenninger[5][a]) + '\t' + str(Spenninger[6][a]) + '\t' + str(Spenninger[7][a]) + '\t' + str(Spenninger[8][a])
-            + '\t' + str(Spenninger[9][a]) + '\t' + str(Spenninger[8][a]) + '\t' + str(Spenninger[9][a]) + '\t' + str(Spenninger[10][a]) + '\t' + str(Spenninger[11][a])
-            + '\t' + str(Toyinger[0][a]) + '\t' + str(Toyinger[1][a]) + '\t' + str(Toyinger[2][a]) + '\t' + str(Toyinger[3][a])+'\n')
-
-    a=0 # Complete the Sirkel
-    g.write(str(Spenninger[0][a]) + '\t' + str(Spenninger[1][a]) + '\t' + str(Spenninger[2][a]) + '\t' + str(Spenninger[3][a]) + '\t' + str(Spenninger[4][a])
-            + '\t' + str(Spenninger[5][a]) + '\t' + str(Spenninger[6][a]) + '\t' + str(Spenninger[7][a]) + '\t' + str(Spenninger[8][a])
-            + '\t' + str(Spenninger[9][a]) + '\t' + str(Spenninger[8][a]) + '\t' + str(Spenninger[9][a]) + '\t' + str(Spenninger[10][a]) + '\t' + str(Spenninger[11][a])
-            + '\t' + str(Toyinger[0][a]) + '\t' + str(Toyinger[1][a]) + '\t' + str(Toyinger[2][a]) + '\t' + str(Toyinger[3][a]))
-    g.close()
-    return
-
-"""$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
-"""          GLOBALE VARIABLER                                                   """
-
+"""$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
+"""              GLOBALE VARIABLER               """
 #Flag
-
 Runjobs = 1                         # TRUE/FALSE Bestemmer om jobber skal kjores
-sweepcases = 1              # Opplosning paa stress sweeps
+
 
 nonLinearDeformation = 1               # TRUE/FALSE Linear eller nonlinear analyse?
 
 noFiber = 1                         # TRUE/FALSE Overstyrer antall fiber til 0
 
 Fibervariation = 1                      # TRUE/FALSE Skal fiber radius variere eller ikke?
-rmean = 8.7096              # Gjennomsnittradius
 
 Interface = 1                               # TRUE/FALSE Interface paa fibere?
 Interfacetykkelse = 1                           # TRUE/FALSE 0 volum Interfaceelement  paa fibere?
-                    #Mesh med utgangspunkt i Interface
-FiberSirkelResolution = 50                                  # 2*pi/FiberSirkelResolution
-meshsize = rmean * 2 * pi / FiberSirkelResolution          # Meshresolution
-
 
 """Start"""
 #Forste sweepvariabel
 Sample=[3]
 #Sample=[0, 5, 10, 25,50]
 for m in range(0,len(Sample)):
-    n = 1                                                                # Sweep variabel: fra 0 til n antall random seeds for iterasjon
-    #         RVE Modelleringsvariabler
-    nf=Sample[m]
-    Vf = 0.6
-    rmean = 8.7096                                      # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
-    Rstdiv = 0.6374                                          # Standard avvik fra gjennomsnittsradius.
-
-    Rclearing = 0.025                                                    # Prosent avstand av r mellom fibere og fra kanter og sider
-    rinterface = 0.002                                                    # Prosent avstand av r paa interfacetykkelse ved modellering
-    tol = rinterface*0.6
-    RVEt =   0.01                                                         # Proporsjonal forskjell mellom bredde of RVE tykkelse
-
-    # Instilliger
+    # Se variabler
     if True:                     # For aa kunne kollapse variabler
-        if nf == 0 or Vf == 0 or noFiber:                   # Fiberfri RVE
-            nf = 0
-            Vf = 0
-            dL = rmean*3
-            noFiber = 1
-        if not nf == 0:                              # Er RVE tomt? RVE_Modelleringsparametere
-            dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5                 # RVE storrelsen er satt til aa vaere relativ av nf og V
+        # Sweep variabler: itererer random seeds fra 0 til n
+        n = 1
+        sweepcases = 1      # Opplosning paa stress sweeps vinkler
 
-        tykkelse = float(RVEt * dL)                                                       # RVE tykkelse
-        r = rmean                                                                  # r er er variable som brukes for aa beholde en mean
+        #  RVE Modelleringsvariabler
+        nf=Sample[m]
+        Vf = 0.6
+        RVEt =   0.01         # Proporsjonal forskjell mellom bredde/hoyde og RVE tykkelse
 
-        rtol = Rclearing * r                                                       # Mellomfiber toleranse
+        # Fibere
+        rmean = 8.7096                # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
+        Rstdiv = 0.6374                 # Standard avvik fra gjennomsnittsradius.
 
-        gtol = Rclearing * r                                                       # Dodsone toleranse
-        ytredodgrense = r + gtol                                                   # Dodzone avstand, lengst fra kantene
-        indredodgrense = r - gtol                                                  # Dodzone avstand, naermest kantene
+        #Toleranser og klaringer
+        Rclearing  = 0.025                   # Prosent avstand av r klaring mellom fibere og fra kanter og sider
+        rinterface = 0.002                    # Prosent avstand av r paa interfacetykkelse ved modellering
+        tol = rinterface*0.6                  # Toleranse som er godt mindre en minste modelleringsvariabel
 
-        iterasjonsgrense = 10000                                                   # iterasjonsgrense
-        sweepresolution = 2 * pi / sweepcases                                      # stepsize paa Stress sweeps
-        if Interfacetykkelse:
-            print 'Aspect ratio for Interface elements = ' + str(round(meshsize / (rinterface * rmean), 2)) + '    Interface elements thickness = ' + str(float(rinterface * rmean))
+        # Meshsize fra Interface resolution paa fiberomkrets
+        FiberSirkelResolution = 50                              #Standard meshsixer er 2*pi/FiberSirkelResolution
 
+        #Se instilliger
+        if True:                     # For aa kunne kollapse variabler
+            # Fiberfri RVE
+            if nf == 0 or Vf == 0 or noFiber:
+                nf = 0
+                Vf = 0
+                dL = rmean*2
+                noFiber = 1
+            if not nf == 0:                              # RVE dL er relativ av nf, rmean og V
+                dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5
+            #RVE tykkelse
+            tykkelse = float(RVEt * dL)
+            # Meshresolution
+            meshsize = rmean * 2 * pi / FiberSirkelResolution
+            # iterasjonsgrense i Fiberutplassering
+            iterasjonsgrense = 10000
+            # stepsize paa Stress sweep
+            sweepresolution = 2 * pi / sweepcases
 
-    """RVE_MODELLERING"""
+            if Interfacetykkelse:
+                print 'Aspect ratio for Interface elements = ' + str(round(meshsize / (rinterface * rmean), 2)) + '    Interface elements thickness = ' + str(float(rinterface * rmean))
+        # Se tekstfiler for databehandling
+        if True:                     # For aa kunne kollapse variabler
+            GitHub  = 'C:/Multiscale-Modeling/'
+            workpath =  'C:/Temp/'
+
+            Tekstfiler, Abaqus = 'textfiles/', 'Abaqus_steg/'
+
+            parameterpath = GitHub + 'Parametere.txt'  # Skrives ned for chaining  til ett annet script
+            coordpath = GitHub + 'coordst.txt'  # Hentes fra genererefiberPop chaining  til ett annet script
+
+            lagrestiffpath = GitHub + 'Stiffness.txt'  # Skrives ned statistikk til ett annet script
+            Envelope = GitHub + Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn legges til i funksjonen
+        # Se ABAQUS navn
+        if True:                     # For aa kunne kollapse variabler
+            modelName = 'Model-A'
+            partName, meshPartName = 'Part-1', 'Part-1-mesh-1'
+
+            instanceName = 'PART-1-MESH-1-1'
+            stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
+
+    """RVE MODELLERINGS LOOP"""
     for Q in range(0,n):
         from abaqus import *
         from abaqusConstants import *
@@ -683,26 +504,30 @@ for m in range(0,len(Sample)):
         import displayGroupOdbToolset as dgo
         import connectorBehavior
 
-        seed(Q)                                     # Q er randomfunksjonensnokkelen
-        wiggle = random() * rmean                     # Omplasseringsgrenser for fiberomplassering
+        # Se randomseed spesifikke variabler og navn
+        if True:                     # For aa kunne kollapse variabler
+            seed(Q)                                     # Q er randomfunksjonensnokkelen
+            wiggle = random() * rmean                     # Omplasseringsgrenser for fiberomplassering
 
-        """RVE og n relative ABAQUS Jobb navn"""
-        Enhetstoyinger = ['Exx' + str(nf) + '_' + str(Q), 'Eyy' + str(nf) + '_' + str(Q), 'Ezz' + str(nf) + '_' + str(Q),
-                          'Exy' + str(nf) + '_' + str(Q), 'Exz' + str(nf) + '_' + str(Q), 'Eyz' + str(nf) + '_' + str(Q)]
-                                                    # Enhetstoyingene fra 0 til 5. Alle 6
-        Sweeptoyinger = [''] * sweepcases
-        for g in range(0,sweepcases):
-            Sweeptoyinger[g] = ('Sweep_strain'+ str(nf) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
+            #RVE og n relative ABAQUS Jobb navn
+            Enhetstoyinger = ['Exx' + str(nf) + '_' + str(Q), 'Eyy' + str(nf) + '_' + str(Q), 'Ezz' + str(nf) + '_' + str(Q),
+                              'Exy' + str(nf) + '_' + str(Q), 'Exz' + str(nf) + '_' + str(Q), 'Eyz' + str(nf) + '_' + str(Q)]
+                                                        # Enhetstoyingene fra 0 til 5. Alle 6
+            Sweeptoyinger = [''] * sweepcases
+            for g in range(0,sweepcases):
+                Sweeptoyinger[g] = ('Sweep_strain'+ str(nf) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
 
-        """Prosess"""
+        #RVE parametere
         xydata = None
         if not noFiber:
             execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
-            xydata= hentePopulation()                      # hente fibercoordinater
+            xydata= hentePopulation()                               # hente fibercoordinater
 
         # Abaqus Operasjoner
-        createPart_n_Ophanmesh()                                                            # Lag model for testing med onsket fiber og interface.
-        createSets_n_Datums()
+        createPart_n_Ophanmesh()            # Lage 2D RVE shell fra fiberpopulasjon data, meshe RVE, extrudere til 3D part og lage orphanmesh
+        createSets_n_Datums()               # Element sets for material properties and Fiber center datums for material orientation
+
+
         create_Properites()
         createCEq()                                                                    # Lag constrain equations
         if not Interfacetykkelse and (Interface and not noFiber):
@@ -711,9 +536,11 @@ for m in range(0,len(Sample)):
         if nonLinearDeformation:
                     #exx, eyy, ezz, exy, exz, eyz
             Case=[(0,0.001,0,0,0,0),    (0,-0.001,0,0,0,0),    (0,0,0,0.001,0,0),    (0,-0.001,0,0.001,0,0)]
-            create_nonLinearsweepedlastcases(Case[0],'caseEyy')          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[1],'caseExy')          #    Lag linear strain cases. Set boundary condition and create job.
-            del noWORK
+            create_nonLinearsweepedlastcases(Case[0],'caseEyyT')          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[1],'caseEyyC')          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[2],'caseExyS')          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[3],'caseExySC')          #    Lag linear strain cases. Set boundary condition and create job.
+
         else:
             del noDoLinearWork
             create_Linearunitstrainslastcases()                                             # Lag linear strain cases. Set boundary condition and create job.
@@ -723,7 +550,6 @@ for m in range(0,len(Sample)):
             sweepstrains = get_sweepstrains_sig2_sig3(Compliancematrix, sweepresolution)    # Finne strains for sweep stress case
             create_Linearsweepedlastcases(sweepstrains)                                     # Lag linear sweep strain cases. Set boundary condition and create job.
 
-        #Extract_parameterdata()                                                            # Abaqus Save Odb data to textfile for envelopes
-
-        print 'bob'
+        print 'Reached end of Iteration'
+        del NotDone
 

@@ -59,16 +59,8 @@ def meshOrphanRVEpart():
     p.setMeshControls(regions=p.sets['Ffiber'].faces, elemShape=TRI)
     p = mod.parts[partName]
     p.generateMesh()                                                                                     # Generate mesh
-
-    elFace = mod.parts[partName].elementFaces                                                                   # Velge partens overflater for aa lage 3D
-    v = ((0.0, 0.0, 0.0), (0.0, 0.0, 2 * tykkelse))
-    p.generateBottomUpExtrudedMesh(elemFacesSourceSide=elFace, extrudeVector=v, numberOfLayers=2)
-    p = mod.parts[partName]                                                                                 # Slette shell noder of part
-    n = p.nodes
-    nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
-    p.deleteNode(nodes=nodes)
-    p.PartFromMesh(name=meshPartName, copySets=True)  # Make orphan mesh
     del mod.parts[partName].sets['Ffiber'], mod.parts[partName].sets['Matrix']
+
 def meshOrphanSlabpart():
     p = mod.parts[partName]
     p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
@@ -80,7 +72,7 @@ def Extrude_and_create_orphanmesh():
     p = mod.parts[partName]
     p.generateBottomUpExtrudedMesh(elemFacesSourceSide=elFace, extrudeVector=v, numberOfLayers=2)
     n = p.nodes                                                                                                      # Slette shell noder of part
-    nodes = n.getByBoundingBox(-dL, -dL, -0.01, dL, dL, 0.01)
+    nodes = n.getByBoundingBox(-dL, -dL, -tykkelse/2, dL, dL, tykkelse/2)
     p.deleteNode(nodes=nodes)
     p.PartFromMesh(name=meshPartName, copySets=True)                                                                # Make orphan mesh
 

@@ -243,39 +243,21 @@ def create_nonLinearsweepedlastcases(Strain,bob):
         mod.DisplacementBC(name='BCZ', createStepName=difstpNm,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-        region = a.sets['Xb0']
+        """
+        region = a.sets['RPS']
         mod.DisplacementBC(name='BC-4', createStepName='Initial',
                                              region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                                              amplitude=UNSET, distributionType=UNIFORM, fieldName='',
                                              localCsys=None)
         """
-        a = mod.rootAssembly
-        n1 = a.instances[instanceName].nodes
-        nodes1 = n1.getByBoundingCylinder((-dL, -dL, 0 - tol), (-dL, -dL, tol), tykkelse/2)
-        navn = 'hjorne1'
-        a.Set(nodes=nodes1, name=navn)
-        mdb.models['Model-A'].DisplacementBC(name='BC-4', createStepName='Initial', 
-            region=a.sets[navn], u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, 
-            amplitude=UNSET, distributionType=UNIFORM, fieldName='', 
-            localCsys=None)
+        region = a.sets['Xa0']
+        mod.DisplacementBC(name='BC-4', createStepName='Initial',
+                                             region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                                             amplitude=UNSET, distributionType=UNIFORM, fieldName='',
+                                             localCsys=None)
         
-    
-        nodes1 = n1.getByBoundingCylinder((+dL, -dL, 0 - tol), (+dL, -dL, tol), tykkelse/2)
-        navn = 'hjorne2'
-        a.Set(nodes=nodes1, name=navn)
-        mdb.models['Model-A'].DisplacementBC(name='BC-5', createStepName='Initial', 
-            region=a.sets[navn], u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, 
-            ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', 
-            localCsys=None)
-    
-        nodes1 = n1.getByBoundingCylinder((+dL, +dL, 0 - tol), (+dL, +dL, tol), tykkelse/2)
-        navn = 'hjorne3'
-        a.Set(nodes=nodes1, name=navn)
-        mdb.models['Model-A'].DisplacementBC(name='BC-6', createStepName='Initial', 
-            region=a.sets[navn], u1=SET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, 
-            ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', 
-        localCsys=None)
-        """
+        
+
 
         run_Job(bob+'lol', modelName)
 
@@ -286,19 +268,19 @@ def create_nonLinearsweepedlastcases(Strain,bob):
 #Flag
 Runjobs = 1                         # TRUE/FALSE Bestemmer om jobber skal kjores
 
-
 nonLinearDeformation = 1               # TRUE/FALSE Linear eller nonlinear analyse?
 
-noFiber = 0                         # TRUE/FALSE Overstyrer antall fiber til 0
+noFiber = 0                               # TRUE/FALSE Overstyrer antall fiber til 0
 
-Fibervariation = 1                      # TRUE/FALSE Skal fiber radius variere eller ikke?
+Fibervariation = 1                          # TRUE/FALSE Skal fiber radius variere eller ikke?
 
-Interface = 1                               # TRUE/FALSE Interface paa fibere?
-Interfacetykkelse = 1                           # TRUE/FALSE 0 volum Interfaceelement  paa fibere?
+Interface = 1                                  # TRUE/FALSE Interface paa fibere?
 
-"""Start"""
-#Forste sweepvariabel
-Sample=[25]
+Interfacetykkelse = 1                            # TRUE/FALSE 0 volum Interfaceelement  paa fibere?
+
+"""Process Start"""
+
+Sample=[5]          #Forste sweepvariabel
 #Sample=[0, 5, 10, 25,50]
 for m in range(0,len(Sample)):
     # Se variabler
@@ -370,7 +352,7 @@ for m in range(0,len(Sample)):
             instanceName = 'PART-1-MESH-1-1'
             stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
 
-    """RVE MODELLERINGS LOOP"""
+    #RVE MODELLERING sweep
     for Q in range(0,n):
         from abaqus import *
         from abaqusConstants import *

@@ -23,8 +23,8 @@ def ReferencePoints(a,xmax, ymax, zmax, xmin, ymin, zmin):        # Create X,Y,Z
 
 def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
     # Constraint Equations between x-normal surfaces: Note: excluding a node for fixing
-    nodesXa = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmin - tol, xmin + tol, ymax + tol, zmax + tol)
-    nodesXb = allNodes.getByBoundingBox(xmax - tol, ymin - tol, zmin - tol, xmax + tol, ymax + tol, zmax + tol)
+    nodesXa = allNodes.getByBoundingBox(xmin-tol,ymin-tol,zmin-tol,xmin+tol, ymax+tol,zmax+tol)    
+    nodesXb = allNodes.getByBoundingBox(xmax-tol,ymin-tol,zmin-tol,xmax+tol, ymax+tol,zmax+tol)  
     counter = 0
     for n in nodesXa:
         name1 = "Xa%i" % (counter)
@@ -36,7 +36,7 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
         a.Set(nodes=nodes2, name=name2)
         if counter==0:
             mod.Equation(name="Cq11x%i" % (counter),
-                         terms=((-1.0, name1, 1), (-(xmax - xmin), 'RPX', 1),))  # 11
+                         terms=((1.0, name2, 1), (-(xmax - xmin), 'RPX', 1),))  # 11
         else:
             mod.Equation(name="Cq11x%i" % (counter),
                          terms=((1.0, name2, 1), (-1.0, name1, 1), (-(xmax - xmin), 'RPX', 1),))  # 11
@@ -48,8 +48,8 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
         counter = counter + 1
 
     # Constraint Equations between y-normal surfaces. Note: excluding the nodes at xmax:
-    nodesYa = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmin - tol, xmax - tol, ymin + tol, zmax + tol)
-    nodesYb = allNodes.getByBoundingBox(xmin - tol, ymax - tol, zmin - tol, xmax - tol, ymax + tol, zmax + tol)
+    nodesYa = allNodes.getByBoundingBox(xmin-tol,ymin-tol,zmin-tol,xmax-tol, ymin+tol,zmax+tol)    
+    nodesYb = allNodes.getByBoundingBox(xmin-tol,ymax-tol,zmin-tol,xmax-tol, ymax+tol,zmax+tol)       
     counter = 0
     for n in nodesYa:
         name1 = "Ya%i" % (counter)
@@ -70,8 +70,8 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
         counter = counter + 1
 
     # Constraint Equations between z-normal surfaces. Note: excluding the nodes at xmax and ymax :
-    nodesZa = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmin - tol, xmax - tol, ymax - tol, zmin + tol)
-    nodesZb = allNodes.getByBoundingBox(xmin - tol, ymin - tol, zmax - tol, xmax - tol, ymax - tol, zmax + tol)
+    nodesZa = allNodes.getByBoundingBox(xmin-tol,ymin-tol,zmin-tol,xmax-tol, ymax-tol,zmin+tol)    
+    nodesZb = allNodes.getByBoundingBox(xmin-tol,ymin-tol,zmax-tol,xmax-tol, ymax-tol,zmax+tol)       
     counter = 0
     for n in nodesZa:
         name1 = "Za%i" % (counter)

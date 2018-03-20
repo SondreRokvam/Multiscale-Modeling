@@ -285,6 +285,17 @@ Interface = 1                                  # TRUE/FALSE Interface paa fibere
 
 Interfacetykkelse = 1                            # TRUE/FALSE 0 volum Interfaceelement  paa fibere?
 
+
+# Fibere
+rmean = 8.7096  # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
+Rstdiv = 0.6374  # Standard avvik fra gjennomsnittsradius.
+
+# Meshsize fra Interface resolution paa fiberomkrets
+FiberSirkelResolution = 50  # Standard meshsixer er 2*pi/FiberSirkelResolution
+# Meshresolution
+meshsize = rmean * 2 * pi / FiberSirkelResolution
+
+
 """Process Start"""
 
 Sample=[20]          #Forste sweepvariabel
@@ -299,19 +310,12 @@ for m in range(0,len(Sample)):
         #  RVE Modelleringsvariabler
         nf=Sample[m]
         Vf = 0.6
-        RVEt =   0.01         # Proporsjonal forskjell mellom bredde/hoyde og RVE tykkelse
-
-        # Fibere
-        rmean = 8.7096                # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
-        Rstdiv = 0.6374                 # Standard avvik fra gjennomsnittsradius.
+        RVEt =   meshsize         # Naa Mesh size, Var koeffisient forskjell mellom bredde/hoyde med RVE tykkelse
 
         #Toleranser og klaringer
         Rclearing  = 0.025                   # Prosent avstand av r klaring mellom fibere og fra kanter og sider
         rinterface = 0.005                    # Prosent avstand av r paa interfacetykkelse ved modellering
         tol = rinterface*0.4                  # Toleranse som er godt mindre en minste modelleringsvariabel
-
-        # Meshsize fra Interface resolution paa fiberomkrets
-        FiberSirkelResolution = 50                              #Standard meshsixer er 2*pi/FiberSirkelResolution
 
         #Se instilliger
         if True:                     # For aa kunne kollapse variabler
@@ -324,14 +328,14 @@ for m in range(0,len(Sample)):
             if not nf == 0:                              # RVE dL er relativ av nf, rmean og V
                 dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5
             #RVE tykkelse
-            tykkelse = float(RVEt * dL)
-            # Meshresolution
-            meshsize = rmean * 2 * pi / FiberSirkelResolution
+            tykkelse = RVEt
             # iterasjonsgrense i Fiberutplassering
             iterasjonsgrense = 10000
             # stepsize paa Stress sweep
             sweepresolution = 2 * pi / sweepcases
-            # Fiber detaljier
+
+
+            # RVE Fiber detaljier
             r = rmean
             gtol = Rclearing * r  # Dodsone klaring toleranse
             ytredodgrense = r + gtol  # Dodzone avstand, lengst fra kantene
@@ -427,6 +431,7 @@ for m in range(0,len(Sample)):
             create_Linearsweepedlastcases(sweepstrains)                                     # Lag linear sweep strain cases. Set boundary condition and create job.
             del noDoLinearWork
         print 'Reached end of Iteration'
+        Mdb()
 
 
 del NotDone

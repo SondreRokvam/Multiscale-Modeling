@@ -53,7 +53,7 @@ def create_Properites():  # Angi materialegenskaper
     print '\nMaterial properties assigned to element sets in model'
 def createCEq():
     execfile(GitHub + Abaqus + 'RVE_Assembly_RP_CE.py')
-    print 'Imported to Assembly, Reference points created and constraint equ. applied'
+    print '\nImported to Assembly, Reference points created and constraint equ. applied'
 def collapsInterface():
     a = mod.rootAssembly
     nod = a.instances[instanceName].nodes
@@ -428,5 +428,6 @@ for m in range(0,len(Sample)):
             create_Linearsweepedlastcases(sweepstrains)                                     # Lag linear sweep strain cases. Set boundary condition and create job.
             del noDoLinearWork
         print 'Reached end of Iteration'
-        del NotDone
 
+
+del NotDone

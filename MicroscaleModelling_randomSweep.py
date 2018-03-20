@@ -216,9 +216,13 @@ def get_sweepstrains_sig2_sig3(Compliancematrix,sweepresolution):
 
 # nonLinear
 def create_nonLinearsweepedlastcases(Strain,bob):
-    mod = mdb.models[modelName]
-    mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
     a = mod.rootAssembly
+    mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
+    mod.steps['Lasttoyinger'].setValues(
+        stabilizationMagnitude=0.0002, stabilizationMethod=DAMPING_FACTOR,
+        continueDampingFactors=False, adaptiveDampingRatio=0.05,
+        extrapolation=LINEAR, convertSDI=CONVERT_SDI_OFF)
+
     mod.fieldOutputRequests['F-Output-1'].setValues(variables=('DAMAGEC', 'DAMAGET', 'LE', 'MISES', 'PE', 'PEEQ', 'RT', 'S', 'SDEG','STATUS', 'STATUSXFEM', 'U'), timeInterval=0.05)
     mod.historyOutputRequests['H-Output-1'].setValues(variables=(
         'ALLDMD', 'ALLIE', 'ALLSD'))
@@ -243,11 +247,12 @@ def create_nonLinearsweepedlastcases(Strain,bob):
         mod.DisplacementBC(name='BCZ', createStepName=difstpNm,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-        
-        
+
+
         region = a.sets['NL1']
         mod.PinnedBC(name='Laas-3', createStepName='Initial', 
         region=region, localCsys=None)
+        """
         region = a.sets['NL2']
         mod.DisplacementBC(name='Laas-2', createStepName='Initial',
                                              region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
@@ -258,7 +263,7 @@ def create_nonLinearsweepedlastcases(Strain,bob):
                                              region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                                              amplitude=UNSET, distributionType=UNIFORM, fieldName='',
                                              localCsys=None)
-        
+        """
 
 
 
@@ -407,7 +412,7 @@ for m in range(0,len(Sample)):
             collapsInterface()
         if nonLinearDeformation:
                     #exx, eyy, ezz, exy, exz, eyz
-            Case=[(0,0.001,0,0,0,0),    (0,-0.001,0,0,0,0),    (0,0,0,0.001,0,0),    (0,-0.001,0,0.001,0,0)]
+            Case=[(0,0.005,0,0,0,0),    (0,-0.005,0,0,0,0),    (0,0,0,0.001,0,0),    (0,-0.001,0,0.001,0,0)]
             create_nonLinearsweepedlastcases(Case[0],'caseEyyT')          #    Lag linear strain cases. Set boundary condition and create job.
             create_nonLinearsweepedlastcases(Case[1],'caseEyyC')          #    Lag linear strain cases. Set boundary condition and create job.
             create_nonLinearsweepedlastcases(Case[2],'caseExyS')          #    Lag linear strain cases. Set boundary condition and create job.

@@ -25,6 +25,24 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
     # Constraint Equations between x-normal surfaces: Note: excluding a node for fixing
     nodesXa = allNodes.getByBoundingBox(xmin-tol,ymin-tol,zmin-tol,xmin+tol, ymax+tol,zmax+tol)    
     nodesXb = allNodes.getByBoundingBox(xmax-tol,ymin-tol,zmin-tol,xmax+tol, ymax+tol,zmax+tol)  
+    
+    NL1=nodesXa.getByBoundingCylinder((-tol,-dL/2,-dL/2), (tol,-dL/2,-dL/2), tol)
+    if len(NL1)==1:
+        a.Set(nodes=NL1, name='NL1')
+    else:
+        del FinnerIkkeHjornenode
+    NL2=nodesXa.getByBoundingBox(xmin-tol,-dL/10,zmin-tol,xmin+tol,dL/10,zmin+tol)
+    NL2 = NL2[int(len(NL2)/2):int(len(NL2)/2) + 1 ]
+    if len(NL2)==1:
+        a.Set(nodes=NL2, name='NL2')
+    else:          
+        del FinnerIkkeKantenode
+    NL3=nodesXa.getByBoundingCylinder((-tol,0,0), (tol,0,0), dL/20)
+    NL3 = NL3[int(len(NL2)/2):int(len(NL2)/2) + 1 ]
+    if len(NL3)==1:
+        a.Set(nodes=NL3, name='NL3')
+    else:
+        del FinnerIkkeMidtnode
     counter = 0
     for n in nodesXa:
         name1 = "Xa%i" % (counter)
@@ -34,11 +52,7 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
         name2 = "Xb%i" % (counter)
         nodes2 = nodesXb.getByBoundingCylinder((-dL, y, z), (dL, y, z), tol)
         a.Set(nodes=nodes2, name=name2)
-        if counter==0:
-            mod.Equation(name="Cq11x%i" % (counter),
-                         terms=((1.0, name2, 1), (-(xmax - xmin), 'RPX', 1),))  # 11
-        else:
-            mod.Equation(name="Cq11x%i" % (counter),
+        mod.Equation(name="Cq11x%i" % (counter),
                          terms=((1.0, name2, 1), (-1.0, name1, 1), (-(xmax - xmin), 'RPX', 1),))  # 11
         mod.Equation(name="Cq21x%i" % (counter),
                      terms=((1.0, name2, 2), (-1.0, name1, 2), (-(xmax - xmin) / 2, 'RPX', 2),))  # 21

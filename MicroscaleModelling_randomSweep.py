@@ -243,16 +243,19 @@ def create_nonLinearsweepedlastcases(Strain,bob):
         mod.DisplacementBC(name='BCZ', createStepName=difstpNm,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-        """
-        region = a.sets['RPS']
-        mod.DisplacementBC(name='BC-4', createStepName='Initial',
-                                             region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+        
+        
+        region = a.sets['NL1']
+        mod.PinnedBC(name='Laas-3', createStepName='Initial', 
+        region=region, localCsys=None)
+        region = a.sets['NL2']
+        mod.DisplacementBC(name='Laas-2', createStepName='Initial',
+                                             region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                                              amplitude=UNSET, distributionType=UNIFORM, fieldName='',
                                              localCsys=None)
-        """
-        region = a.sets['Xa0']
-        mod.DisplacementBC(name='BC-4', createStepName='Initial',
-                                             region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+        region = a.sets['NL3']
+        mod.DisplacementBC(name='Laas-1', createStepName='Initial',
+                                             region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                                              amplitude=UNSET, distributionType=UNIFORM, fieldName='',
                                              localCsys=None)
         
@@ -268,7 +271,7 @@ def create_nonLinearsweepedlastcases(Strain,bob):
 #Flag
 Runjobs = 1                         # TRUE/FALSE Bestemmer om jobber skal kjores
 
-nonLinearDeformation = 1               # TRUE/FALSE Linear eller nonlinear analyse?
+nonLinearDeformation = 1              # TRUE/FALSE Linear eller nonlinear analyse?
 
 noFiber = 0                               # TRUE/FALSE Overstyrer antall fiber til 0
 
@@ -411,14 +414,14 @@ for m in range(0,len(Sample)):
             create_nonLinearsweepedlastcases(Case[3],'caseExySC')          #    Lag linear strain cases. Set boundary condition and create job.
 
         else:
-            del noDoLinearWork
+            
             create_Linearunitstrainslastcases()                                             # Lag linear strain cases. Set boundary condition and create job.
             Stiffmatrix = get_stiffness()                                                   # Faa ut stiffnessmatrix
 
             Compliancematrix = get_compliance(Stiffmatrix)                                  # Inverter til compliance materix
             sweepstrains = get_sweepstrains_sig2_sig3(Compliancematrix, sweepresolution)    # Finne strains for sweep stress case
             create_Linearsweepedlastcases(sweepstrains)                                     # Lag linear sweep strain cases. Set boundary condition and create job.
-
+            del noDoLinearWork
         print 'Reached end of Iteration'
         del NotDone
 

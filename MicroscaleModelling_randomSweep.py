@@ -252,7 +252,7 @@ def create_nonLinearsweepedlastcases(Strain,bob):
         region = a.sets['NL1']
         mod.PinnedBC(name='Laas-3', createStepName='Initial', 
         region=region, localCsys=None)
-        """
+
         region = a.sets['NL2']
         mod.DisplacementBC(name='Laas-2', createStepName='Initial',
                                              region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
@@ -263,7 +263,6 @@ def create_nonLinearsweepedlastcases(Strain,bob):
                                              region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                                              amplitude=UNSET, distributionType=UNIFORM, fieldName='',
                                              localCsys=None)
-        """
 
 
 
@@ -288,7 +287,7 @@ Interfacetykkelse = 1                            # TRUE/FALSE 0 volum Interfacee
 
 """Process Start"""
 
-Sample=[5]          #Forste sweepvariabel
+Sample=[20]          #Forste sweepvariabel
 #Sample=[0, 5, 10, 25,50]
 for m in range(0,len(Sample)):
     # Se variabler
@@ -361,7 +360,7 @@ for m in range(0,len(Sample)):
             stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
 
     #RVE MODELLERING sweep
-    for Q in range(0,n):
+    for Q in range(0,3):
         from abaqus import *
         from abaqusConstants import *
         from odbAccess import *
@@ -413,10 +412,10 @@ for m in range(0,len(Sample)):
         if nonLinearDeformation:
                     #exx, eyy, ezz, exy, exz, eyz
             Case=[(0,0.005,0,0,0,0),    (0,-0.005,0,0,0,0),    (0,0,0,0.001,0,0),    (0,-0.001,0,0.001,0,0)]
-            create_nonLinearsweepedlastcases(Case[0],'caseEyyT')          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[1],'caseEyyC')          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[2],'caseExyS')          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[3],'caseExySC')          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[0],'caseEyyT'+str(n))          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[1],'caseEyyC'+str(n))          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[2],'caseExyS'+str(n))          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[3],'caseExySC'+str(n))          #    Lag linear strain cases. Set boundary condition and create job.
 
         else:
             

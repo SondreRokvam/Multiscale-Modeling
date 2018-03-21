@@ -146,21 +146,21 @@ def create_nonLinearsweepedlastcases(Strain,bob):
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-
-        region = a.sets['NL1']
-        mod.PinnedBC(name='Laas-3', createStepName='Initial', 
-        region=region, localCsys=None)
-
-        region = a.sets['NL2']
-        mod.DisplacementBC(name='Laas-2', createStepName='Initial',
-                                             region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                                             amplitude=UNSET, distributionType=UNIFORM, fieldName='',
-                                             localCsys=None)
-        region = a.sets['NL3']
-        mod.DisplacementBC(name='Laas-1', createStepName='Initial',
-                                             region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                                             amplitude=UNSET, distributionType=UNIFORM, fieldName='',
-                                             localCsys=None)
+        if Siglepin:
+            region = a.sets['NL1']
+            mod.PinnedBC(name='Laas-3', createStepName='Initial',
+                        region=region, localCsys=None)
+        if Trippelpin and Singlepin:
+            region = a.sets['NL2']
+            mod.DisplacementBC(name='Laas-2', createStepName='Initial',
+                               region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                               amplitude=UNSET, distributionType=UNIFORM, fieldName='',
+                               localCsys=None)
+            region = a.sets['NL3']
+            mod.DisplacementBC(name='Laas-1', createStepName='Initial',
+                               region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                               amplitude=UNSET, distributionType=UNIFORM, fieldName='',
+                               localCsys=None)
 
 
 
@@ -171,6 +171,8 @@ def create_nonLinearsweepedlastcases(Strain,bob):
 #Flag
 Runjobs = 1                         # TRUE/FALSE Bestemmer om jobber skal kjores
 nonLinearDeformation = 1              # TRUE/FALSE Linear eller nonlinear analyse?
+Singlepin = 1
+tripplepin = 1
 
 noFiber = 0                               # TRUE/FALSE Overstyrer antall fiber til 0
 Fibervariation = 1                          # TRUE/FALSE Skal fiber radius variere eller ikke?

@@ -42,6 +42,21 @@ def create_Linearunitstrainslastcases():
         mod.DisplacementBC(name='BCZ', createStepName=stepName,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+        if Siglepin:
+            region = a.sets['NL1']
+            mod.PinnedBC(name='Laas-3', createStepName='Initial',
+                        region=region, localCsys=None)
+        if Trippelpin and Singlepin:
+            region = a.sets['NL2']
+            mod.DisplacementBC(name='Laas-2', createStepName='Initial',
+                               region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                               amplitude=UNSET, distributionType=UNIFORM, fieldName='',
+                               localCsys=None)
+            region = a.sets['NL3']
+            mod.DisplacementBC(name='Laas-1', createStepName='Initial',
+                               region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                               amplitude=UNSET, distributionType=UNIFORM, fieldName='',
+                               localCsys=None)
         print Enhetstoyinger[i]
         run_Job(Enhetstoyinger[i],modelName)
         del exx, eyy, ezz, exy, exz, eyz

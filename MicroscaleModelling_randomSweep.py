@@ -116,10 +116,9 @@ def run_Job(Jobe, modelName):
 def create_nonLinearsweepedlastcases(Strain,bob):
     a = mod.rootAssembly
     mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
-    mod.steps['Lasttoyinger'].setValues(
+    mod.steps['Lasttoyinger'].setValues(maxNumInc=1000,initialInc=0.001, minInc=1e-12, maxInc=0.1,
         stabilizationMagnitude=0.0002, stabilizationMethod=DAMPING_FACTOR,
-        continueDampingFactors=False, adaptiveDampingRatio=0.05,
-        extrapolation=LINEAR, convertSDI=CONVERT_SDI_OFF)
+        continueDampingFactors=False, adaptiveDampingRatio=0.05, extrapolation=LINEAR, convertSDI=CONVERT_SDI_OFF)
 
     mod.fieldOutputRequests['F-Output-1'].setValues(variables=('DAMAGEC', 'DAMAGET', 'LE', 'MISES', 'PE', 'PEEQ', 'RT', 'S', 'SDEG','STATUS', 'STATUSXFEM', 'U'), timeInterval=0.01)
     mod.historyOutputRequests['H-Output-1'].setValues(variables=(
@@ -146,11 +145,11 @@ def create_nonLinearsweepedlastcases(Strain,bob):
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-        if Siglepin:
+        if Singlepin:
             region = a.sets['NL1']
             mod.PinnedBC(name='Laas-3', createStepName='Initial',
                         region=region, localCsys=None)
-        if Trippelpin and Singlepin:
+        if tripplepin and Singlepin:
             region = a.sets['NL2']
             mod.DisplacementBC(name='Laas-2', createStepName='Initial',
                                region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
@@ -253,7 +252,7 @@ for m in range(0,len(Sample)):
         stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
 
     #RVE random modellering sweep
-    n = 1           # Andre Sweep lokke. Itererer med random nokkeler fra 0 til n
+    n = 2           # Andre Sweep lokke. Itererer med random nokkeler fra 0 til n
     for Q in range(0,n):
         from abaqus import *
         from abaqusConstants import *
@@ -306,15 +305,15 @@ for m in range(0,len(Sample)):
         if nonLinearDeformation:
                     #exx, eyy, ezz, exy, exz, eyz
             Case=[(0,0.005,0,0,0,0),    (0,-0.001,0,0,0,0),    (0,0,0,0.005,0,0),    (0,-0.005,0,0.001,0,0)]
-            create_nonLinearsweepedlastcases(Case[0],'caseEyyT'+str(Q))          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[1],'caseEyyC'+str(Q))          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[2],'caseExyS'+str(Q))          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[3],'caseExySC'+str(Q))          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[0],'caseEyyT_'+str(Q))          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[1],'caseEyyC_'+str(Q))          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[2],'caseExyS_'+str(Q))          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[3],'caseExySC_'+str(Q))          #    Lag linear strain cases. Set boundary condition and create job.
 
         else:
             execfile(GitHub + Abaqus + 'LinearAnalysis.py')
         print 'Reached end of Iteration'
-        Mdb()
+
 
 
 del NotDone

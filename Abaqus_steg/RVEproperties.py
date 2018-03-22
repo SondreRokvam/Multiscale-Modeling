@@ -73,7 +73,7 @@ def SectionsAndOrientations():                                  # Create and ass
                                           additionalRotationField='', stackDirection=STACK_3)
 
                 mod.CohesiveSection(name='SSbond', material='interface', response=TRACTION_SEPARATION,
-                                    initialThicknessType=SPECIFY, initialThickness=rinterface * rmean, outOfPlaneThickness=None)
+                                    initialThicknessType=SPECIFY, initialThickness=0.001, outOfPlaneThickness=None)
                 # initialThicknessType=GEOMETRY,outOfPlaneThickness=None)
             else:
                 mod.HomogeneousSolidSection(name='SSbond', material='interface', thickness=None)

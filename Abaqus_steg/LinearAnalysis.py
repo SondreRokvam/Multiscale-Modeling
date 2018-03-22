@@ -42,11 +42,11 @@ def create_Linearunitstrainslastcases():
         mod.DisplacementBC(name='BCZ', createStepName=stepName,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-        if Siglepin:
+        if Singlepin:
             region = a.sets['NL1']
             mod.PinnedBC(name='Laas-3', createStepName='Initial',
                         region=region, localCsys=None)
-        if Trippelpin and Singlepin:
+        if tripplepin and Singlepin:
             region = a.sets['NL2']
             mod.DisplacementBC(name='Laas-2', createStepName='Initial',
                                region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,

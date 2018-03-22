@@ -37,8 +37,12 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
         a.Set(nodes=NL2, name='NL2')
     else:          
         del FinnerIkkeKantenode
-    NL3=nodesXa.getByBoundingCylinder((-tol,0,0), (tol,0,0), dL/20)
-    NL3 = NL3[int(len(NL2)/2):int(len(NL2)/2) + 1 ]
+    if not nf==0:
+        NL3=nodesXa.getByBoundingCylinder((-tol,0,0), (tol,0,0), dL/10)
+        NL3 = NL3[int(len(NL2)/2):int(len(NL2)/2) + 1 ]
+    else:
+        NL3 = nodesXa.getByBoundingCylinder((-tol, 0, 0), (tol, 0, 0), dL / 3)
+        NL3 = NL3[int(len(NL2) / 2):int(len(NL2) / 2) + 1]
     if len(NL3)==1:
         a.Set(nodes=NL3, name='NL3')
     else:

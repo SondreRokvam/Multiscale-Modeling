@@ -54,10 +54,11 @@ def create_Properites():  # Angi materialegenskaper
 def createCEq():
     execfile(GitHub + Abaqus + 'RVE_Assembly_RP_CE.py')
     print '\nReference points created and constraint equ. applied'
-def collapsInterface():
+def ReadajustInterface():
     a = mod.rootAssembly
     nod = a.instances[instanceName].nodes
     count=0
+    #del checkHere
     for fiba in xydata:
         x = fiba[0]
         y = fiba[1]
@@ -66,7 +67,7 @@ def collapsInterface():
             r = fiba[2]
         Fod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r  - tol)
         Fnod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface)  - tol)
-        Inod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface) + tol)
+        Inod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface) +rinterface)
         a.Set(nodes=Fod, name='noFiber'+str(count)+'nodes')
         a.Set(nodes=Fnod, name='Fiber'+str(count)+'nodes')
         a.Set(nodes=Inod, name='FiberInterface' + str(count) + 'nodes')
@@ -78,18 +79,29 @@ def collapsInterface():
             xns = node.coordinates[0]
             yns = node.coordinates[1]
             zns = node.coordinates[2]
-            FN = Fibnodes.getByBoundingCylinder((xns - tol, yns, zns), (xns + tol, yns, zns), 2 * r * rinterface)
-            IN = Intnodes.getByBoundingCylinder((xns - tol, yns, zns), (xns + tol, yns, zns), 2 * r * rinterface)
+            FN = Fibnodes.getByBoundingCylinder((xns - tol, yns, zns), (xns + tol, yns, zns), 2* r * rinterface)
+            IN = Intnodes.getByBoundingCylinder((xns - tol, yns, zns), (xns + tol, yns, zns), 2* r * rinterface)
             a.Set(nodes=IN, name='IN')
             a.Set(nodes=FN, name='FN')
-            nyx = round(FN[0].coordinates[0],5)
-            nyy = round(FN[0].coordinates[1],5)
-            nyz = round(FN[0].coordinates[2],5)
-            a.editNode(nodes=a.sets['IN'], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
-            a.editNode(nodes=a.sets['FN'], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
-            a.regenerate()
-            a.deleteSets(setNames=('noFiber'+str(count)+'nodes','IN','FN', 'Fiber'+str(count)+'nodes','FiberInterface' + str(count) + 'nodes','Fiberflate'+ str(count) + 'nodes','Interface'+ str(count) + 'nodes',))
+            if len(FN)==1 and len(IN)==1:
+                nyx = round(FN[0].coordinates[0], 5)
+                nyy = round(FN[0].coordinates[1], 5)
+                nyz = round(FN[0].coordinates[2], 5)
+                RScaling = ElementInterfaceT / r
+                if not Interfacetykkelse:
+                    RScaling = 0
+                Iy = round(nyy+(nyy - y)*RScaling,5)
+                Iz = round(nyz + (nyz + x) * RScaling, 5)
+                if abs(Iy)>dL/2:
+                    Iy = (Iy / abs(Iy)) * dL / 2
+                if abs(Iz)>dL/2:
+                    Iz = (Iz / abs(Iz)) * dL / 2
+                a.editNode(nodes=a.sets['IN'], coordinate1=nyx, coordinate2= Iy, coordinate3=Iz)
+                a.editNode(nodes=a.sets['FN'], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
+                a.regenerate()
+                a.deleteSets(setNames=('noFiber'+str(count)+'nodes','IN','FN', 'Fiber'+str(count)+'nodes','FiberInterface' + str(count) + 'nodes','Fiberflate'+ str(count) + 'nodes','Interface'+ str(count) + 'nodes',))
         count = count + 1
+    print '\nInterface elements adjusted'
 
 """         SIMULERINGS FUNKSJONER               """
 
@@ -113,14 +125,14 @@ def run_Job(Jobe, modelName):
                 numDomains=numCpus, numGPUs=OFF)"""
 
 # nonLinear
-def create_nonLinearsweepedlastcases(Strain,bob):
+def create_nonLinearsweepedlastcases(Strain,bob,Incre):
     a = mod.rootAssembly
     mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
     mod.steps['Lasttoyinger'].setValues(maxNumInc=1000,initialInc=0.001, minInc=1e-12, maxInc=0.1,
         stabilizationMagnitude=0.0002, stabilizationMethod=DAMPING_FACTOR,
         continueDampingFactors=False, adaptiveDampingRatio=0.05, extrapolation=LINEAR, convertSDI=CONVERT_SDI_OFF)
 
-    mod.fieldOutputRequests['F-Output-1'].setValues(variables=('DAMAGEC', 'DAMAGET', 'LE', 'MISES', 'PE', 'PEEQ', 'RT', 'S', 'SDEG','STATUS', 'STATUSXFEM', 'U'), timeInterval=0.01)
+    mod.fieldOutputRequests['F-Output-1'].setValues(variables=('DAMAGEC', 'DAMAGET', 'LE', 'MISES', 'PE', 'PEEQ', 'RT', 'S', 'SDEG','STATUS', 'STATUSXFEM', 'U'), timeInterval=0.0001)
     mod.historyOutputRequests['H-Output-1'].setValues(variables=(
         'ALLDMD', 'ALLIE', 'ALLSD'))
     a.SetByBoolean(name='RPS', sets=(a.sets['RPX'], a.sets['RPY'],a.sets['RPZ'],))
@@ -128,6 +140,9 @@ def create_nonLinearsweepedlastcases(Strain,bob):
     mod.HistoryOutputRequest(name='H-Output-2', 
         createStepName='Lasttoyinger', variables=('RT', 'UT'), 
         region=regDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
+    mdb.models['Model-A'].fieldOutputRequests['F-Output-1'].setValues(frequency=1)
+    mdb.models['Model-A'].steps['Lasttoyinger'].setValues(
+        timeIncrementationMethod=FIXED, initialInc=Incre, noStop=OFF)
     
     print '\nnon Linear load analysis'
     # Lagring av output data base filer .odb
@@ -160,10 +175,9 @@ def create_nonLinearsweepedlastcases(Strain,bob):
                                region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                                amplitude=UNSET, distributionType=UNIFORM, fieldName='',
                                localCsys=None)
+        run_Job(bob, modelName)
+        mdb.saveAs(pathName=workpath + bob)
 
-
-
-        run_Job(bob+'lol', modelName)
 
 """$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
 """            TEST VARIABLER               """
@@ -171,7 +185,7 @@ def create_nonLinearsweepedlastcases(Strain,bob):
 Runjobs = 1                         # TRUE/FALSE Bestemmer om jobber skal kjores
 nonLinearDeformation = 1              # TRUE/FALSE Linear eller nonlinear analyse?
 Singlepin = 1
-tripplepin = 1
+tripplepin = 0
 
 noFiber = 0                               # TRUE/FALSE Overstyrer antall fiber til 0
 Fibervariation = 1                          # TRUE/FALSE Skal fiber radius variere eller ikke?
@@ -183,15 +197,16 @@ rmean = 8.7096  # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere t
 Rstdiv = 0.6374  # Standard avvik fra gjennomsnittsradius.
 
 # Meshsize fra Interface resolution paa fiberomkrets
-FiberSirkelResolution = 36          # Standard meshsixer er 2*pi/FiberSirkelResolution
+FiberSirkelResolution = 16                              # Standard meshsixer er 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshresolution
 
 """Process Start"""
 
-Sample=[25]          #Forste sweepvariabel
-#Sample=[0, 5, 10, 25,50]
+Sample=[15]          #Forste sweepvariabel
+#Sample=[0, 5, 10, 25]
 for m in range(0,len(Sample)):
-                                    #  RVE Modelleringsvariabler
+
+    #  RVE Modelleringsvariabler
     nf   =      Sample[m]
     Vf   =      0.6
     RVEt =      meshsize            #      RVE modellens tykkelse.
@@ -203,10 +218,12 @@ for m in range(0,len(Sample)):
 
     #Unit stess sweeps
     sweepcases = 1      # Opplosning paa stress sweeps vinkler
-
+    ElementInterfaceT = 0.005
     #Se instilliger
     if True:                     # For aa kunne kollapse instillinger
-            # RVE modellering:
+        print Sample[m]
+        if Sample[m]==0:
+            noFiber = 1             # Loop reset check
         if nf == 0 or Vf == 0 or noFiber:
             nf = 0
             Vf = 0
@@ -252,7 +269,7 @@ for m in range(0,len(Sample)):
         stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
 
     #RVE random modellering sweep
-    n = 2           # Andre Sweep lokke. Itererer med random nokkeler fra 0 til n
+    n = 1           # Andre Sweep lokke. Itererer med random nokkeler fra 0 til n
     for Q in range(0,n):
         from abaqus import *
         from abaqusConstants import *
@@ -287,33 +304,35 @@ for m in range(0,len(Sample)):
             for g in range(0,sweepcases):
                 Sweeptoyinger[g] = ('Sweep_strain'+ str(m) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
 
-        #RVE parametere
-        xydata = None
-        if not noFiber:
-            execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
-            xydata= hentePopulation()                               # hente fibercoordinater
+        # RVE model creation in Abaqus
+        if True:
+            #RVE parametere
+            xydata = None
+            if not noFiber:
+                execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
+                xydata= hentePopulation()                               # hente fibercoordinater
 
-        # Abaqus Operasjoner
-        createPart_n_Ophanmesh()            # Lage 2D RVE shell fra fiberpopulasjon data, meshe RVE, extrudere til 3D part og lage orphanmesh
-        createSets_n_Datums()               # Element sets for material properties and Fiber center datums for material orientation
+            # Abaqus Operasjoner
+            createPart_n_Ophanmesh()            # Lage 2D RVE shell fra fiberpopulasjon data, meshe RVE, extrudere til 3D part og lage orphanmesh
+            createSets_n_Datums()               # Element sets for material properties and Fiber center datums for material orientation
 
-        create_Properites()
-        createCEq()                                                                    # Lag constrain equations
-        if not Interfacetykkelse and (Interface and not noFiber):
-            print 'Collaps Interface elements'
-            collapsInterface()
+            create_Properites()
+            createCEq()
+            if not noFiber and True:
+                ReadajustInterface()
         if nonLinearDeformation:
                     #exx, eyy, ezz, exy, exz, eyz
-            Case=[(0,0.005,0,0,0,0),    (0,-0.001,0,0,0,0),    (0,0,0,0.005,0,0),    (0,-0.005,0,0.001,0,0)]
-            create_nonLinearsweepedlastcases(Case[0],'caseEyyT_'+str(Q))          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[1],'caseEyyC_'+str(Q))          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[2],'caseExyS_'+str(Q))          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[3],'caseExySC_'+str(Q))          #    Lag linear strain cases. Set boundary condition and create job.
-
+            Case=[(0,1e-4,0,0,0,0),    (0,-1e-4,0,0,0,0),    (0,0,0,1e-3,0,0),    (0,-1e-4,0,5e-4,0,0)]
+            Incre = 0.00001
+            create_nonLinearsweepedlastcases(Case[0],'caseEyyT_'+str(Q)+str(Sample[m],Incre))          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[1],'caseEyyC_'+str(Q)+str(Sample[m],Incre))          #    Lag linear strain cases. Set boundary condition and create job.
+            Incre = 0.0001
+            create_nonLinearsweepedlastcases(Case[2],'caseExyS_'+str(Q)+str(Sample[m],Incre))          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[3],'caseExySC_'+str(Q)+str(Sample[m],Incre))          #    Lag linear strain cases. Set boundary condition and create job.
         else:
             execfile(GitHub + Abaqus + 'LinearAnalysis.py')
         print 'Reached end of Iteration'
 
 
 
-del NotDone
+del IfWork_NowDone

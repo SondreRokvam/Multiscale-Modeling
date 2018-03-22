@@ -203,7 +203,7 @@ meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshresolution
 """Process Start"""
 
 Sample=[15]          #Forste sweepvariabel
-#Sample=[0, 5, 10, 25]
+Sample=[0, 5, 10, 25, 50]
 for m in range(0,len(Sample)):
 
     #  RVE Modelleringsvariabler
@@ -324,11 +324,11 @@ for m in range(0,len(Sample)):
                     #exx, eyy, ezz, exy, exz, eyz
             Case=[(0,1e-4,0,0,0,0),    (0,-1e-4,0,0,0,0),    (0,0,0,1e-3,0,0),    (0,-1e-4,0,5e-4,0,0)]
             Incre = 0.00001
-            create_nonLinearsweepedlastcases(Case[0],'caseEyyT_'+str(Q)+str(Sample[m],Incre))          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[1],'caseEyyC_'+str(Q)+str(Sample[m],Incre))          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[0],'caseEyyT_'+str(Q)+str(Sample[m]),Incre)          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[1],'caseEyyC_'+str(Q)+str(Sample[m]),Incre)          #    Lag linear strain cases. Set boundary condition and create job.
             Incre = 0.0001
-            create_nonLinearsweepedlastcases(Case[2],'caseExyS_'+str(Q)+str(Sample[m],Incre))          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[3],'caseExySC_'+str(Q)+str(Sample[m],Incre))          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[2],'caseExyS_'+str(Q)+str(Sample[m]),Incre)          #    Lag linear strain cases. Set boundary condition and create job.
+            create_nonLinearsweepedlastcases(Case[3],'caseExySC_'+str(Q)+str(Sample[m]),Incre)          #    Lag linear strain cases. Set boundary condition and create job.
         else:
             execfile(GitHub + Abaqus + 'LinearAnalysis.py')
         print 'Reached end of Iteration'

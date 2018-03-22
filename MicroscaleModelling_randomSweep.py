@@ -197,7 +197,7 @@ rmean = 8.7096  # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere t
 Rstdiv = 0.6374  # Standard avvik fra gjennomsnittsradius.
 
 # Meshsize fra Interface resolution paa fiberomkrets
-FiberSirkelResolution = 16                              # Standard meshsixer er 2*pi/FiberSirkelResolution
+FiberSirkelResolution = 32                              # Standard meshsixer er 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshresolution
 
 """Process Start"""
@@ -205,7 +205,6 @@ meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshresolution
 Sample=[15]          #Forste sweepvariabel
 Sample=[0, 5, 10, 25, 50]
 for m in range(0,len(Sample)):
-
     #  RVE Modelleringsvariabler
     nf   =      Sample[m]
     Vf   =      0.6
@@ -219,11 +218,11 @@ for m in range(0,len(Sample)):
     #Unit stess sweeps
     sweepcases = 1      # Opplosning paa stress sweeps vinkler
     ElementInterfaceT = 0.005
-    #Se instilliger
+    #Se Generelle instilliger
     if True:                     # For aa kunne kollapse instillinger
         print Sample[m]
-        if Sample[m]==0:
-            noFiber = 1             # Loop reset check
+        if  not Sample[m]==0:
+            noFiber = 0
         if nf == 0 or Vf == 0 or noFiber:
             nf = 0
             Vf = 0

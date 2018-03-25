@@ -1,25 +1,6 @@
-def run_Job(Jobe, modelName):
-    if Runjobs:
-        mdb.Job(name=Jobe, model=modelName, description='', type=ANALYSIS,
-        atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
-        memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
-        modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-        scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
-        numDomains=numCpus, numGPUs=1)
-
-        mdb.jobs[Jobe].submit(consistencyChecking=OFF)
-        mdb.jobs[Jobe].waitForCompletion()
-        """type=ANALYSIS,atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
-                memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-                explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
-                modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-                scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
-                numDomains=numCpus, numGPUs=OFF)"""
-
 # Linear
 def create_Linearunitstrainslastcases():
-    id = np.identity(6)  # Identity matrix for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
+
     a = mod.rootAssembly
     #Create step Linear step
     mod.StaticStep(name=stepName, previous='Initial')
@@ -95,7 +76,8 @@ def get_stiffness():
             sag[k]= sag[k]/(tykkelse*(dL)**2) #Volume
         stiffmatrix.append(sag)
     print '\n'
-    g = open(lagrestiffpath, "w")
+    g = open(lagrestiffpath, "a")
+    g = open(lagrestiffpath, "a")
     print '\nStiffnessmatrix stored\n'
     for a in range(0, 6):
         g.write(str(float(stiffmatrix[0][a]))+'\t'+str(float(stiffmatrix[1][a]))+'\t'+str(float(stiffmatrix[2][a]))+'\t'+str(float(stiffmatrix[3][a]))+'\t'+str(float(stiffmatrix[4][a]))+'\t'+str(float(stiffmatrix[5][a])))

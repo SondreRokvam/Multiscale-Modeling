@@ -18,7 +18,8 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
     mod.Material(name='resin')
     res=mod.materials['resin']
     res.Elastic(table=(ResCon['E,v'],))
-    res.Density(table=((ResCon['Den'],),))
+    if MaterialDens:
+        res.Density(table=((ResCon['Den'],),))
     if nonLinearDeformation:
         res.ConcreteDamagedPlasticity(table=(ResCon['CDP'],))
         RCDP = res.concreteDamagedPlasticity
@@ -29,7 +30,8 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
     if not nf == 0:
         mod.Material(name='glass')
         mod.materials['glass'].Elastic(table=(FibCon['E,v'],))
-        mod.materials['glass'].Density(table=((FibCon['Den'],),))
+        if MaterialDens:
+            mod.materials['glass'].Density(table=((FibCon['Den'],),))
         if Interface:
             mod.Material(name='interface')
             if nonLinearDeformation:
@@ -41,7 +43,8 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
                                                            power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
             else:
                 mod.materials['interface'].Elastic(table=(ResCon['E,v'],))
-                mod.materials['interface'].Density(table=((FibCon['Den'],),))
+                if MaterialDens:
+                    mod.materials['interface'].Density(table=((FibCon['Den'],),))
                 #mod.materials['interface'].Elastic(type=TRACTION, table=((100.0, 100.0, 100.0),))?
 
 def SectionsAndOrientations():                                  # Create and assign sections to materials

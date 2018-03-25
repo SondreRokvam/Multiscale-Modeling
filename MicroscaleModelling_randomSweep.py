@@ -7,9 +7,8 @@ print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
        'Multiscale Modelling, Microscale  \n'
        'Allowed numCpus = ',numCpus)
 
-
-"""         MODELLERINGS FUNKSJONER                """
-#RVEmodell
+"""         RVE MODELLERING                """
+#RVEmodellfibercoordinaterdata
 def hentePopulation():                 #Les fiber matrix populasjon
     xy=list()
     f = open(coordpath,'r')
@@ -26,17 +25,16 @@ def hentePopulation():                 #Les fiber matrix populasjon
     return xy
 
 #Abaqus operations
-def createPart_n_Ophanmesh():
+def createPart_n_Ophanmesh():                                       # Creates an RVE model and a orphanmesh
     Mdb()  # reset Abaqus
-    #Lag sketch
     execfile(GitHub+Abaqus+'RVEsketching.py')                                             # Lage 2D RVE fra fiberpopulasjon data
-    del mdb.models['Model-1']                                             # Slett standard part
+    del mdb.models['Model-1']                                                             # Slett standard part model 1
     execfile(GitHub+Abaqus+'RVEmeshpart.py')                                              # Meshe 2D RVE  til 3D part og lage orphanmesh
     print '\nRVEpart created, meshed and Orphanmesh created'
-def createSets_n_Datums():
+def createSets_n_Datums():                                          # Element sets for materials properties. Fiber center datums for material orientation
     p = mod.parts[meshPartName]
-    execfile(GitHub+Abaqus+'RVEelementsets.py')
-    # Lage cylindriske kordinatsystemer i fiber sentrum
+    execfile(GitHub+Abaqus+'RVEelementsets.py')                                         # Sette i fiber, sizing og matrix elementer i set
+                                                                                        # Lage cylindriske kordinatsystemer i fiber sentrum
     if not noFiber and Interface and nonLinearDeformation:
         # Lage fiber datums for material orientering av Interface
         for ie in range(0, len(xydata)):
@@ -47,163 +45,66 @@ def createSets_n_Datums():
         # Set cohesive elementtype paa Interface
         p.setElementType(regions=p.sets['Interfaces'],
                          elemTypes=(mesh.ElemType(elemCode=COH3D8, elemLibrary=STANDARD),))
-    print '\nElement sets and Fiber center datums  created' #Element sets for material properties and Fiber center datums for material orientation
-def create_Properites():  # Angi materialegenskaper
+    print '\nElement sets (and Fiber center datums) created'
+def create_Properites():                                    # Sett materialegenskaper for element settene i kompositten
     execfile(GitHub + Abaqus + 'RVEproperties.py')
     print '\nMaterial properties assigned to element sets in model'
-def createCEq():
+def createCEq():                                        # Sett constraint equations for RVE model
     execfile(GitHub + Abaqus + 'RVE_Assembly_RP_CE.py')
     print '\nReference points created and constraint equ. applied'
-def ReadajustInterface():
-    a = mod.rootAssembly
-    nod = a.instances[instanceName].nodes
-    count=0
-    #del checkHere
-    for fiba in xydata:
-        x = fiba[0]
-        y = fiba[1]
-        r = rmean
-        if Fibervariation:
-            r = fiba[2]
-        Fod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r  - tol)
-        Fnod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface)  - tol)
-        Inod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface) +rinterface)
-        a.Set(nodes=Fod, name='noFiber'+str(count)+'nodes')
-        a.Set(nodes=Fnod, name='Fiber'+str(count)+'nodes')
-        a.Set(nodes=Inod, name='FiberInterface' + str(count) + 'nodes')
-        a.SetByBoolean(name='Fiberflate'+ str(count) + 'nodes', sets=(a.sets['Fiber'+str(count)+'nodes'], a.sets['noFiber'+str(count)+'nodes'],), operation=DIFFERENCE)
-        a.SetByBoolean(name='Interface'+ str(count) + 'nodes', sets=(a.sets['FiberInterface' + str(count) + 'nodes'], a.sets['Fiber'+str(count)+'nodes'],), operation=DIFFERENCE)
-        Intnodes = a.sets['Interface'+ str(count) + 'nodes'].nodes
-        Fibnodes = a.sets['Fiberflate'+ str(count) + 'nodes'].nodes
-        for node in Intnodes:
-            xns = node.coordinates[0]
-            yns = node.coordinates[1]
-            zns = node.coordinates[2]
-            FN = Fibnodes.getByBoundingCylinder((xns - tol, yns, zns), (xns + tol, yns, zns), 2* r * rinterface)
-            IN = Intnodes.getByBoundingCylinder((xns - tol, yns, zns), (xns + tol, yns, zns), 2* r * rinterface)
-            a.Set(nodes=IN, name='IN')
-            a.Set(nodes=FN, name='FN')
-            if len(FN)==1 and len(IN)==1:
-                nyx = round(FN[0].coordinates[0], 5)
-                nyy = round(FN[0].coordinates[1], 5)
-                nyz = round(FN[0].coordinates[2], 5)
-                RScaling = ElementInterfaceT / r
-                if not Interfacetykkelse:
-                    RScaling = 0
-                Iy = round(nyy+(nyy - y)*RScaling,5)
-                Iz = round(nyz + (nyz + x) * RScaling, 5)
-                if abs(Iy)>dL/2:
-                    Iy = (Iy / abs(Iy)) * dL / 2
-                if abs(Iz)>dL/2:
-                    Iz = (Iz / abs(Iz)) * dL / 2
-                a.editNode(nodes=a.sets['IN'], coordinate1=nyx, coordinate2= Iy, coordinate3=Iz)
-                a.editNode(nodes=a.sets['FN'], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
-                a.regenerate()
-                a.deleteSets(setNames=('noFiber'+str(count)+'nodes','IN','FN', 'Fiber'+str(count)+'nodes','FiberInterface' + str(count) + 'nodes','Fiberflate'+ str(count) + 'nodes','Interface'+ str(count) + 'nodes',))
-        count = count + 1
+def ReadajustInterface():                                    # Rearrange fiber interface nodes for different element thickness and stable simulations
+    execfile(GitHub + Abaqus + 'RVE_InterfaceElementThickness.py')
     print '\nInterface elements adjusted'
 
-"""         SIMULERINGS FUNKSJONER               """
+"""         SIMULERING               """
 
-def run_Job(Jobe, modelName):
+Simuleringer=[]
+def run_Job(Jobb, modelName):
+    Simuleringer.append(Jobb)
+    mdb.Job(name=Jobb, model=modelName, description='', type=ANALYSIS,
+            atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
+            memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+            explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
+            modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
+            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
+            numDomains=numCpus, numGPUs=1)
     if Runjobs:
-        mdb.Job(name=Jobe, model=modelName, description='', type=ANALYSIS,
-        atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
-        memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
-        modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-        scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
-        numDomains=numCpus, numGPUs=1)
-
-        mdb.jobs[Jobe].submit(consistencyChecking=OFF)
-        mdb.jobs[Jobe].waitForCompletion()
-        """type=ANALYSIS,atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
-                memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-                explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
-                modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-                scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
-                numDomains=numCpus, numGPUs=OFF)"""
-
-# nonLinear
-def create_nonLinearsweepedlastcases(Strain,bob,Incre):
-    a = mod.rootAssembly
-    mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
-    mod.steps['Lasttoyinger'].setValues(maxNumInc=1000,initialInc=0.001, minInc=1e-12, maxInc=0.1,
-        stabilizationMagnitude=0.0002, stabilizationMethod=DAMPING_FACTOR,
-        continueDampingFactors=False, adaptiveDampingRatio=0.05, extrapolation=LINEAR, convertSDI=CONVERT_SDI_OFF)
-
-    mod.fieldOutputRequests['F-Output-1'].setValues(variables=('DAMAGEC', 'DAMAGET', 'LE', 'MISES', 'PE', 'PEEQ', 'RT', 'S', 'SDEG','STATUS', 'STATUSXFEM', 'U'), timeInterval=0.0001)
-    mod.historyOutputRequests['H-Output-1'].setValues(variables=(
-        'ALLDMD', 'ALLIE', 'ALLSD'))
-    a.SetByBoolean(name='RPS', sets=(a.sets['RPX'], a.sets['RPY'],a.sets['RPZ'],))
-    regDef=mdb.models['Model-A'].rootAssembly.sets['RPS']
-    mod.HistoryOutputRequest(name='H-Output-2', 
-        createStepName='Lasttoyinger', variables=('RT', 'UT'), 
-        region=regDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
-    mdb.models['Model-A'].fieldOutputRequests['F-Output-1'].setValues(frequency=1)
-    mdb.models['Model-A'].steps['Lasttoyinger'].setValues(
-        timeIncrementationMethod=FIXED, initialInc=Incre, noStop=OFF)
-    
-    print '\nnon Linear load analysis'
-    # Lagring av output data base filer .odb
-    for case in range(0, 1):
-        exx, eyy, ezz, exy, exz, eyz = Strain
-        mod.DisplacementBC(name='BCX', createStepName=difstpNm,
-                           region=a.sets['RPX'], u1=exx, u2=exy, u3=exz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                           amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-
-        mod.DisplacementBC(name='BCY', createStepName=difstpNm,
-                           region=a.sets['RPY'], u1=exy, u2=eyy, u3=eyz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                           amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-
-        mod.DisplacementBC(name='BCZ', createStepName=difstpNm,
-                           region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                           amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-
-        if Singlepin:
-            region = a.sets['NL1']
-            mod.PinnedBC(name='Laas-3', createStepName='Initial',
-                        region=region, localCsys=None)
-        if tripplepin and Singlepin:
-            region = a.sets['NL2']
-            mod.DisplacementBC(name='Laas-2', createStepName='Initial',
-                               region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                               amplitude=UNSET, distributionType=UNIFORM, fieldName='',
-                               localCsys=None)
-            region = a.sets['NL3']
-            mod.DisplacementBC(name='Laas-1', createStepName='Initial',
-                               region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                               amplitude=UNSET, distributionType=UNIFORM, fieldName='',
-                               localCsys=None)
-        run_Job(bob, modelName)
-        mdb.saveAs(pathName=workpath + bob)
+        mdb.jobs[Jobb].submit(consistencyChecking=OFF)
+        mdb.jobs[Jobb].waitForCompletion()
 
 
-"""$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"""
-"""            TEST VARIABLER               """
-#Flag
-Runjobs = 1                         # TRUE/FALSE Bestemmer om jobber skal kjores
-nonLinearDeformation = 1              # TRUE/FALSE Linear eller nonlinear analyse?
-Singlepin = 1
-tripplepin = 0
+"""$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        VARIABLER                                       """
+#FLAGS
+Runjobs = 0                             #   Bestemmer om jobber skal kjores
+linearAnalysis = 0                      #   Linear analyse
+nonLinearDeformation = 1                #   non-linear analyse
 
-noFiber = 0                               # TRUE/FALSE Overstyrer antall fiber til 0
-Fibervariation = 1                          # TRUE/FALSE Skal fiber radius variere eller ikke?
-Interface = 1                                  # TRUE/FALSE Interface paa fibere?
-Interfacetykkelse = 1                            # TRUE/FALSE 0 volum Interfaceelement  paa fibere?
+Singlepin = 1                               #   Laaser en hjorne node mot forskyvning i 3 retninger
+tripplepin = 0                              #   Laaser to noder mot forskyvning. En langs kant i 2 retninger og en i midten i 1 retning
+
+#Interface
+Interface = 1                                   # Modellere Interface?
+rinterface = 0.005                              # Interfacetykkelse ved modellering relativt til radius.    0.005 =0 .5%
+ElementInterfaceT = 0.005                       # Sette/endre Interfacetykkelse relativt til radius.
 
 # Fibere
-rmean = 8.7096  # Gjennomsnittradius. Om ikke fibervariasjon saa settes fibere til aa vaere uniform.
-Rstdiv = 0.6374  # Standard avvik fra gjennomsnittsradius.
+noFibertest = 0                                     # Fjerner alle fiber fra modellen
+Fibervariation = 1                                  # Legger til fiberradius variasjon fra standard avvik
 
-# Meshsize fra Interface resolution paa fiberomkrets
-FiberSirkelResolution = 32                              # Standard meshsixer er 2*pi/FiberSirkelResolution
-meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshresolution
+rmean = 8.7096                      # Gjennomsnittradius. Om fibervariasjon er uniform.
+Rstdiv = 0.6374                     # Om fibervariasjon saa brukes dette som Standard avvik fra gjennomsnittsradius.
 
+# Meshsize
+FiberSirkelResolution = 32                              # Standard meshsizer er 2*pi/FiberSirkelResolution
+meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra interface resolution rundt fiber
+
+#Material Density
+MaterialDens  = 0
 """Process Start"""
 
-Sample=[15]          #Forste sweepvariabel
-Sample=[0, 5, 10, 25, 50]
+Sample=[5]          #Forste sweepvariabel for parameter tester
+#Sample=[0, 5, 10, 25, 50]
 for m in range(0,len(Sample)):
     #  RVE Modelleringsvariabler
     nf   =      Sample[m]
@@ -211,25 +112,23 @@ for m in range(0,len(Sample)):
     RVEt =      meshsize            #      RVE modellens tykkelse.
 
     #Toleranser og klaringer
-    Rclearing  = 0.025                   # Prosent avstand av r klaring mellom fibere og fra kanter og sider
-    rinterface = 0.005                    # Prosent avstand av r paa interfacetykkelse ved modellering
-    tol = rinterface*0.4                  # Toleranse som er godt mindre en minste modelleringsvariabel
+    Rclearing  = 0.025                    # Minimumsavstand mellom fibere og fra kantene. Kan kanskje settes lik meshsize?
+    tol = rinterface*0.4                  # Modellerings toleranse er mindre en minste modelleringsvariabel
 
     #Unit stess sweeps
     sweepcases = 1      # Opplosning paa stress sweeps vinkler
-    ElementInterfaceT = 0.005
+    id = np.identity(6)  # Identity matrix for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
     #Se Generelle instilliger
     if True:                     # For aa kunne kollapse instillinger
         print Sample[m]
-        if  not Sample[m]==0:
-            noFiber = 0
-        if nf == 0 or Vf == 0 or noFiber:
+        if nf == 0 or Vf == 0 or noFibertest:
             nf = 0
             Vf = 0
             dL = rmean*2
             noFiber = 1
         if not nf == 0:                              # RVE dL er relativ av nf, rmean og V
             dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5
+            noFiber =0
 
             #RVE tykkelse
         tykkelse = RVEt
@@ -240,14 +139,14 @@ for m in range(0,len(Sample)):
         ytredodgrense = r + gtol  # Dodzone avstand, lengst fra kantene
         indredodgrense = r - gtol  # Dodzone avstand, naermest kantene
 
-            # iterasjonsgrense i Fiberutplassering
+            # iterasjonsgrense i Fiberutplassering og stepsize paa Stress sweep
         iterasjonsgrense = 10000
 
-            # stepsize paa Stress sweep
         sweepresolution = 2 * pi / sweepcases
 
-        if Interfacetykkelse:
-            print 'Aspect ratio for Interface elements = ' + str(round(meshsize / (rinterface * rmean), 2)) + '    Interface elements thickness = ' + str(float(rinterface * rmean))
+        if Interface:
+            print('Aspect ratio for Interface elements ved modellering = ' + str(round(meshsize / (rinterface * rmean), 2)) +
+                    '\t Interface element thickness = ' + str(float(ElementInterfaceT * rmean)))
 
             # Se tekstfiler for databehandling
         GitHub  = 'C:/Multiscale-Modeling/'
@@ -294,44 +193,57 @@ for m in range(0,len(Sample)):
         if True:                     # For aa kunne kollapse variabler
             seed(Q)                                     # Q er randomfunksjonensnokkelen
             wiggle = random() * rmean                     # Omplasseringsgrenser for fiberomplassering
-
+            Retning =['Exx', 'Eyy' , 'Ezz' ,'Exy' , 'Exz' , 'Eyz']
             #Lineare RVE og n relative ABAQUS Jobb navn
-            Enhetstoyinger = ['Exx' + str(m) + '_' + str(Q), 'Eyy' + str(m) + '_' + str(Q), 'Ezz' + str(m) + '_' + str(Q),
-                              'Exy' + str(m) + '_' + str(Q), 'Exz' + str(m) + '_' + str(Q), 'Eyz' + str(m) + '_' + str(Q)]
-                                                        # Enhetstoyingene fra 0 til 5. Alle 6
-            Sweeptoyinger = [''] * sweepcases
+            Enhetstoyinger =['']*6
+            for g in range(0, 6):                                           # Enhetstoyingene fra 0 til 5. Alle 6
+                Enhetstoyinger[g] = [Retning[g] + str(m) + '_' + str(Q)]
+
+            Sweeptoyinger = [''] * sweepcases                               # Sweepcases
             for g in range(0,sweepcases):
                 Sweeptoyinger[g] = ('Sweep_strain'+ str(m) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
 
         # RVE model creation in Abaqus
-        if True:
-            #RVE parametere
-            xydata = None
-            if not noFiber:
-                execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
-                xydata= hentePopulation()                               # hente fibercoordinater
+        xydata = None                       # Fiber kordinater og radiuser
+        if not noFiber:
+            execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
+            xydata= hentePopulation()                               # hente fibercoordinater
+        createPart_n_Ophanmesh()            # Lage 2D RVE shell fra fiberpopulasjon data, meshe RVE, extrudere til 3D part, lage orphanmesh og sette cohesive elementtype paa Interface
+        createSets_n_Datums()               # Element sets for material properties and Fiber center datums for material orientation
+        create_Properites()                 # Sette egenskaper paa fiber og matrix materialene
+        createCEq()                         # Sette rVE med x i fiber retning. Lage constrain equations til RVE stykket og fixe boundary condition
+        if not noFiber and True:
+            ReadajustInterface()            # Justere pa elementtykkelsen pa interface elements
 
-            # Abaqus Operasjoner
-            createPart_n_Ophanmesh()            # Lage 2D RVE shell fra fiberpopulasjon data, meshe RVE, extrudere til 3D part og lage orphanmesh
-            createSets_n_Datums()               # Element sets for material properties and Fiber center datums for material orientation
+        print 'RVEmodel made from given parameters and random key'
 
-            create_Properites()
-            createCEq()
-            if not noFiber and True:
-                ReadajustInterface()
-        if nonLinearDeformation:
-                    #exx, eyy, ezz, exy, exz, eyz
-            Case=[(0,1e-4,0,0,0,0),    (0,-1e-4,0,0,0,0),    (0,0,0,1e-3,0,0),    (0,-1e-4,0,5e-4,0,0)]
-            Incre = 0.00001
-            create_nonLinearsweepedlastcases(Case[0],'caseEyyT_'+str(Q)+str(Sample[m]),Incre)          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[1],'caseEyyC_'+str(Q)+str(Sample[m]),Incre)          #    Lag linear strain cases. Set boundary condition and create job.
-            Incre = 0.0001
-            create_nonLinearsweepedlastcases(Case[2],'caseExyS_'+str(Q)+str(Sample[m]),Incre)          #    Lag linear strain cases. Set boundary condition and create job.
-            create_nonLinearsweepedlastcases(Case[3],'caseExySC_'+str(Q)+str(Sample[m]),Incre)          #    Lag linear strain cases. Set boundary condition and create job.
-        else:
-            execfile(GitHub + Abaqus + 'LinearAnalysis.py')
-        print 'Reached end of Iteration'
+        """Simuleringer sweeps lokke"""
 
 
+        strains = {'TensionEyy' :, 'TensionEzz':[0,0,-1e-3,0,0,0],'ShearExy':[0,0,0,1e-3,0,0]} \
+                #                   exx,    eyy,    ezz,    exy,    exz,    eyz
+        cases=[('TensionEyy',       [  0,   1e-3,   0,      0,      0,     0]),        # Tension
+               ('CompressionEyy',   [  0,  -1e-3,   0,      0,       0,   0]),           # Compression
+               ('TensionEzz',       [ 0,    0,      1e-3,   0,      0, 0]),              # Tension
+               ('CompressionEzz',   [ 0,    0,      -1e-3,  0,      0, 0]),                # Compression
+               ('ShearExy',         [0,     0,      0,      1e-3,   0,0]),                  # Shear
+               ('ShearExy+Eyy',     [0,     1e-3,      0,      1e-3,   0,0]),       # Shear + Tension
+               ('ShearExy-Eyy',     strains['ShearExy'] - strains['TensionEyy']),         # Shear + Compression
+               ('ShearExy+Ezz',     strains['ShearExy'] + strains['TensionEzz']),       # Shear + Tension
+               ('ShearExy-Ezz',     strains['ShearExy'] - strains['TensionEzz'])]       # Shear + Compression
 
+
+
+        for Case in cases:
+            if linearAnalysis:
+                execfile(GitHub + Abaqus + 'LinearAnalysis.py')
+            if nonLinearDeformation:
+                Jobbnavn, Strain = Case
+                        #exx, eyy, ezz, exy, exz, eyz
+                execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
+
+
+            print 'Reached end of 2 Iteration'
+
+    print 'Reached end of Iteration'
 del IfWork_NowDone

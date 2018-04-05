@@ -172,11 +172,11 @@ for m in range(0,len(Sample)):
             #Lineare RVE og n relative ABAQUS Jobb navn
             Enhetstoyinger =['']*6
             for g in range(0, 6):                                           # Enhetstoyingene fra 0 til 5. Alle 6
-                Enhetstoyinger[g] = [Retning[g] + str(Sample[m]) + '_' + str(Q)]
+                Enhetstoyinger[g] = [Retning[g] + str(int(Sample[m])) + '_' + str(Q)]
             print Enhetstoyinger
             Sweeptoyinger = [''] * sweepcases                               # Sweepcases
             for g in range(0,sweepcases):
-                Sweeptoyinger[g] = ('Sweep_strain'+ str(Sample[m]) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
+                Sweeptoyinger[g] = ('Sweep_strain'+ str(int(Sample[m])) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
 
             lagrestiffpath = GitHub + Tekstfiler + 'Stiffness__NF-'+ str(int(nf))+'.txt'  # Skrives ned statistikk til ett annet script
             Envelope = GitHub + Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn legges til i funksjonen
@@ -189,36 +189,5 @@ for m in range(0,len(Sample)):
 
         if linearAnalysis:
             execfile(GitHub + Abaqus + 'LinearAnalysis.py')
-        """
-        print 'RVEmodel made from given parameters and random key'
-
-        #Simuleringer sweeps lokke
-
-
-        strains = {'TensionEyy' :, 'TensionEzz':[0,0,-1e-3,0,0,0],'ShearExy':[0,0,0,1e-3,0,0]} \
-                #                   exx,    eyy,    ezz,    exy,    exz,    eyz
-        cases=[('TensionEyy',       [  0,   1e-3,   0,      0,      0,     0]),        # Tension
-               ('CompressionEyy',   [  0,  -1e-3,   0,      0,       0,   0]),           # Compression
-               ('TensionEzz',       [ 0,    0,      1e-3,   0,      0, 0]),              # Tension
-               ('CompressionEzz',   [ 0,    0,      -1e-3,  0,      0, 0]),                # Compression
-               ('ShearExy',         [0,     0,      0,      1e-3,   0,0]),                  # Shear
-               ('ShearExy+Eyy',     [0,     1e-3,      0,      1e-3,   0,0]),       # Shear + Tension
-               ('ShearExy-Eyy',     strains['ShearExy'] - strains['TensionEyy']),         # Shear + Compression
-               ('ShearExy+Ezz',     strains['ShearExy'] + strains['TensionEzz']),       # Shear + Tension
-               ('ShearExy-Ezz',     strains['ShearExy'] - strains['TensionEzz'])]       # Shear + Compression
-
-
-
-        for Case in cases:
-            if linearAnalysis:
-                execfile(GitHub + Abaqus + 'LinearAnalysis.py')
-            if nonLinearDeformation:
-                Jobbnavn, Strain = Case
-                        #exx, eyy, ezz, exy, exz, eyz
-                execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
-
-
-            print 'Reached end of 2 Iteration'
-        """
         print 'Reached end of Iteration random key'
     print 'Reached end of Iteration nf'

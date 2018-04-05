@@ -27,7 +27,7 @@ def CreateNewRVEModel():
     execfile(GitHub+Abaqus+'RVEelementsets.py')                    # Sette i fiber, sizing og matrix elementer i set og Lage cylindriske kordinatsystemer i fiber sentrum
     execfile(GitHub + Abaqus + 'RVEproperties.py')                         # Sett materialegenskaper for elementset
     execfile(GitHub + Abaqus + 'RVE_Assembly_RP_CE.py')     # Assembly med RVE med x i fiber retning. Lage constrain equations til RVE modell og fixe boundary condition for rigid body movement
-    if not noFiber and Interface and True:        # Rearrange fiber interface nodes for controlled elementthickness and stable simulations
+    if not noFiber and Interface and False:        # Rearrange fiber interface nodes for controlled elementthickness and stable simulations
         execfile(GitHub + Abaqus + 'RVE_InterfaceElementThickness.py')
 Simuleringer=[]
 def run_Job(Jobb, modelName):
@@ -44,14 +44,14 @@ def run_Job(Jobb, modelName):
         mdb.jobs[Jobb].waitForCompletion()
 
 """         PROCESS FLAGS                                       """
-Createmodel = 0
+Createmodel = 1
 
 Runjobs = 1                             #   ON/OFF Start analyser
 linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
 nonLinearDeformation = 1                #   ON/OFF non-linear analyse for strength
 
 Singlepin = 1                               #   Randbetingelse:    Laaser hjornenode mot forskyvning i 3 retninger
-tripplepin = 1                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
+tripplepin = 0                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
 
 """         RVE MODELLERING                """
 if True:
@@ -70,7 +70,7 @@ if True:
     meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
 
     #Material Density
-    MaterialDens  = 1
+    MaterialDens  = 0
     Dampening = 0
 
 Sample=[50]   #Forste sweepvariabel

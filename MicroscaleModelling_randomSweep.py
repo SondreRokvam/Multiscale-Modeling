@@ -83,7 +83,7 @@ def run_Job(Jobb, modelName):
 
 Sample=np.linspace(1,100,101)# [5]          #Forste sweepvariabel for parameter tester
 #Sample=[0, 5, 10, 25, 50]
-Sample=[2,3,4]
+Sample=[2]
 for m in range(0,len(Sample)):
     #  RVE Modelleringsvariabler
     nf   =      int(Sample[m])
@@ -144,7 +144,7 @@ for m in range(0,len(Sample)):
         stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
 
     #RVE random modellering sweep
-    n = 1           # Andre Sweep lokke. Itererer med random nokkeler fra 0 til n
+    n = 10           # Andre Sweep lokke. Itererer med random nokkeler fra 0 til n
     for Q in range(0,n):
         from abaqus import *
         from abaqusConstants import *

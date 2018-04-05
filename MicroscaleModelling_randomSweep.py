@@ -19,7 +19,7 @@ tripplepin = 0                              #   Laaser to noder mot forskyvning.
 #Interface
 Interface = 0                                   # Modellere Interface?
 rinterface = 0.005                              # Interfacetykkelse ved modellering relativt til radius.    0.005 =0 .5%
-ElementInterfaceT = 0.005                       # Sette/endre Interfacetykkelse relativt til radius.
+ElementInterfaceT = 0.001                       # Sette/endre Interfacetykkelse relativt til radius.
 
 # Fibere
 noFibertest = 0                                     # Fjerner alle fiber fra modellen
@@ -64,7 +64,7 @@ def CreateNewRVEModel():
     execfile(GitHub+Abaqus+'RVEelementsets.py')                    # Sette i fiber, sizing og matrix elementer i set og Lage cylindriske kordinatsystemer i fiber sentrum
     execfile(GitHub + Abaqus + 'RVEproperties.py')                         # Sett materialegenskaper for elementset
     execfile(GitHub + Abaqus + 'RVE_Assembly_RP_CE.py')     # Assembly med RVE med x i fiber retning. Lage constrain equations til RVE modell og fixe boundary condition for rigid body movement
-    if not noFiber and True:        # Rearrange fiber interface nodes for controlled elementthickness and stable simulations
+    if not noFiber and Interface and True:        # Rearrange fiber interface nodes for controlled elementthickness and stable simulations
         execfile(GitHub + Abaqus + 'RVE_InterfaceElementThickness.py')
 
 Simuleringer=[]
@@ -81,9 +81,7 @@ def run_Job(Jobb, modelName):
         mdb.jobs[Jobb].submit(consistencyChecking=OFF)
         mdb.jobs[Jobb].waitForCompletion()
 
-Sample=np.linspace(1,100,101)# [5]          #Forste sweepvariabel for parameter tester
-#Sample=[0, 5, 10, 25, 50]
-Sample=[2]
+Sample=np.linspace(2,80,79)   #Forste sweepvariabel for parameter tester
 for m in range(0,len(Sample)):
     #  RVE Modelleringsvariabler
     nf   =      int(Sample[m])
@@ -144,7 +142,7 @@ for m in range(0,len(Sample)):
         stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
 
     #RVE random modellering sweep
-    n = 10           # Andre Sweep lokke. Itererer med random nokkeler fra 0 til n
+    n = 50           # Andre Sweep lokke. Itererer med random nokkeler fra 0 til n
     for Q in range(0,n):
         from abaqus import *
         from abaqusConstants import *

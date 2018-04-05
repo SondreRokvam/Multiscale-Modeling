@@ -1,2 +1,2 @@
 import numpy as np
-print (np.linspace(2,100,99))
+print (np.round(np.linspace(2,80,79)))

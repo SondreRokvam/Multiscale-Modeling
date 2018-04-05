@@ -7,9 +7,11 @@ print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
        'Multiscale Modelling, Microscale  \n'
        'Allowed numCpus = ',numCpus)
 """         PROCESS FLAGS                                       """
+Createmodel = 0
+
 Runjobs = 1                             #   Bestemmer om jobber skal kjores
-linearAnalysis = 1                      #   Linear analyse for aa finne stivhets matrix
-nonLinearDeformation = 0                #   non-linear analyse
+linearAnalysis = 0                      #   Linear analyse for aa finne stivhets matrix
+nonLinearDeformation = 1                #   non-linear analyse
 
 Singlepin = 1                               #   Laaser en hjorne node mot forskyvning i 3 retninger
 tripplepin = 0                              #   Laaser to noder mot forskyvning. En langs kant i 2 retninger og en i midten i 1 retning
@@ -17,7 +19,7 @@ tripplepin = 0                              #   Laaser to noder mot forskyvning.
 
 """         RVE MODELLERING                """
 #Interface
-Interface = 0                                   # Modellere Interface?
+Interface = 1                                   # Modellere Interface?
 rinterface = 0.005                              # Interfacetykkelse ved modellering relativt til radius.    0.005 =0 .5%
 ElementInterfaceT = 0.001                       # Sette/endre Interfacetykkelse relativt til radius.
 
@@ -29,7 +31,7 @@ rmean = 8.7096                      # Gjennomsnittradius. Om fibervariasjon er u
 Rstdiv = 0.6374                     # Om fibervariasjon saa brukes dette som Standard avvik fra gjennomsnittsradius.
 
 # Meshsize
-FiberSirkelResolution = 32                              # Standard meshsizer er 2*pi/FiberSirkelResolution
+FiberSirkelResolution = 16                              # Standard meshsizer er 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra interface resolution rundt fiber
 
 #Material Density
@@ -81,7 +83,7 @@ def run_Job(Jobb, modelName):
         mdb.jobs[Jobb].submit(consistencyChecking=OFF)
         mdb.jobs[Jobb].waitForCompletion()
 
-Sample=np.linspace(2,80,79)   #Forste sweepvariabel for parameter tester
+Sample=[50]   #Forste sweepvariabel for parameter tester
 for m in range(0,len(Sample)):
     #  RVE Modelleringsvariabler
     nf   =      int(Sample[m])
@@ -142,7 +144,7 @@ for m in range(0,len(Sample)):
         stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
 
     #RVE random modellering sweep
-    n = 50           # Andre Sweep lokke. Itererer med random nokkeler fra 0 til n
+    n = 1           # Andre Sweep lokke. Itererer med random nokkeler fra 0 til n
     for Q in range(0,n):
         from abaqus import *
         from abaqusConstants import *
@@ -181,44 +183,29 @@ for m in range(0,len(Sample)):
             lagrestiffpath = GitHub + Tekstfiler + 'Stiffness__NF-'+ str(int(nf))+'.txt'  # Skrives ned statistikk til ett annet script
             Envelope = GitHub + Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn legges til i funksjonen
         # RVE model creation in Abaqus
-        xydata = None                       # Fiber kordinater og radiuser
-        if not noFiber:
-            execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
-            xydata= hentePopulation()                               # hente fibercoordinater
-        CreateNewRVEModel()
+        if Createmodel:
+            xydata = None                       # Fiber kordinater og radiuser
+            if not noFiber:
+                execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
+                xydata= hentePopulation()                               # hente fibercoordinater
+            CreateNewRVEModel()
 
-        if linearAnalysis:
+        if linearAnalysis:          # LinearAnalysis for stiffness and small deformation
             execfile(GitHub + Abaqus + 'LinearAnalysis.py')
-        """
-        print 'RVEmodel made from given parameters and random key'
+        if nonLinearDeformation:    # nonLinearAnalysis for strength and large deformation
 
-        #Simuleringer sweeps lokke
-
-
-        strains = {'TensionEyy' :, 'TensionEzz':[0,0,-1e-3,0,0,0],'ShearExy':[0,0,0,1e-3,0,0]} \
-                #                   exx,    eyy,    ezz,    exy,    exz,    eyz
-        cases=[('TensionEyy',       [  0,   1e-3,   0,      0,      0,     0]),        # Tension
-               ('CompressionEyy',   [  0,  -1e-3,   0,      0,       0,   0]),           # Compression
-               ('TensionEzz',       [ 0,    0,      1e-3,   0,      0, 0]),              # Tension
-               ('CompressionEzz',   [ 0,    0,      -1e-3,  0,      0, 0]),                # Compression
-               ('ShearExy',         [0,     0,      0,      1e-3,   0,0]),                  # Shear
-               ('ShearExy+Eyy',     [0,     1e-3,      0,      1e-3,   0,0]),       # Shear + Tension
-               ('ShearExy-Eyy',     strains['ShearExy'] - strains['TensionEyy']),         # Shear + Compression
-               ('ShearExy+Ezz',     strains['ShearExy'] + strains['TensionEzz']),       # Shear + Tension
-               ('ShearExy-Ezz',     strains['ShearExy'] - strains['TensionEzz'])]       # Shear + Compression
+            strains = {'TensionEyy':[0,1e-2,0,0,0,0], 'TensionEzz':[0,0,1e-2,0,0,0],'ShearExy':[0,0,0,1e-2,0,0]}
+                    #                   exx,    eyy,    ezz,    exy,    exz,    eyz
+            cases=[['ShearExy',strains['ShearExy']], ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
 
 
 
-        for Case in cases:
-            if linearAnalysis:
-                execfile(GitHub + Abaqus + 'LinearAnalysis.py')
-            if nonLinearDeformation:
-                Jobbnavn, Strain = Case
-                        #exx, eyy, ezz, exy, exz, eyz
-                execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
+            for Case in cases:
+                if nonLinearDeformation:
+                    Jobbnavn, Strain = Case
+                            #exx, eyy, ezz, exy, exz, eyz
+                    execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
 
 
-            print 'Reached end of 2 Iteration'
-        """
-        print 'Reached end of Iteration random key'
-    print 'Reached end of Iteration nf'
+        print 'Reached end of random key Iteration'
+    print 'Reached end of primary Iteration'

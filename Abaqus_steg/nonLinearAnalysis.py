@@ -3,7 +3,7 @@ def create_nonLinearstrainedlastcases(Strain, bob):
     mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
 
     mod.steps['Lasttoyinger'].setValues(stabilizationMethod=NONE, continueDampingFactors=False,
-        adaptiveDampingRatio=None, initialInc=5e-05, minInc=1e-20,
+        adaptiveDampingRatio=None, initialInc=1e-06, minInc=1e-20,
         maxInc=0.0001, nlgeom=ON)
 
     mod.fieldOutputRequests['F-Output-1'].setValues(

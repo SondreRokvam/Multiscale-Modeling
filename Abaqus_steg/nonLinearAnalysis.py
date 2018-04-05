@@ -1,12 +1,15 @@
 def create_nonLinearstrainedlastcases(Strain, bob):
     a = mod.rootAssembly
     mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
-    mod.steps['Lasttoyinger'].setValues(initialInc=0.001,minInc=1e-12,
-        maxInc=0.01)
+    mod.steps['Lasttoyinger'].setValues(maxNumInc=1000, initialInc=Incre,minInc=1e-12,
+        maxInc=0.01, convertSDI=CONVERT_SDI_OFF)
+    if Dampening:
+        mod.steps['Lasttoyinger'].setValues(stabilizationMagnitude=0.0002,
+                                                              stabilizationMethod=DAMPING_FACTOR,
+                                                              continueDampingFactors=False, adaptiveDampingRatio=0.05)
     mdb.models['Model-A'].fieldOutputRequests['F-Output-1'].setValues(variables=(
         'DAMAGEC', 'DAMAGET', 'LE', 'MISES', 'PE', 'PEEQ', 'RT', 'S', 'SDEG',
         'STATUS', 'STATUSXFEM', 'U'))
-
 
     mdb.models['Model-A'].fieldOutputRequests['F-Output-1'].setValues(frequency=1)
 
@@ -17,7 +20,7 @@ def create_nonLinearstrainedlastcases(Strain, bob):
     mod.HistoryOutputRequest(name='H-Output-2',
                              createStepName='Lasttoyinger', variables=('RT', 'UT'),
                              region=regDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
-
+    print bob,': ', Strain,'   Initial Increment: ',Incre
     print '\nnon Linear load analysis'
     # Lagring av output data base filer .odb
     for case in range(0, 1):

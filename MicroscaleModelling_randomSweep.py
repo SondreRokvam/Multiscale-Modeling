@@ -5,41 +5,17 @@ from multiprocessing import cpu_count
 numCpus = cpu_count()/4
 print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
        'Multiscale Modelling, Microscale  \n'
-       'Allowed numCpus = ',numCpus)
+       'Allowed numCpus = ',numCpus,'\n')
 """         PROCESS FLAGS                                       """
-Createmodel = 1
+Createmodel = 0
 
 Runjobs = 1                             #   Bestemmer om jobber skal kjores
 linearAnalysis = 0                      #   Linear analyse for aa finne stivhets matrix
 nonLinearDeformation = 1                #   non-linear analyse
 
 Singlepin = 1                               #   Laaser en hjorne node mot forskyvning i 3 retninger
-tripplepin = 1                              #   Laaser to noder mot forskyvning. En langs kant i 2 retninger og en i midten i 1 retning
+tripplepin = 1                                #   Laaser to noder mot forskyvning. En langs kant i 2 retninger og en i midten i 1 retning
 
-
-"""         RVE MODELLERING                """
-#Interface
-Interface = 1                                   # Modellere Interface?
-rinterface = 0.005                              # Interfacetykkelse ved modellering relativt til radius.    0.005 =0 .5%
-ElementInterfaceT = 0.001                       # Sette/endre Interfacetykkelse relativt til radius.
-
-# Fibere
-noFibertest = 0                                     # Fjerner alle fiber fra modellen
-Fibervariation = 1                                  # Legger til fiberradius variasjon fra standard avvik
-
-rmean = 8.7096                      # Gjennomsnittradius. Om fibervariasjon er uniform.
-Rstdiv = 0.6374                     # Om fibervariasjon saa brukes dette som Standard avvik fra gjennomsnittsradius.
-
-# Meshsize
-FiberSirkelResolution = 16                              # Standard meshsizer er 2*pi/FiberSirkelResolution
-meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra interface resolution rundt fiber
-
-#Material Density
-MaterialDens  = 1
-
-"""%%%%%%%%%%%%%%%%%%%%%%%%%%%%"""
-
-#HenteRVEmodellfibercoordinaterdata
 def hentePopulation():                 #Les fiber matrix populasjon
     xy=list()
     f = open(coordpath,'r')
@@ -55,7 +31,6 @@ def hentePopulation():                 #Les fiber matrix populasjon
     print 'Antall fiber = ',int(nf),'\tAntall fiberkoordinater = '+str(len(xy))
     return xy
 
-#LageRVEmodell
 def CreateNewRVEModel():
     # Creates RVE model and orphanmesh. Lage 2D RVE shell, meshe RVE, extrudere til 3D part, lage orphanmesh og sette cohesive elementtype paa Interface
     execfile(GitHub+Abaqus+'RVEsketching.py')                                             # Lage 2D RVE fra fiberpopulasjon data
@@ -82,7 +57,28 @@ def run_Job(Jobb, modelName):
         mdb.jobs[Jobb].submit(consistencyChecking=OFF)
         mdb.jobs[Jobb].waitForCompletion()
 
-Sample=[50]   #Forste sweepvariabel for parameter tester
+"""         RVE MODELLERING                """
+#Interface
+Interface = 1                                   # Modellere Interface?
+rinterface = 0.005                              # Interfacetykkelse ved modellering relativt til radius.    0.005 =0 .5%
+ElementInterfaceT = 0.001                       # Sette/endre Interfacetykkelse relativt til radius.
+
+# Fibere
+noFibertest = 0                                     # Fjerner alle fiber fra modellen
+Fibervariation = 1                                  # Legger til fiberradius variasjon fra standard avvik
+
+rmean = 8.7096                      # Gjennomsnittradius. Om fibervariasjon er uniform.
+Rstdiv = 0.6374                     # Om fibervariasjon saa brukes dette som Standard avvik fra gjennomsnittsradius.
+
+# Meshsize
+FiberSirkelResolution = 16                              # Standard meshsizer er 2*pi/FiberSirkelResolution
+meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra interface resolution rundt fiber
+
+#Material Density
+MaterialDens  = 0
+Dampening = 0
+
+Sample=[50]   #Forste sweepvariabel
 for m in range(0,len(Sample)):
     #  RVE Modelleringsvariabler
     nf   =      int(Sample[m])
@@ -123,7 +119,7 @@ for m in range(0,len(Sample)):
 
         sweepresolution = 2 * pi / sweepcases
 
-        if Interface:
+        if Interface and Createmodel:
             print('Aspect ratio for Interface elements ved modellering = ' + str(round(meshsize / (rinterface * rmean), 2)) +
                     '\t Interface element thickness = ' + str(float(ElementInterfaceT * rmean)))
 
@@ -174,7 +170,6 @@ for m in range(0,len(Sample)):
             Enhetstoyinger =['']*6
             for g in range(0, 6):                                           # Enhetstoyingene fra 0 til 5. Alle 6
                 Enhetstoyinger[g] = [Retning[g] + str(Sample[m]) + '_' + str(Q)]
-            print Enhetstoyinger
             Sweeptoyinger = [''] * sweepcases                               # Sweepcases
             for g in range(0,sweepcases):
                 Sweeptoyinger[g] = ('Sweep_strain'+ str(Sample[m]) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
@@ -213,12 +208,12 @@ for m in range(0,len(Sample)):
                                region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                                amplitude=UNSET, distributionType=UNIFORM, fieldName='',
                                localCsys=None)
-
+        Incre = 0.0001
         if linearAnalysis:          # LinearAnalysis for stiffness and small deformation
             execfile(GitHub + Abaqus + 'LinearAnalysis.py')
         if nonLinearDeformation:    # nonLinearAnalysis for strength and large deformation
 
-            strains = {'ShearExy':[0,0,0,0.1,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
+            strains = {'ShearExy':[0,0,-0.0063,0.0182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
                     #                   exx,    eyy,    ezz,    exy,    exz,    eyz
             cases=[['ShearExy',strains['ShearExy']]]#, ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
 

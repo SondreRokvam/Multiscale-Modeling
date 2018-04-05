@@ -73,7 +73,7 @@ FiberSirkelResolution = 16                              # Standard meshsizer er 
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra interface resolution rundt fiber
 
 #Material Density
-MaterialDens  = 0
+MaterialDens  = 1
 Dampening = 0
 
 Sample=[50]   #Forste sweepvariabel

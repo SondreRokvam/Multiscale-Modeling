@@ -18,7 +18,7 @@ def create_nonLinearstrainedlastcases(Strain, bob):
     mod.HistoryOutputRequest(name='H-Output-2',
                              createStepName='Lasttoyinger', variables=('RT', 'UT'),
                              region=regDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
-    print bob,': ', Strain,Increments
+    print bob,': ', Strain,'       Increments : ',Increments
     print '\nnon Linear load analysis'
     # Lagring av output data base filer .odb
     for case in range(0, 1):

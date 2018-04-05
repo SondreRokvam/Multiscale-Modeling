@@ -3,9 +3,7 @@ from math import *
 import numpy as np
 from multiprocessing import cpu_count
 numCpus = cpu_count()/4
-print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
-       'Multiscale Modelling, Microscale  \n'
-       'Allowed numCpus = ',numCpus,'\n')
+print'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n', 'Multiscale Modelling, Microscale  \n', 'Allowed numCpus = ',numCpus,'\n'
 """         PROCESS FLAGS                                       """
 Createmodel = 0
 
@@ -208,7 +206,7 @@ for m in range(0,len(Sample)):
                                region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                                amplitude=UNSET, distributionType=UNIFORM, fieldName='',
                                localCsys=None)
-        Incre = 0.0001
+        Increments = {'maxNum':1000,'initial': 1e-06,'min':1e-20,'max':1e-2}
         if linearAnalysis:          # LinearAnalysis for stiffness and small deformation
             execfile(GitHub + Abaqus + 'LinearAnalysis.py')
         if nonLinearDeformation:    # nonLinearAnalysis for strength and large deformation

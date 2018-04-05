@@ -56,17 +56,17 @@ tripplepin = 0                              #   Randbetingelse:    Laaser to nod
 """         RVE MODELLERING                """
 if True:
     Interface = 1                                   # ON/OFF CohesiveInterface
-    rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.005 =0 .5%
+    rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
     ElementInterfaceT = 0.001                       # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
     noFibertest = 0                                     # Fjerner fiber fra modellen. Modeller resin blokk
     Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
 
-    rmean = 8.7096                      # Gjennomsnittradius pa fiber
-    Rstdiv = 0.6374                     # OStandard avvik fra gjennomsnittsradius
+    rmean = 8.7096                              # Gjennomsnittradius pa fiber
+    Rstdiv = 0.6374                             # OStandard avvik fra gjennomsnittsradius
 
     # Meshsize
-    FiberSirkelResolution = 16                                  # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
+    FiberSirkelResolution = 24                                  # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
     meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
 
     #Material Density
@@ -212,9 +212,11 @@ for m in range(0,len(Sample)):
         if linearAnalysis:                                  # LinearAnalysis for stiffness and small deformation
             execfile(GitHub + Abaqus + 'LinearAnalysis.py')
 
-        Increments = {'maxNum': 1000, 'initial': 1e-06, 'min': 1e-20, 'max': 1e-2}
+        Increments = {'maxNum': 1000, 'initial': 1e-10, 'min': 1e-20, 'max': 1e-2}
         if nonLinearDeformation:                            # nonLinearAnalysis for strength and large deformation
+            #Unitstrain to fracture.
 
+            #Sweepstrain to fracture
             #       STRAINS:  exx, eyy, ezz, exy, exz, eyz
             #strains = {'ShearExy':[0,0,-0.0063,0.0182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
             strains = {'ShearExy':[0,0,0.063,0.182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}

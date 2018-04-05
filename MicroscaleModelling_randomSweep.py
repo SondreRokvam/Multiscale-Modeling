@@ -56,7 +56,7 @@ tripplepin = 0                              #   Randbetingelse:    Laaser to nod
 """         RVE MODELLERING                """
 if True:
     Interface = 1                                   # ON/OFF CohesiveInterface
-    rinterface = 0.005                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.005 =0 .5%
+    rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.005 =0 .5%
     ElementInterfaceT = 0.001                       # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
     noFibertest = 0                                     # Fjerner fiber fra modellen. Modeller resin blokk
@@ -216,7 +216,8 @@ for m in range(0,len(Sample)):
         if nonLinearDeformation:                            # nonLinearAnalysis for strength and large deformation
 
             #       STRAINS:  exx, eyy, ezz, exy, exz, eyz
-            strains = {'ShearExy':[0,0,-0.0063,0.0182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
+            #strains = {'ShearExy':[0,0,-0.0063,0.0182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
+            strains = {'ShearExy':[0,0,0.063,0.182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
 
             #       CASES: Name, Strains
             cases=[['ShearExy',strains['ShearExy']]]#, ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression

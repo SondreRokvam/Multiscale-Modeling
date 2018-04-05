@@ -10,7 +10,7 @@ ResCon = {'E,v':(3.5,0.33), 'Den':1.2e-06,
 
 FibCon = {'E,v':(90,0.22), 'Den':2.55e-06}
 
-IntCon = {'Trac':(100.0, 100.0, 100.0), 'Den':1.2e-06,
+IntCon = {'Trac':(50.0, 100.0, 100.0), 'Den':1.2e-06,
           'QDI':(0.042, 0.063, 0.063),
           'qdiDEpower':1.2,   'qdiDE':(0.0028, 0.0078, 0.0078), }
 
@@ -24,9 +24,10 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
         res.ConcreteDamagedPlasticity(table=(ResCon['CDP'],))
         RCDP = res.concreteDamagedPlasticity
         RCDP.ConcreteCompressionHardening(table=ResCon['cdpCCH'])
+        RCDP.ConcreteCompressionDamage(table=ResCon['cdpCCD'])
         RCDP.ConcreteTensionStiffening(table=(ResCon['cdpCTS'],), type=GFI)
         RCDP.ConcreteTensionDamage(table=ResCon['cdpCTD'], type=DISPLACEMENT)
-        RCDP.ConcreteCompressionDamage(table=ResCon['cdpCCD'])
+
     if not nf == 0:
         mod.Material(name='glass')
         mod.materials['glass'].Elastic(table=(FibCon['E,v'],))

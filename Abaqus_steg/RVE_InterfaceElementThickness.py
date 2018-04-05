@@ -49,3 +49,5 @@ for fiba in xydata:
                                    'FiberInterface' + str(count) + 'nodes', 'Fiberflate' + str(count) + 'nodes',
                                    'Interface' + str(count) + 'nodes',))
     count = count + 1
+
+print '\nInterface elements adjusted'

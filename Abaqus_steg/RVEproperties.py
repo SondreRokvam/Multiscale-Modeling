@@ -86,3 +86,5 @@ def SectionsAndOrientations():                                  # Create and ass
 
 SetMaterialConstants(ResCon,FibCon,IntCon)
 SectionsAndOrientations()
+
+print '\nMaterial properties assigned to element sets in model'

@@ -38,8 +38,8 @@ def create_Linearunitstrainslastcases():
                                region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                                amplitude=UNSET, distributionType=UNIFORM, fieldName='',
                                localCsys=None)
-        print Enhetstoyinger[i]
-        run_Job(Enhetstoyinger[i],modelName)
+        print Enhetstoyinger[i][0]
+        run_Job(Enhetstoyinger[i][0],modelName)
         del exx, eyy, ezz, exy, exz, eyz
 def create_Linearsweepedlastcases(sweep):
     mod = mdb.models[modelName]
@@ -61,7 +61,7 @@ def create_Linearsweepedlastcases(sweep):
 def get_stiffness():
     stiffmatrix = []
     for i in range(0,6):
-        path = workpath + Enhetstoyinger[i]
+        path = workpath + Enhetstoyinger[i][0]
         odb = session.openOdb(path+'.odb')
         instance = odb.rootAssembly.instances[instanceName]
 
@@ -77,8 +77,8 @@ def get_stiffness():
         stiffmatrix.append(sag)
     print '\n'
     g = open(lagrestiffpath, "a")
-    g = open(lagrestiffpath, "a")
-    print '\nStiffnessmatrix stored\n'
+    #g = open(lagrestiffpath, "a")
+    print '\nStiffnessmatrix found\n'
     for a in range(0, 6):
         g.write(str(float(stiffmatrix[0][a]))+'\t'+str(float(stiffmatrix[1][a]))+'\t'+str(float(stiffmatrix[2][a]))+'\t'+str(float(stiffmatrix[3][a]))+'\t'+str(float(stiffmatrix[4][a]))+'\t'+str(float(stiffmatrix[5][a])))
         if not a==5:
@@ -119,8 +119,8 @@ def get_sweepstrains_sig2_sig3(Compliancematrix,sweepresolution):
 
 create_Linearunitstrainslastcases()  # Lag linear strain cases. Set boundary condition and create job.
 
-Stiffmatrix = get_stiffness()  # Faa ut stiffnessmatrix
+Stiffmatrix = get_stiffness()  # Faa stiffnessmatrix
 
-Compliancematrix = get_compliance(Stiffmatrix)  # Inverter til compliance materix
-sweepstrains = get_sweepstrains_sig2_sig3(Compliancematrix, sweepresolution)  # Finne strains for sweep stress case
-create_Linearsweepedlastcases(sweepstrains)
+#Compliancematrix = get_compliance(Stiffmatrix)  # Inverter til compliance materix
+#sweepstrains = get_sweepstrains_sig2_sig3(Compliancematrix, sweepresolution)  # Finne strains for sweep stress case
+#create_Linearsweepedlastcases(sweepstrains)

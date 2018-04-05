@@ -138,3 +138,4 @@ if tripplepin and Singlepin:
                        region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                        amplitude=UNSET, distributionType=UNIFORM, fieldName='',
                        localCsys=None)
+print '\nReference points created and constraint equ. applied'

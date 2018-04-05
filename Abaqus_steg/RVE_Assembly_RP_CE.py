@@ -122,20 +122,5 @@ for n in allNodes:
 ReferencePoints(a,xmax, ymax, zmax, xmin, ymin, zmin)
 ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin)
 
-# Feste for simulering
-if Singlepin:
-    region = a.sets['NL1']
-    mod.PinnedBC(name='Laas-3', createStepName='Initial',
-                 region=region, localCsys=None)
-if tripplepin and Singlepin:
-    region = a.sets['NL2']
-    mod.DisplacementBC(name='Laas-2', createStepName='Initial',
-                       region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                       amplitude=UNSET, distributionType=UNIFORM, fieldName='',
-                       localCsys=None)
-    region = a.sets['NL3']
-    mod.DisplacementBC(name='Laas-1', createStepName='Initial',
-                       region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                       amplitude=UNSET, distributionType=UNIFORM, fieldName='',
-                       localCsys=None)
+
 print '\nReference points created and constraint equ. applied'

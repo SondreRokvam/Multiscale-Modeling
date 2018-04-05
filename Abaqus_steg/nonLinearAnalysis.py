@@ -1,14 +1,15 @@
 def create_nonLinearstrainedlastcases(Strain, bob):
     a = mod.rootAssembly
     mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
+    mod.steps['Lasttoyinger'].setValues(initialInc=0.001,minInc=1e-12,
+        maxInc=0.01)
+    mdb.models['Model-A'].fieldOutputRequests['F-Output-1'].setValues(variables=(
+        'DAMAGEC', 'DAMAGET', 'LE', 'MISES', 'PE', 'PEEQ', 'RT', 'S', 'SDEG',
+        'STATUS', 'STATUSXFEM', 'U'))
 
-    mod.steps['Lasttoyinger'].setValues(stabilizationMethod=NONE, continueDampingFactors=False,
-        adaptiveDampingRatio=None, initialInc=1e-06, minInc=1e-20,
-        maxInc=0.0001, nlgeom=ON)
 
-    mod.fieldOutputRequests['F-Output-1'].setValues(
-        variables=('DAMAGEC', 'DAMAGET', 'LE', 'MISES', 'PE', 'PEEQ', 'RT', 'S', 'SDEG', 'STATUS', 'STATUSXFEM', 'U'),
-        timeInterval=0.00001)
+    mdb.models['Model-A'].fieldOutputRequests['F-Output-1'].setValues(frequency=1)
+
     mod.historyOutputRequests['H-Output-1'].setValues(variables=(
         'ALLDMD', 'ALLIE', 'ALLSD'))
     a.SetByBoolean(name='RPS', sets=(a.sets['RPX'], a.sets['RPY'], a.sets['RPZ'],))
@@ -16,7 +17,6 @@ def create_nonLinearstrainedlastcases(Strain, bob):
     mod.HistoryOutputRequest(name='H-Output-2',
                              createStepName='Lasttoyinger', variables=('RT', 'UT'),
                              region=regDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
-    mdb.models['Model-A'].fieldOutputRequests['F-Output-1'].setValues(frequency=1)
 
     print '\nnon Linear load analysis'
     # Lagring av output data base filer .odb

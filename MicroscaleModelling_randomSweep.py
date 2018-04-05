@@ -7,14 +7,14 @@ print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
        'Multiscale Modelling, Microscale  \n'
        'Allowed numCpus = ',numCpus)
 """         PROCESS FLAGS                                       """
-Createmodel = 0
+Createmodel = 1
 
 Runjobs = 1                             #   Bestemmer om jobber skal kjores
 linearAnalysis = 0                      #   Linear analyse for aa finne stivhets matrix
 nonLinearDeformation = 1                #   non-linear analyse
 
 Singlepin = 1                               #   Laaser en hjorne node mot forskyvning i 3 retninger
-tripplepin = 0                              #   Laaser to noder mot forskyvning. En langs kant i 2 retninger og en i midten i 1 retning
+tripplepin = 1                              #   Laaser to noder mot forskyvning. En langs kant i 2 retninger og en i midten i 1 retning
 
 
 """         RVE MODELLERING                """
@@ -35,7 +35,7 @@ FiberSirkelResolution = 16                              # Standard meshsizer er 
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra interface resolution rundt fiber
 
 #Material Density
-MaterialDens  = 0
+MaterialDens  = 1
 
 """%%%%%%%%%%%%%%%%%%%%%%%%%%%%"""
 
@@ -57,7 +57,6 @@ def hentePopulation():                 #Les fiber matrix populasjon
 
 #LageRVEmodell
 def CreateNewRVEModel():
-    Mdb()  # reset Abaqus
     # Creates RVE model and orphanmesh. Lage 2D RVE shell, meshe RVE, extrudere til 3D part, lage orphanmesh og sette cohesive elementtype paa Interface
     execfile(GitHub+Abaqus+'RVEsketching.py')                                             # Lage 2D RVE fra fiberpopulasjon data
     del mdb.models['Model-1']                                                             # Slett standard part model 1
@@ -182,21 +181,46 @@ for m in range(0,len(Sample)):
 
             lagrestiffpath = GitHub + Tekstfiler + 'Stiffness__NF-'+ str(int(nf))+'.txt'  # Skrives ned statistikk til ett annet script
             Envelope = GitHub + Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn legges til i funksjonen
-        # RVE model creation in Abaqus
+
+        # RVE model in Abaqus
+        Mdb()  # reset Abaqus
+        model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
+        mod = mdb.models[modelName]
         if Createmodel:
             xydata = None                       # Fiber kordinater og radiuser
             if not noFiber:
                 execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
                 xydata= hentePopulation()                               # hente fibercoordinater
             CreateNewRVEModel()
+            mdb.saveAs(pathName=workpath+'RVE-'+str(Sample[m])+'-'+str(int(Q)))
+        else:
+            openMdb(pathName=workpath+'RVE-'+str(Sample[m])+'-'+str(int(Q)))
+            mod = mdb.models[modelName]
+
+        # Boundary mot rigid body movement i simulering
+        if Singlepin:
+            region = mod.rootAssembly.sets['NL1']
+            mod.PinnedBC(name='Laas-3', createStepName='Initial',
+                         region=region, localCsys=None)
+        if tripplepin and Singlepin:
+            region = mod.rootAssembly.sets['NL2']
+            mod.DisplacementBC(name='Laas-2', createStepName='Initial',
+                               region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                               amplitude=UNSET, distributionType=UNIFORM, fieldName='',
+                               localCsys=None)
+            region = mod.rootAssembly.sets['NL3']
+            mod.DisplacementBC(name='Laas-1', createStepName='Initial',
+                               region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                               amplitude=UNSET, distributionType=UNIFORM, fieldName='',
+                               localCsys=None)
 
         if linearAnalysis:          # LinearAnalysis for stiffness and small deformation
             execfile(GitHub + Abaqus + 'LinearAnalysis.py')
         if nonLinearDeformation:    # nonLinearAnalysis for strength and large deformation
 
-            strains = {'TensionEyy':[0,1e-2,0,0,0,0], 'TensionEzz':[0,0,1e-2,0,0,0],'ShearExy':[0,0,0,1e-2,0,0]}
+            strains = {'ShearExy':[0,0,0,0.1,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
                     #                   exx,    eyy,    ezz,    exy,    exz,    eyz
-            cases=[['ShearExy',strains['ShearExy']], ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
+            cases=[['ShearExy',strains['ShearExy']]]#, ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
 
 
 

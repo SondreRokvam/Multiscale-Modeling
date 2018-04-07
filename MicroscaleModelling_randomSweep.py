@@ -2,6 +2,7 @@ from random import *
 from math import *
 import numpy as np
 import os
+numCPU = 8
 print'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n', 'Multiscale Modelling, Microscale  \n',
 def hentePopulation():                 #Les fiber matrix populasjon
     xy=list()
@@ -36,8 +37,8 @@ def run_Job(Jobb, modelName):
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
             explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=8,
-            numDomains=8, numGPUs=1)
+            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCPU,
+            numDomains=numCPU, numGPUs=1)
     if Runjobs:
         mdb.jobs[Jobb].submit(consistencyChecking=OFF)
         mdb.jobs[Jobb].waitForCompletion()

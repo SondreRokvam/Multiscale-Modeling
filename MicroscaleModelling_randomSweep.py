@@ -70,7 +70,7 @@ if True:
     MaterialDens  = 0
     Dampening = 0
 
-Sample=[2]   #Forste sweepvariabel
+Sample=[2,3]   #Forste sweepvariabel
 #Sample=np.round(np.linspace(2,80,79))
 for m in range(0,len(Sample)):
     """  RVE design parameters  """
@@ -238,10 +238,14 @@ for m in range(0,len(Sample)):
 
         print 'Reached end of random key Iteration'
         Q = Q+1
+    """Rydde for neste iterasjon"""
+    filelist = [f for f in os.listdir(workpathr) if f.endswith(".bak")]
+    for f in filelist:
+        try:
+            os.remove(os.path.join(workpath, f))
+        except:
+            pass
     print 'Reached end of primary Iteration'
 
 
 
-    filelist = [f for f in os.listdir(mydir) if f.endswith(".bak")]
-    for f in filelist:
-        os.remove(os.path.join(mydir, f))

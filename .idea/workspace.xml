@@ -14,14 +14,18 @@
       <file leaf-file-name="MicroscaleModelling_randomSweep.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3733">
+            <state relative-caret-position="156">
               <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
-                <element signature="e#346#747#0" expanded="false" />
-                <element signature="e#777#2157#0" expanded="false" />
-                <element signature="e#2208#2855#0" expanded="false" />
-                <element signature="e#3507#4577#0" expanded="false" />
+                <element signature="e#347#748#0" expanded="false" />
+                <element signature="e#778#2158#0" expanded="false" />
+                <element signature="e#2209#2856#0" expanded="false" />
+                <element signature="e#3508#4578#0" expanded="false" />
+                <element signature="e#9283#10045#0" expanded="false" />
+                <element signature="e#10139#10298#0" expanded="false" />
+                <element signature="e#10348#11061#0" expanded="false" />
+                <element signature="e#12227#12494#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -32,13 +36,20 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/MicroscaleModelling_randomSweep.py" />
+      </list>
+    </option>
+  </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" fullScreen="true">
     <option name="x" value="-9" />
     <option name="y" value="-9" />
     <option name="width" value="1938" />
@@ -108,7 +119,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1938" height="1048" extended-state="0" />
+    <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -146,14 +157,18 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3733">
+        <state relative-caret-position="156">
           <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
-            <element signature="e#346#747#0" expanded="false" />
-            <element signature="e#777#2157#0" expanded="false" />
-            <element signature="e#2208#2855#0" expanded="false" />
-            <element signature="e#3507#4577#0" expanded="false" />
+            <element signature="e#347#748#0" expanded="false" />
+            <element signature="e#778#2158#0" expanded="false" />
+            <element signature="e#2209#2856#0" expanded="false" />
+            <element signature="e#3508#4578#0" expanded="false" />
+            <element signature="e#9283#10045#0" expanded="false" />
+            <element signature="e#10139#10298#0" expanded="false" />
+            <element signature="e#10348#11061#0" expanded="false" />
+            <element signature="e#12227#12494#0" expanded="false" />
           </folding>
         </state>
       </provider>

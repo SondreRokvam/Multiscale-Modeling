@@ -3,6 +3,7 @@ from math import *
 import numpy as np
 from multiprocessing import cpu_count
 numCpus = cpu_count()/4
+
 print'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n', 'Multiscale Modelling, Microscale  \n', 'Allowed numCpus = ',numCpus,'\n'
 def hentePopulation():                 #Les fiber matrix populasjon
     xy=list()
@@ -189,7 +190,7 @@ for m in range(0,len(Sample)):
                 openMdb(pathName=workpath+'RVE-'+str(Sample[m])+'-'+str(int(Q)))
                 mod = mdb.models[modelName]
 
-        # Boundaryconditions mot rigid body movement
+        """ Boundaryconditions mot rigid body movement"""
         if Singlepin:
             region = mod.rootAssembly.sets['NL1']
             mod.PinnedBC(name='Laas-3', createStepName='Initial',
@@ -208,28 +209,33 @@ for m in range(0,len(Sample)):
 
 
         """ SIMULERINGER    """
-        #try:
         if linearAnalysis:                                  # LinearAnalysis for stiffness and small deformation
-            execfile(GitHub + Abaqus + 'LinearAnalysis.py')
-
-        Increments = {'maxNum': 1000, 'initial': 1e-10, 'min': 1e-20, 'max': 1e-2}
+            try:
+                execfile(GitHub + Abaqus + 'LinearAnalysis.py')
+            except:
+                pass
         if nonLinearDeformation:                            # nonLinearAnalysis for strength and large deformation
-            #Unitstrain to fracture.
-
-            #Sweepstrain to fracture
             #       STRAINS:  exx, eyy, ezz, exy, exz, eyz
-            #strains = {'ShearExy':[0,0,-0.0063,0.0182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
             strains = {'ShearExy':[0,0,0.063,0.182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
-
             #       CASES: Name, Strains
             cases=[['ShearExy',strains['ShearExy']]]#, ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
 
             for Case in cases:
-                if nonLinearDeformation:
-                    Jobbnavn, Strain = Case
+                sim = 0
+                Jobbnavn, Strain = Case
+                try:
+                    Increments = {'maxNum': 1000, 'initial': 1e-10, 'min': 1e-20, 'max': 1e-2}
                     execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
-        #except:
-
+                    sim=1
+                except:
+                    pass
+                if not sim:
+                    try:
+                        Increments = {'maxNum': 1000, 'initial': 1e-15, 'min': 1e-20, 'max': 1e-2}
+                        execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
+                        sim = 1
+                    except:
+                        pass
 
         print 'Reached end of random key Iteration'
     print 'Reached end of primary Iteration'

@@ -1,6 +1,12 @@
 """Filen er laget for aa bli kjort av microscale scriptet"""
 # Lage materialer, material sections og assigne materialer til sections for Matrix, Fiber og Interface
 """Material Constants for Resin, Fiber and Interfaze/Bond/Sizing"""
+ResCon2 = {'E,v':(3.5,0.33), 'Den':1.2e-06,
+          'CDP':(0.1, 0.1, 1.16, 0.89, 0.0001),
+          'cdpCCH':((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)),
+          'cdpCTS':(0.6, 0.09),
+          'cdpCTD':((0.0, 0.0), (0.9, 1.487)),
+          'cdpCCD':((0.0, 0.0), (0.0, 0.32), (0.9, 0.55))}
 ResCon = {'E,v':(3.5,0.33), 'Den':1.2e-06,
           'CDP':(0.1, 0.1, 1.16, 0.89, 0.0001),
           'cdpCCH':((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)),
@@ -10,7 +16,7 @@ ResCon = {'E,v':(3.5,0.33), 'Den':1.2e-06,
 
 FibCon = {'E,v':(90,0.22), 'Den':2.55e-06}
 
-IntCon = {'Trac':(100.0, 100.0, 100.0), 'Den':1.2e-06,
+IntCon = {'Trac':(50.0, 100.0, 100.0), 'Den':1.2e-06,
           'QDI':(0.042, 0.063, 0.063),
           'qdiDEpower':1.2,   'qdiDE':(0.0028, 0.0078, 0.0078), }
 
@@ -24,9 +30,10 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
         res.ConcreteDamagedPlasticity(table=(ResCon['CDP'],))
         RCDP = res.concreteDamagedPlasticity
         RCDP.ConcreteCompressionHardening(table=ResCon['cdpCCH'])
+        RCDP.ConcreteCompressionDamage(table=ResCon['cdpCCD'])
         RCDP.ConcreteTensionStiffening(table=(ResCon['cdpCTS'],), type=GFI)
         RCDP.ConcreteTensionDamage(table=ResCon['cdpCTD'], type=DISPLACEMENT)
-        RCDP.ConcreteCompressionDamage(table=ResCon['cdpCCD'])
+
     if not nf == 0:
         mod.Material(name='glass')
         mod.materials['glass'].Elastic(table=(FibCon['E,v'],))

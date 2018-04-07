@@ -7,7 +7,7 @@ def create_Linearunitstrainslastcases():
     #Request outputs
     mod.fieldOutputRequests['F-Output-1'].setValues(variables=('S', 'EVOL','U'))
     #Run the simulations to create stiffnessmatrix
-    print '\nComputing stresses for normalized strains'
+    print '\nComputing stresses for normalized unit strains'
     for i in range(0,6):#   arg:   +   ,len(id)+1
 
         #Laste inn toyningscase
@@ -23,7 +23,7 @@ def create_Linearunitstrainslastcases():
         mod.DisplacementBC(name='BCZ', createStepName=stepName,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-        print Enhetstoyinger[i][0]
+        
         run_Job(Enhetstoyinger[i][0],modelName)
         del exx, eyy, ezz, exy, exz, eyz
 def create_Linearsweepedlastcases(sweep):
@@ -101,10 +101,12 @@ def get_sweepstrains_sig2_sig3(Compliancematrix,sweepresolution):
     return sweep
 
 
+"""     STIFFNESS  MATRIX       """
+create_Linearunitstrainslastcases()     # Unit strain cases. Set boundary condition and create job.
+Stiffmatrix = get_stiffness()           # Faa stiffnessmatrix
 
-create_Linearunitstrainslastcases()  # Lag linear strain cases. Set boundary condition and create job.
 
-Stiffmatrix = get_stiffness()  # Faa stiffnessmatrix
+"""     Compliance matrix and sweepes stress envelopes"""
 
 #Compliancematrix = get_compliance(Stiffmatrix)  # Inverter til compliance materix
 #sweepstrains = get_sweepstrains_sig2_sig3(Compliancematrix, sweepresolution)  # Finne strains for sweep stress case

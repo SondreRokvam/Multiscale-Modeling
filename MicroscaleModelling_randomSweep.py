@@ -208,28 +208,34 @@ for m in range(0,len(Sample)):
 
 
         """ SIMULERINGER    """
-        #try:
+
         if linearAnalysis:                                  # LinearAnalysis for stiffness and small deformation
-            execfile(GitHub + Abaqus + 'LinearAnalysis.py')
-
-        Increments = {'maxNum': 1000, 'initial': 1e-10, 'min': 1e-20, 'max': 1e-2}
-        if nonLinearDeformation:                            # nonLinearAnalysis for strength and large deformation
-            #Unitstrain to fracture.
-
-            #Sweepstrain to fracture
-            #       STRAINS:  exx, eyy, ezz, exy, exz, eyz
-            #strains = {'ShearExy':[0,0,-0.0063,0.0182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
-            strains = {'ShearExy':[0,0,0.063,0.182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
-
-            #       CASES: Name, Strains
-            cases=[['ShearExy',strains['ShearExy']]]#, ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
-
-            for Case in cases:
-                if nonLinearDeformation:
+            try:
+                execfile(GitHub + Abaqus + 'LinearAnalysis.py')
+            except:
+                pass
+            if nonLinearDeformation:                            # nonLinearAnalysis for strength and large deformation
+                """Unitstrain to break"""
+                #       STRAINS:  exx, eyy, ezz, exy, exz, eyz
+                """Sweepstrain to break"""
+                #strains = {'ShearExy':[0,0,-0.0063,0.0182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
+                strains = {'ShearExy':[0,0,0.063,0.182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
+                #       CASES: Name, Strains
+                cases=[['ShearExy',strains['ShearExy']]]#, ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]
+                for Case in cases:
+                    sim=0
                     Jobbnavn, Strain = Case
-                    execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
-        #except:
-
-
+                    try:
+                        Increments = {'maxNum': 1000, 'initial': 1e-10, 'min': 1e-20, 'max': 1e-2}
+                        execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
+                        sim=1
+                    except:
+                        pass
+                    if not sim:
+                        try:
+                            Increments = {'maxNum': 1000, 'initial': 1e-15, 'min': 1e-20, 'max': 1e-2}
+                            execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
+                        except:
+                            pass
         print 'Reached end of random key Iteration'
     print 'Reached end of primary Iteration'

@@ -1,0 +1,208 @@
+# -*- coding: mbcs -*-
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+mdb.Model(modelType=STANDARD_EXPLICIT, name='Model-A')
+del mdb.models['Model-1']
+mdb.models['Model-A'].ConstrainedSketch(name='__profile__', sheetSize=
+    178.255325910615)
+mdb.models['Model-A'].sketches['__profile__'].Line(point1=(-44.5638314776537, 
+    -44.5638314776537), point2=(44.5638314776537, -44.5638314776537))
+mdb.models['Model-A'].sketches['__profile__'].Line(point1=(44.5638314776537, 
+    -44.5638314776537), point2=(44.5638314776537, 44.5638314776537))
+mdb.models['Model-A'].sketches['__profile__'].Line(point1=(44.5638314776537, 
+    44.5638314776537), point2=(-44.5638314776537, 44.5638314776537))
+mdb.models['Model-A'].sketches['__profile__'].Line(point1=(-44.5638314776537, 
+    44.5638314776537), point2=(-44.5638314776537, -44.5638314776537))
+mdb.models['Model-A'].Part(dimensionality=THREE_D, name='Part-1', type=
+    DEFORMABLE_BODY)
+mdb.models['Model-A'].parts['Part-1'].BaseShell(sketch=
+    mdb.models['Model-A'].sketches['__profile__'])
+mdb.models['Model-A'].ConstrainedSketch(gridSpacing=3.5651065182123, name=
+    '__profile__', sheetSize=178.255325910615, transform=
+    mdb.models['Model-A'].parts['Part-1'].MakeSketchTransform(
+    sketchPlane=mdb.models['Model-A'].parts['Part-1'].faces[0], 
+    sketchPlaneSide=SIDE1, 
+    sketchUpEdge=mdb.models['Model-A'].parts['Part-1'].edges[2], 
+    sketchOrientation=RIGHT, origin=(0.0, 0.0, 0.0)))
+mdb.models['Model-A'].parts['Part-1'].projectReferencesOntoSketch(filter=
+    COPLANAR_EDGES, sketch=mdb.models['Model-A'].sketches['__profile__'])
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    22.959288844, 34.179955302), point1=(16.7771481787251, 27.9978146367251))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    20.777934032, -15.7333514116), point1=(15.0895915256949, 
+    -10.0450089052949))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -33.0083158122, -13.7064009497), point1=(-26.87989908826, 
+    -7.57798422576003))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    34.7676728388, -26.7573096369), point1=(28.0705715062777, 
+    -20.0602083043777))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -43.3123275581, 19.5817652395), point1=(-37.8059430017584, 
+    14.0753806831584))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    45.8153353972, 19.5817652395), point1=(53.60253911642, 19.5817652395))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -14.5646291193, 9.97918918256), point1=(-7.96236035425422, 
+    3.37692041751423))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    0.716896635772, -29.0691334954), point1=(-5.27312046144429, 
+    -23.0791163981837))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -11.6358601516, -9.64058335271), point1=(-4.99288740274897, 
+    -2.99761060385897))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -0.935858116186, 21.0462887084), point1=(4.37003246800456, 
+    15.7403981242094))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    3.59038374468, 41.3408455912), point1=(-2.07556351558681, 
+    35.6748983309332))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    3.59038374468, -47.7868173641), point1=(3.59038374468, -55.79967682326))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -17.2514254085, -28.1856345801), point1=(-11.4593951405715, 
+    -22.3936043121715))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    37.7083490986, 3.61857642678), point1=(31.5605303921094, 
+    -2.52924227971058))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -51.4193138567, 3.61857642678), point1=(-60.11364245043, 3.61857642678))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -35.5969183251, -31.5192414072), point1=(-29.415491414704, 
+    -25.337814496804))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -42.6354199198, 41.090640557), point1=(-37.1019814674713, 
+    35.5572021046713))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    46.4922430355, 41.090640557), point1=(54.31770674134, 41.090640557))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -42.6354199198, -48.0370223983), point1=(-42.6354199198, -55.86248610414))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    46.4922430355, -48.0370223983), point1=(54.31770674134, -48.0370223983))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -32.977734707, 5.71886076309), point1=(-26.8222623642567, 
+    -0.436611579653255))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    20.8385957522, 13.5893593381), point1=(13.6914728788065, 6.44223646470654))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -23.123672098, 42.5478017056), point1=(-16.148160543708, 35.572290151308))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -23.123672098, -46.5798612497), point1=(-23.123672098, -56.44472429427))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    18.6371648633, -35.6390591249), point1=(12.5672507862878, 
+    -29.5691450478878))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    6.78590870084, -2.06562206561), point1=(0.310004586809256, 
+    4.41028204842074))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -25.9863647943, 24.1670667125), point1=(-20.0517369022887, 
+    18.2324388204887))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    22.959288844, 34.179955302), point1=(16.7462374753987, 27.9669039333987))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    20.777934032, -15.7333514116), point1=(15.0611498131634, 
+    -10.0165671927634))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -33.0083158122, -13.7064009497), point1=(-26.8492570046403, 
+    -7.54734214214033))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    34.7676728388, -26.7573096369), point1=(28.0370859996151, 
+    -20.0267227977151))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -43.3123275581, 19.5817652395), point1=(-37.7784110789767, 
+    14.0478487603767))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    45.8153353972, 19.5817652395), point1=(53.6414751350161, 19.5817652395))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -14.5646291193, 9.97918918256), point1=(-7.929349010429, 3.343909073689))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    0.716896635772, -29.0691334954), point1=(-5.30307054693038, 
+    -23.0491663126976))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -11.6358601516, -9.64058335271), point1=(-4.95967253900472, 
+    -2.96439574011472))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -0.935858116186, 21.0462887084), point1=(4.39656192092552, 
+    15.7138686712885))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    3.59038374468, 41.3408455912), point1=(-2.10389325188814, 
+    35.6465685946319))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    3.59038374468, -47.7868173641), point1=(3.59038374468, -55.8397411205558))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -17.2514254085, -28.1856345801), point1=(-11.4304349892318, 
+    -22.3646441608318))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    37.7083490986, 3.61857642678), point1=(31.529791298577, -2.55998137324304))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -51.4193138567, 3.61857642678), point1=(-60.1571140933986, 3.61857642678))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -35.5969183251, -31.5192414072), point1=(-29.384584280152, 
+    -25.306907362252))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -42.6354199198, 41.090640557), point1=(-37.0743142752097, 
+    35.5295349124097))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    46.4922430355, 41.090640557), point1=(54.3568340598692, 41.090640557))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -42.6354199198, -48.0370223983), point1=(-42.6354199198, 
+    -55.9016134226692))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    46.4922430355, -48.0370223983), point1=(54.3568340598692, -48.0370223983))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -32.977734707, 5.71886076309), point1=(-26.791485002543, 
+    -0.467388941366971))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    20.8385957522, 13.5893593381), point1=(13.6557372644396, 6.40650085033957))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -23.123672098, 42.5478017056), point1=(-16.1132829859365, 
+    35.5374125935365))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -23.123672098, -46.5798612497), point1=(-23.123672098, -56.4940486094929))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    18.6371648633, -35.6390591249), point1=(12.5369012159028, 
+    -29.5387954775028))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    6.78590870084, -2.06562206561), point1=(0.277625066239104, 
+    4.4426615689909))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    -25.9863647943, 24.1670667125), point1=(-20.0220637628287, 
+    18.2027656810287))
+mdb.models['Model-A'].parts['Part-1'].PartitionFaceBySketch(faces=
+    mdb.models['Model-A'].parts['Part-1'].faces.getSequenceFromMask(mask=(
+    '[#1 ]', ), ), sketch=mdb.models['Model-A'].sketches['__profile__'], 
+    sketchUpEdge=mdb.models['Model-A'].parts['Part-1'].edges[2])
+mdb.models['Model-A'].parts['Part-1'].Set(faces=
+    mdb.models['Model-A'].parts['Part-1'].faces, name='Alt')
+mdb.models['Model-A'].parts['Part-1'].Set(faces=
+    mdb.models['Model-A'].parts['Part-1'].faces.getSequenceFromMask(mask=(
+    '[#c07fff00 #1001ff ]', ), ), name='Ffiber')
+mdb.models['Model-A'].parts['Part-1'].Set(faces=
+    mdb.models['Model-A'].parts['Part-1'].faces.getSequenceFromMask(mask=(
+    '[#ffffffff #5fffff ]', ), ), name='IFfiber')
+mdb.models['Model-A'].parts['Part-1'].SetByBoolean(name='Interface', operation=
+    DIFFERENCE, sets=(mdb.models['Model-A'].parts['Part-1'].sets['IFfiber'], 
+    mdb.models['Model-A'].parts['Part-1'].sets['Ffiber']))
+mdb.models['Model-A'].parts['Part-1'].SetByBoolean(name='Matrix', operation=
+    DIFFERENCE, sets=(mdb.models['Model-A'].parts['Part-1'].sets['Alt'], 
+    mdb.models['Model-A'].parts['Part-1'].sets['IFfiber']))
+del mdb.models['Model-A'].parts['Part-1'].sets['IFfiber']
+mdb.models['Model-A'].parts['Part-1'].seedPart(deviationFactor=0.1, 
+    minSizeFactor=0.1, size=2.61288)
+mdb.models['Model-A'].parts['Part-1'].generateMesh(regions=
+    mdb.models['Model-A'].parts['Part-1'].faces.getSequenceFromMask(mask=(
+    '[#0 #200000 ]', ), ))
+mdb.models['Model-A'].parts['Part-1'].generateMesh(regions=
+    mdb.models['Model-A'].parts['Part-1'].faces.getSequenceFromMask(mask=(
+    '[#3f8000ff #4ffe00 ]', ), ))

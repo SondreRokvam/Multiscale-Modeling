@@ -71,8 +71,8 @@ if True:
     MaterialDens  = 0
     Dampening = 0
 
-Sample=[2]   #Forste sweepvariabel
-#Sample=np.round(np.linspace(2,80,79))
+#Sample=[2]   #Forste sweepvariabel
+Sample=np.round(np.linspace(2,80,79))
 for m in range(0,len(Sample)):
     """  RVE design parameters  """
     nf   =      int(Sample[m])
@@ -132,7 +132,7 @@ for m in range(0,len(Sample)):
         stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
 
     #Random modellering lokke
-    n = 1           #  Itererer med random nokkeler fra 0 til n
+    n = 50           #  Itererer med random nokkeler fra 0 til n
     Q = 0
     while Q<n:
         from abaqus import *

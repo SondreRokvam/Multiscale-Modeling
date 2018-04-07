@@ -36,8 +36,8 @@ def run_Job(Jobb, modelName):
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
             explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCpus,
-            numDomains=numCpus, numGPUs=1)
+            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=8,
+            numDomains=8, numGPUs=1)
     if Runjobs:
         mdb.jobs[Jobb].submit(consistencyChecking=OFF)
         mdb.jobs[Jobb].waitForCompletion()
@@ -70,7 +70,7 @@ if True:
     MaterialDens  = 0
     Dampening = 0
 
-Sample=[2,3]   #Forste sweepvariabel
+Sample=[2]   #Forste sweepvariabel
 #Sample=np.round(np.linspace(2,80,79))
 for m in range(0,len(Sample)):
     """  RVE design parameters  """

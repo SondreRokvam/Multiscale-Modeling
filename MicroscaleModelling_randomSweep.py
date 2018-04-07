@@ -1,10 +1,8 @@
 from random import *
 from math import *
 import numpy as np
-from multiprocessing import cpu_count
-numCpus = cpu_count()/4
-
-print'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n', 'Multiscale Modelling, Microscale  \n', 'Allowed numCpus = ',numCpus,'\n'
+import os
+print'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n', 'Multiscale Modelling, Microscale  \n',
 def hentePopulation():                 #Les fiber matrix populasjon
     xy=list()
     f = open(coordpath,'r')
@@ -46,21 +44,19 @@ def run_Job(Jobb, modelName):
 
 """         PROCESS FLAGS                                       """
 Createmodel = 1
-
 Runjobs = 1                             #   ON/OFF Start analyser
-linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
-nonLinearDeformation = 1                #   ON/OFF non-linear analyse for strength
+linearAnalysis = 1                      #   ON/OFF Linear analyse for stiffness
+nonLinearDeformation = 0                #   ON/OFF non-linear analyse for strength
 
 Singlepin = 1                               #   Randbetingelse:    Laaser hjornenode mot forskyvning i 3 retninger
 tripplepin = 0                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
-
 """         RVE MODELLERING                """
 if True:
-    Interface = 1                                   # ON/OFF CohesiveInterface
+    Interface = 0                                   # ON/OFF CohesiveInterface
     rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
     ElementInterfaceT = 0.001                       # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
-    noFibertest = 0                                     # Fjerner fiber fra modellen. Modeller resin blokk
+    noFibertest = 0                                     # ON/OFF Fiber i modellen.
     Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
 
     rmean = 8.7096                              # Gjennomsnittradius pa fiber
@@ -74,7 +70,8 @@ if True:
     MaterialDens  = 0
     Dampening = 0
 
-Sample=[50]   #Forste sweepvariabel
+Sample=[2]   #Forste sweepvariabel
+#Sample=np.round(np.linspace(2,80,79))
 for m in range(0,len(Sample)):
     """  RVE design parameters  """
     nf   =      int(Sample[m])
@@ -94,7 +91,7 @@ for m in range(0,len(Sample)):
         if nf == 0 or Vf == 0 or noFibertest:
             nf = 0
             Vf = 0
-            dL = rmean*2
+            dL = rmean*5
             noFiber = 1
         if not nf == 0:                              # RVE dL er relativ av nf, rmean og V
             dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5
@@ -135,7 +132,8 @@ for m in range(0,len(Sample)):
 
     #Random modellering lokke
     n = 1           #  Itererer med random nokkeler fra 0 til n
-    for Q in range(0,n):
+    Q = 0
+    while Q<n:
         from abaqus import *
         from abaqusConstants import *
         from odbAccess import *
@@ -214,6 +212,7 @@ for m in range(0,len(Sample)):
                 execfile(GitHub + Abaqus + 'LinearAnalysis.py')
             except:
                 pass
+                n=n+1
         if nonLinearDeformation:                            # nonLinearAnalysis for strength and large deformation
             #       STRAINS:  exx, eyy, ezz, exy, exz, eyz
             strains = {'ShearExy':[0,0,0.063,0.182,0,0],'TensionEyy':[0,0.1,0,0,0,0], 'TensionEzz':[0,0,0.1,0,0,0]}
@@ -238,4 +237,11 @@ for m in range(0,len(Sample)):
                         pass
 
         print 'Reached end of random key Iteration'
+        Q = Q+1
     print 'Reached end of primary Iteration'
+
+
+
+    filelist = [f for f in os.listdir(mydir) if f.endswith(".bak")]
+    for f in filelist:
+        os.remove(os.path.join(mydir, f))

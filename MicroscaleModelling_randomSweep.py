@@ -162,10 +162,10 @@ for m in range(0,len(Sample)):
 
             """ Navn for lineare tester """
             Retning =['Exx', 'Eyy' , 'Ezz' ,'Exy' , 'Exz' , 'Eyz']
-            Enhetstoyinger =['']*6                                          # Enhetstoyinger for lineare retninger
-            for g in range(0, 6):                                                   # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
-                Enhetstoyinger[g] = [Retning[g] + str(int(Sample[m])) + '_' + str(Q)]
-            Sweeptoyinger = [''] * sweepcases                               # Sweepcasesog n relative ABAQUS Jobb navn
+            Enhetstoyinger =['']*6
+            for g in range(0, 6):                                            # Enhetstoyinger for lineare retninger
+                Enhetstoyinger[g] = [Retning[g] + str(int(Sample[m])) + '_' + str(Q)]       # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
+            Sweeptoyinger = [''] * sweepcases                               # Sweepcases
             for g in range(0,sweepcases):
                 Sweeptoyinger[g] = ('Sweep_strain'+ str(int(Sample[m])) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
 

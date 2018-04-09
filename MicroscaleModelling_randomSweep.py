@@ -162,7 +162,7 @@ for m in range(0,len(Sample)):
         import connectorBehavior
 
         # Rydde for neste iterasjon
-        filelist = [f for f in os.listdir(workpath)]
+        filelist = [f for f in os.listdir(workpath) if not (f.endswith('.inp') or f.endswith('.bat'))]
         for f in filelist:
             try:
                 os.remove(os.path.join(workpath, f))
@@ -221,9 +221,6 @@ for m in range(0,len(Sample)):
 
 
 
-
-
-
         """ SIMULERINGER    """
         if linearAnalysis:                                  # LinearAnalysis for stiffness and small deformation
             try:
@@ -259,6 +256,11 @@ for m in range(0,len(Sample)):
         del section, regionToolset, dgm, part, material, assembly, step, interaction
         del load, mesh, job, sketch, visualization, xyPlot, dgo,connectorBehavior
         del Sweeptoyinger, model, mod,lagrestiffpath
+
+
+    for Simulering in Simuleringer:
+        'call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job='+Simulering+' cpus='+str(numCPU)
+
 
 
     print 'Reached end of primary Iteration'

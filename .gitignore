@@ -1,1 +1,2 @@
-echo .idea/workspace.xml>>.gitignore
+
+.idea/workspace.xml

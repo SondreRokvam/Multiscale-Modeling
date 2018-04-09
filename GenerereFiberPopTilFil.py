@@ -236,4 +236,6 @@ modellereRVEsnitt()
 fA = []
 for radius in radiuser:
     fA.append(pi * radius ** 2)
-print 'Modelled Vf = '+str(round(float(np.sum(fA) / dL ** 2),4))
+global FaktiskVf
+FaktiskVf = round(float(np.sum(fA) / dL ** 2),4)
+print 'Modelled Vf = '+str(FaktiskVf)

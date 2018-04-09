@@ -72,15 +72,16 @@ if True:
     Dampening = 0
 
 #Sample=[2]   #Forste sweepvariabel
-Sample=np.round(np.linspace(2,80,79))
+Sample=np.round(np.linspace(2 ,80,79))
 for m in range(0,len(Sample)):
     """  RVE design parameters  """
-    nf   =      int(Sample[m])
-    Vf   =      0.6                 #
-    RVEt =      meshsize            #      RVE tykkelse i fiberretning
+    if True:
+        nf   =      int(Sample[m])
+        Vf   =      0.6                 #
+        RVEt =      meshsize            #      RVE tykkelse i fiberretning
 
-    Rclearing  = 0.025                    # Minimumsavstand mellom fiberkant og RVE kant. Verdi relativ til radius. Skal den settes lik meshsize?
-    tol = rinterface*0.4                  # Modelleringstoleranse - Mindre en minste modelleringsvariabel (rInterface)
+        Rclearing  = 0.025                    # Minimumsavstand mellom fiberkant og RVE kant. Verdi relativ til radius. Skal den settes lik meshsize?
+        tol = rinterface*0.4                  # Modelleringstoleranse - Mindre en minste modelleringsvariabel (rInterface)
 
     """   Stess sweeps settings     """
     sweepcases = 1              # Stress sweeps cases. Decides sweep resolution
@@ -239,13 +240,14 @@ for m in range(0,len(Sample)):
 
         print 'Reached end of random key Iteration'
         Q = Q+1
-    """Rydde for neste iterasjon"""
-    filelist = [f for f in os.listdir(workpathr) if f.endswith(".bak")]
+    #Rydde for neste iterasjon
+    filelist = [f for f in os.listdir(workpath)]
     for f in filelist:
         try:
             os.remove(os.path.join(workpath, f))
         except:
             pass
+
     print 'Reached end of primary Iteration'
 
 

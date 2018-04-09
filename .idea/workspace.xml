@@ -18,7 +18,7 @@
         <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="337">
-              <caret line="47" column="0" lean-forward="true" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
+              <caret line="47" column="0" lean-forward="false" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
                 <element signature="e#261#662#0" expanded="false" />
@@ -344,7 +344,7 @@
     <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="337">
-          <caret line="47" column="0" lean-forward="true" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
+          <caret line="47" column="0" lean-forward="false" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
             <element signature="e#261#662#0" expanded="false" />

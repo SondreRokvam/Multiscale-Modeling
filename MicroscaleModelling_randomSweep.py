@@ -44,7 +44,7 @@ def run_Job(Jobb, modelName):
         mdb.jobs[Jobb].waitForCompletion()
 
 """         PROCESS FLAGS                                       """
-numCPU = 2
+numCPU = 8
 
 Createmodel = 1
 Runjobs = 1                             #   ON/OFF Start analyser
@@ -142,7 +142,7 @@ for m in range(0,len(Sample)):
         except:
             pass
     #Random modellering lokke
-    n = 50           #  Itererer med random nokkeler fra 0 til n
+    n = 100           #  Itererer med random nokkeler fra 0 til n
     Q = 0
 
     while Q<n:

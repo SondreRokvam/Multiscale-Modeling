@@ -45,6 +45,7 @@ def run_Job(Jobb, modelName):
 
 """         PROCESS FLAGS                                       """
 numCPU = 8
+Retning =['Exx', 'Eyy' , 'Ezz' ,'Exy' , 'Exz' , 'Eyz']
 
 Createmodel = 1
 Runjobs = 1                             #   ON/OFF Start analyser
@@ -134,13 +135,7 @@ for m in range(0,len(Sample)):
         instanceName = 'PART-1-MESH-1-1'
         stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
 
-    #Rydde for neste iterasjon
-    filelist = [f for f in os.listdir(workpath)]
-    for f in filelist:
-        try:
-            os.remove(os.path.join(workpath, f))
-        except:
-            pass
+
     #Random modellering lokke
     n = 100           #  Itererer med random nokkeler fra 0 til n
     Q = 0
@@ -166,13 +161,20 @@ for m in range(0,len(Sample)):
         import displayGroupOdbToolset as dgo
         import connectorBehavior
 
+        # Rydde for neste iterasjon
+        filelist = [f for f in os.listdir(workpath)]
+        for f in filelist:
+            try:
+                os.remove(os.path.join(workpath, f))
+            except:
+                pass
         """Random variabler og iterasjonsnavn"""
         if True:                     # For aa kunne kollapse variabler
             seed(Q)                                                         # Q er randomfunksjonensnokkelen
             wiggle = random() * rmean                                       # Omplasseringsgrenser for fiberomplassering
 
             """ Navn for lineare tester """
-            Retning =['Exx', 'Eyy' , 'Ezz' ,'Exy' , 'Exz' , 'Eyz']
+
             Enhetstoyinger =['']*6                                          # Enhetstoyinger for lineare retninger
             for g in range(0, 6):                                                   # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
                 Enhetstoyinger[g] = [Retning[g] + str(int(Sample[m])) + '_' + str(Q)]
@@ -199,7 +201,7 @@ for m in range(0,len(Sample)):
             else:
                 #openMdb(pathName=workpath+'RVE-'+str(Sample[m])+'-'+str(int(Q)))
                 mod = mdb.models[modelName]
-
+        session.setValues(kernelMemoryLimit= 80000000)
         """ Boundaryconditions mot rigid body movement"""
         if Singlepin:
             region = mod.rootAssembly.sets['NL1']
@@ -250,6 +252,9 @@ for m in range(0,len(Sample)):
 
         print 'Reached end of random key Iteration'
         Q = Q+1
+        del section, regionToolset, dgm, part, material, assembly, step, interaction
+        del load, mesh, job, sketch, visualization, xyPlot, dgo,connectorBehavior
+        del Sweeptoyinger, model, mod,lagrestiffpath
 
 
     print 'Reached end of primary Iteration'

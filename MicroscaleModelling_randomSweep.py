@@ -48,7 +48,7 @@ numCPU = 8
 Retning =['Exx', 'Eyy' , 'Ezz' ,'Exy' , 'Exz' , 'Eyz']
 
 Createmodel = 1
-Runjobs = 1                             #   ON/OFF Start analyser
+Runjobs = 0                             #   ON/OFF Start analyser
 linearAnalysis = 1                      #   ON/OFF Linear analyse for stiffness
 nonLinearDeformation = 0                #   ON/OFF non-linear analyse for strength
 
@@ -125,6 +125,7 @@ for m in range(0,len(Sample)):
         GitHub, workpath  = 'C:/Multiscale-Modeling/', 'C:/Temp/'           #Hovedmapper
         Tekstfiler, Abaqus = 'textfiles/', 'Abaqus_steg/'                   #Undermapper
 
+        Jobsss = workpath + 'Abaqusjobs.bat'
         parameterpath = GitHub + 'Parametere.txt'               # Skrives ned for chaining eller importering
         coordpath = GitHub +  'RVEcoordinater.txt'              # Skrives ned i genererefiberPop for chaining til main script
 
@@ -258,12 +259,11 @@ for m in range(0,len(Sample)):
         del Sweeptoyinger, model, mod,lagrestiffpath
 
 
-    for Simulering in Simuleringer:
-        'call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job='+Simulering+' cpus='+str(numCPU)
-
-
 
     print 'Reached end of primary Iteration'
-
+g = open(Jobsss, "a")
+for Simulering in Simuleringer:
+    g.write('call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job='+Simulering+' cpus='+str(numCPU))
+g.close()
 
 

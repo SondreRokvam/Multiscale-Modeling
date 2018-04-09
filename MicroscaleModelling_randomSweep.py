@@ -2,7 +2,7 @@ from random import *
 from math import *
 import numpy as np
 import os
-numCPU = 8
+
 print'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n', 'Multiscale Modelling, Microscale  \n',
 def hentePopulation():                 #Les fiber matrix populasjon
     xy=list()
@@ -44,6 +44,8 @@ def run_Job(Jobb, modelName):
         mdb.jobs[Jobb].waitForCompletion()
 
 """         PROCESS FLAGS                                       """
+numCPU = 2
+
 Createmodel = 1
 Runjobs = 1                             #   ON/OFF Start analyser
 linearAnalysis = 1                      #   ON/OFF Linear analyse for stiffness
@@ -193,9 +195,9 @@ for m in range(0,len(Sample)):
                     execfile(GitHub+'GenerereFiberPopTilFil.py')            # create a random population
                     xydata= hentePopulation()                               # hente fibercoordinater
                 CreateNewRVEModel()
-                mdb.saveAs(pathName=workpath+'RVE-'+str(Sample[m])+'-'+str(int(Q)))
+                #mdb.saveAs(pathName=workpath+'RVE-'+str(Sample[m])+'-'+str(int(Q)))
             else:
-                openMdb(pathName=workpath+'RVE-'+str(Sample[m])+'-'+str(int(Q)))
+                #openMdb(pathName=workpath+'RVE-'+str(Sample[m])+'-'+str(int(Q)))
                 mod = mdb.models[modelName]
 
         """ Boundaryconditions mot rigid body movement"""

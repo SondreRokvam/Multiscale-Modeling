@@ -37,8 +37,8 @@ def run_Job(Jobb, modelName):
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
             explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCPU,
-            numDomains=numCPU, numGPUs=1)
+            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
+            numDomains=1, numGPUs=1)
     if Runjobs:
         mdb.jobs[Jobb].submit(consistencyChecking=OFF)
         mdb.jobs[Jobb].waitForCompletion()
@@ -132,9 +132,17 @@ for m in range(0,len(Sample)):
         instanceName = 'PART-1-MESH-1-1'
         stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
 
+    #Rydde for neste iterasjon
+    filelist = [f for f in os.listdir(workpath)]
+    for f in filelist:
+        try:
+            os.remove(os.path.join(workpath, f))
+        except:
+            pass
     #Random modellering lokke
     n = 50           #  Itererer med random nokkeler fra 0 til n
     Q = 0
+
     while Q<n:
         from abaqus import *
         from abaqusConstants import *
@@ -240,13 +248,7 @@ for m in range(0,len(Sample)):
 
         print 'Reached end of random key Iteration'
         Q = Q+1
-    #Rydde for neste iterasjon
-    filelist = [f for f in os.listdir(workpath)]
-    for f in filelist:
-        try:
-            os.remove(os.path.join(workpath, f))
-        except:
-            pass
+
 
     print 'Reached end of primary Iteration'
 

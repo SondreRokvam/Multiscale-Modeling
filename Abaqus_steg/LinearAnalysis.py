@@ -103,7 +103,10 @@ def get_sweepstrains_sig2_sig3(Compliancematrix,sweepresolution):
 
 """     STIFFNESS  MATRIX       """
 create_Linearunitstrainslastcases()     # Unit strain cases. Set boundary condition and create job.
-Stiffmatrix = get_stiffness()           # Faa stiffnessmatrix
+
+
+"""Post processing"""
+#Stiffmatrix = get_stiffness()           # Faa stiffnessmatrix
 
 
 """     Compliance matrix and sweepes stress envelopes"""

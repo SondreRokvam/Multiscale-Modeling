@@ -2,6 +2,8 @@ from random import *
 from math import *
 import numpy as np
 import os
+import multiprocessing
+
 
 print'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n', 'Multiscale Modelling, Microscale  \n',
 def hentePopulation():                 #Les fiber matrix populasjon
@@ -42,9 +44,11 @@ def run_Job(Jobb, modelName):
     if Runjobs:
         mdb.jobs[Jobb].submit(consistencyChecking=OFF)
         mdb.jobs[Jobb].waitForCompletion()
+    else:
+        mdb.jobs[Jobb].writeInput(consistencyChecking=OFF)
 
 """         PROCESS FLAGS                                       """
-numCPU = 8
+numCPU = multiprocessing.cpu_count()
 Retning =['Exx', 'Eyy' , 'Ezz' ,'Exy' , 'Exz' , 'Eyz']
 
 Createmodel = 1
@@ -163,12 +167,13 @@ for m in range(0,len(Sample)):
         import connectorBehavior
 
         # Rydde for neste iterasjon
-        filelist = [f for f in os.listdir(workpath) if not (f.endswith('.inp') or f.endswith('.bat'))]
+        """filelist = [f for f in os.listdir(workpath) if not f.endswith('.inp')]
         for f in filelist:
             try:
                 os.remove(os.path.join(workpath, f))
             except:
                 pass
+        """
         """Random variabler og iterasjonsnavn"""
         if True:                     # For aa kunne kollapse variabler
             seed(Q)                                                         # Q er randomfunksjonensnokkelen

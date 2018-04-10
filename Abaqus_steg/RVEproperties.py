@@ -1,7 +1,7 @@
 """Filen er laget for aa bli kjort av microscale scriptet"""
 # Lage materialer, material sections og assigne materialer til sections for Matrix, Fiber og Interface
 """Material Constants for Resin, Fiber and Interfaze/Bond/Sizing"""
-ResCon2 = {'E,v':(3.5,0.33), 'Den':1.2e-06,
+ResCon2 = {'E,v':(3,0.35), 'Den':1.2e-06,
           'CDP':(0.1, 0.1, 1.16, 0.89, 0.0001),
           'cdpCCH':((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)),
           'cdpCTS':(0.6, 0.09),
@@ -16,7 +16,7 @@ ResCon = {'E,v':(3.5,0.33), 'Den':1.2e-06,
 
 FibCon = {'E,v':(90,0.22), 'Den':2.55e-06}
 
-IntCon = {'Trac':(50.0, 100.0, 100.0), 'Den':1.2e-06,
+IntCon = {'Trac':(100.0, 100.0, 100.0), 'Den':1.2e-06,
           'QDI':(0.042, 0.063, 0.063),
           'qdiDEpower':1.2,   'qdiDE':(0.0028, 0.0078, 0.0078), }
 
@@ -44,7 +44,8 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
             if nonLinearDeformation:
                 intF= mod.materials['interface']
                 intF.Elastic(type=TRACTION, table=(IntCon['Trac'],))
-                intF.Density(table=((IntCon['Den'],),))
+                if MaterialDens:
+                    intF.Density(table=((IntCon['Den'],),))
                 intF.QuadsDamageInitiation(table=(IntCon['QDI'],))
                 intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
                                                            power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
@@ -52,7 +53,6 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
                 mod.materials['interface'].Elastic(table=(ResCon['E,v'],))
                 if MaterialDens:
                     mod.materials['interface'].Density(table=((FibCon['Den'],),))
-                #mod.materials['interface'].Elastic(type=TRACTION, table=((100.0, 100.0, 100.0),))?
 
 def SectionsAndOrientations():                                  # Create and assign sections to materials
     p = mdb.models['Model-A'].parts['Part-1-mesh-1']
@@ -78,12 +78,16 @@ def SectionsAndOrientations():                                  # Create and ass
                     datId = p.features['Fiber datum ' + str(Fdats)].id
                     fibCsys = p.datums[datId]
                     region = p.sets['FiberInt' + str(Fdats)]
-                    p.MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=fibCsys,
-                                          fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0,
-                                          additionalRotationField='', stackDirection=STACK_3)
+                    p.MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=fibCsys,fieldName='',
+                                          additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='',
+                                          stackDirection=STACK_ORIENTATION)
+
+                                    # additionalRotationType = ROTATION_ANGLE, angle=-90.0, additionalRotationField='',
+                                    # additionalRotationType = ROTATION_NONE,  angle = 0.0, additionalRotationField='',
 
                 mod.CohesiveSection(name='SSbond', material='interface', response=TRACTION_SEPARATION,
-                                    initialThicknessType=SPECIFY, initialThickness=0.001, outOfPlaneThickness=None)
+                                    initialThicknessType=GEOMETRY, outOfPlaneThickness=None)
+                # initialThicknessType=SPECIFY, initialThickness = 0.0001, outOfPlaneThickness = None)
                 # initialThicknessType=GEOMETRY,outOfPlaneThickness=None)
             else:
                 mod.HomogeneousSolidSection(name='SSbond', material='interface', thickness=None)

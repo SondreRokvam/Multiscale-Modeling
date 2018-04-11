@@ -30,9 +30,8 @@ def CreateNewRVEModel():
     execfile(GitHub + Abaqus + 'RVE_Assembly_RP_CE.py')     # Assembly med RVE med x i fiber retning. Lage constrain equations til RVE modell og fixe boundary condition for rigid body movement
     if not noFiber and Interface and False:        # Rearrange fiber interface nodes for controlled elementthickness and stable simulations
         execfile(GitHub + Abaqus + 'RVE_InterfaceElementThickness.py')
-Simuleringer=[]
+
 def run_Job(Jobb, modelName):
-    Simuleringer.append(Jobb)
     mdb.Job(name=Jobb, model=modelName, description='', type=ANALYSIS,
             atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
@@ -40,18 +39,40 @@ def run_Job(Jobb, modelName):
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
             scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
             numDomains=1, numGPUs=1)
+    """mdb.Job(name=Jobb, type=ANALYSIS, explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE,
+        parallelizationMethodExplicit=DOMAIN, numDomains=1,
+        model=modelName, description='',
+        atTime=None, queue=None,
+        memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+        echoPrint=OFF,
+        modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
+        scratch='', resultsFormat=ODB,
+        numGPUs=1)
+    
+    mdb.Job(name=Jobb, type=ANALYSIS,numCpus=numCPU, memory=95,
+            explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE,
+            parallelizationMethodExplicit=DOMAIN,numDomains=numCPU,
+            model=modelName, description='', getMemoryFromAnalysis=True,
+            echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF,
+            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT,
+            numGPUs=1)
+    """
     if Runjobs:
         mdb.jobs[Jobb].submit(consistencyChecking=OFF)
         mdb.jobs[Jobb].waitForCompletion()
     else:
         mdb.jobs[Jobb].writeInput(consistencyChecking=OFF)
+        qw = open(Jobsss, "a")
+        qw.write('call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job=' + Jobb + ' cpus=' + str(numCPU))
+        qw.close()
 numCPU = multiprocessing.cpu_count()
 Retning =['Exx', 'Eyy' , 'Ezz' ,'Exy' , 'Exz' , 'Eyz']
 
 """         PROCESS FLAGS                                       """
 
-Createmodel = 0
-Savemodel = 1
+Createmodel = 1
+Savemodel = 0
+
 Runjobs = 1                             #   ON/OFF Start analyser or create .inp
 
 linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
@@ -62,23 +83,23 @@ Dampening = 0
 Singlepin = 1                               #   Randbetingelse:    Laaser hjornenode mot forskyvning i 3 retninger
 tripplepin = 1                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
 """         RVE MODELLERING                """
-if True:
-    Interface = 1                                   # ON/OFF CohesiveInterface
-    rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
-    ElementInterfaceT = 0.001                       # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
-    noFibertest = 0                                     # ON/OFF Fiber i modellen.
-    Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
+Interface = 1                                   # ON/OFF CohesiveInterface
+rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
+ElementInterfaceT = 0.001                       # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
-    rmean = 8.7096                              # Gjennomsnittradius pa fiber
-    Rstdiv = 0.6374                             # OStandard avvik fra gjennomsnittsradius
+noFibertest = 0                                     # ON/OFF Fiber i modellen.
+Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
 
-    # Meshsize
-    FiberSirkelResolution = 24                                  # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
-    meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
+rmean = 8.7096                              # Gjennomsnittradius pa fiber
+Rstdiv = 0.6374                             # OStandard avvik fra gjennomsnittsradius
 
-    #Material Density
-    MaterialDens  = 0
+# Meshsize
+FiberSirkelResolution = 24                                  # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
+meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
+
+#Material Density
+MaterialDens  = 0
 
 
 Sample=[20]   #Forste sweepvariabel
@@ -272,9 +293,6 @@ for m in range(0,len(Sample)):
 
     print 'Reached end of primary Iteration'
 
-g = open(Jobsss, "a")
-for Simulering in Simuleringer:
-    g.write('call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job='+Simulering+' cpus='+str(numCPU))
-g.close()
+
 
 

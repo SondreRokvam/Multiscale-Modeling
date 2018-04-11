@@ -71,7 +71,7 @@ Retning =['Exx', 'Eyy' , 'Ezz' ,'Exy' , 'Exz' , 'Eyz']
 """         PROCESS FLAGS                                       """
 
 Createmodel = 1
-Savemodel = 0
+Savemodel = 1
 
 Runjobs = 1                             #   ON/OFF Start analyser or create .inp
 
@@ -228,8 +228,15 @@ for m in range(0,len(Sample)):
                     xydata= hentePopulation()                               # hente fibercoordinater
                 CreateNewRVEModel()
                 if Savemodel:
-                    mdb.saveAs(pathName=workpath+'RVE-'+str(Sample[m])+'-'+str(int(Q)))
+                    if Interface:
+                        mdb.saveAs(pathName=workpath+'RVE-'+str(Sample[m])+'-'+str(int(Q)))
+                    else:
+                        mdb.saveAs(pathName=workpath + 'RVE-' + str(Sample[m]) + '-0-int-' + str(int(Q)))
             else:
+                if Interface:
+                    openMdb(pathName=workpath + 'RVE-' + str(Sample[m]) + '-' + str(int(Q)))
+                else:
+                    openMdb(pathName=workpath + 'RVE-' + str(Sample[m]) + '-0-int-' + str(int(Q)))
                 openMdb(pathName=workpath+'RVE-'+str(Sample[m])+'-'+str(int(Q)))
                 mod = mdb.models[modelName]
         session.setValues(kernelMemoryLimit= 80000000)
@@ -267,7 +274,7 @@ for m in range(0,len(Sample)):
                 #       CASES: Name, Strains
                 cases = [['ShearExy', strains['ShearExy']]]  # , ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
             else:
-                cases = [['ShearExy0int', strains['ShearExy']]]
+                cases = [['ShearExyNoInterface', strains['ShearExy']]]
 
             for Case in cases:
                 sim = 0

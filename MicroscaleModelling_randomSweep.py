@@ -67,7 +67,6 @@ meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resol
 #Material Density
 MaterialDens  = 1
 
-
 Sample=[20]   #Forste sweepvariabel
 #Sample=np.round(np.linspace(2 ,80,79))
 for m in range(0,len(Sample)):
@@ -79,11 +78,9 @@ for m in range(0,len(Sample)):
 
         Rclearing  = 0.05                    # Minimumsavstand mellom fiberkant og RVE kant. Verdi relativ til radius. Skal den settes lik meshsize?
         tol = rinterface*0.4                  # Modelleringstoleranse - Mindre en minste modelleringsvariabel (rInterface)
-
     """   Stess sweeps settings     """
     sweepcases = 1              # Stress sweeps cases. Decides sweep resolution
     id = np.identity(6)         # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
-
     #Generelle instilliger
     if True:                     # For aa kunne kollapse instillinger
         print Sample[m]
@@ -131,7 +128,6 @@ for m in range(0,len(Sample)):
         instanceName = 'PART-1-MESH-1-1'
         stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
 
-
     #Random modellering lokke
     n = 1           #  Itererer med random nokkeler fra 0 til n
     Q = 0
@@ -165,7 +161,6 @@ for m in range(0,len(Sample)):
                     os.remove(os.path.join(workpath, f))
                 except:
                     pass
-
         """Random variabler og iterasjonsnavn"""
         if True:                     # For aa kunne kollapse variabler
             seed(Q)                                                         # Q er randomfunksjonensnokkelen
@@ -202,26 +197,23 @@ for m in range(0,len(Sample)):
                         mdb.saveAs(pathName=workpath + 'RVE-' + str(Sample[m]) + '-0-int-' + str(int(Q)))
             else:
                 openMdb(pathName=workpath + 'RVE-' + str(Sample[m]) + '-' + str(int(Q)))
-
         """ Boundaryconditions mot rigid body movement"""
-        if Singlepin:
-            region = mod.rootAssembly.sets['NL1']
-            mod.PinnedBC(name='Laas-3', createStepName='Initial',
-                         region=region, localCsys=None)
-        if tripplepin and Singlepin:
-            region = mod.rootAssembly.sets['NL2']
-            mod.DisplacementBC(name='Laas-2', createStepName='Initial',
-                               region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                               amplitude=UNSET, distributionType=UNIFORM, fieldName='',
-                               localCsys=None)
-            region = mod.rootAssembly.sets['NL3']
-            mod.DisplacementBC(name='Laas-1', createStepName='Initial',
-                               region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                               amplitude=UNSET, distributionType=UNIFORM, fieldName='',
-                               localCsys=None)
-
-
-
+        if True:
+            if Singlepin:
+                region = mod.rootAssembly.sets['NL1']
+                mod.PinnedBC(name='Laas-3', createStepName='Initial',
+                             region=region, localCsys=None)
+            if tripplepin and Singlepin:
+                region = mod.rootAssembly.sets['NL2']
+                mod.DisplacementBC(name='Laas-2', createStepName='Initial',
+                                   region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                                   amplitude=UNSET, distributionType=UNIFORM, fieldName='',
+                                   localCsys=None)
+                region = mod.rootAssembly.sets['NL3']
+                mod.DisplacementBC(name='Laas-1', createStepName='Initial',
+                                   region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                                   amplitude=UNSET, distributionType=UNIFORM, fieldName='',
+                                   localCsys=None)
         """ SIMULERINGER    """
         if linearAnalysis:                                  # LinearAnalysis for stiffness and small deformation
             try:
@@ -261,14 +253,15 @@ for m in range(0,len(Sample)):
 
         try:
             session.odbs['C:/Temp/ShearExyjob0.odb'].close()
+            o3 = session.openOdb(name='C:/Temp/ShearExyjob0.odb')
+            session.viewports['Viewport: 1'].setValues(displayedObject=o3)
+            session.viewports['Viewport: 1'].odbDisplay.display.setValues(plotState=(
+            CONTOURS_ON_UNDEF, CONTOURS_ON_DEF,))
+            leaf = dgo.LeafFromElementSets(elementSets=('PART-1-MESH-1-1.INTERFACES',))
+            session.viewports['Viewport: 1'].odbDisplay.displayGroup.replace(leaf=leaf)
         except:
             pass
-        o3 = session.openOdb(name='C:/Temp/ShearExyjob0.odb')
-        session.viewports['Viewport: 1'].setValues(displayedObject=o3)
-        session.viewports['Viewport: 1'].odbDisplay.display.setValues(plotState=(
-            CONTOURS_ON_UNDEF, CONTOURS_ON_DEF,))
-        leaf = dgo.LeafFromElementSets(elementSets=('PART-1-MESH-1-1.INTERFACES',))
-        session.viewports['Viewport: 1'].odbDisplay.displayGroup.replace(leaf=leaf)
+
 
         print 'Reached end of random key Iteration'
         Q = Q + 1

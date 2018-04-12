@@ -74,7 +74,6 @@ def SectionsAndOrientations():                                  # Create and ass
                             thicknessAssignment=FROM_SECTION)
         if Interface:
             if nonLinearAnalysis:
-                """
                 for Fdats in range(0, len(xydata)):
                     datId = p.features['Fiber datum ' + str(Fdats)].id
                     fibCsys = p.datums[datId]
@@ -85,7 +84,7 @@ def SectionsAndOrientations():                                  # Create and ass
 
                                     # additionalRotationType = ROTATION_ANGLE, angle=-90.0, additionalRotationField='',
                                     # additionalRotationType = ROTATION_NONE,  angle = 0.0, additionalRotationField='',
-                """
+
                 mod.CohesiveSection(name='SSbond', material='interface', response=TRACTION_SEPARATION,
                                     initialThicknessType=SPECIFY, initialThickness=0.01, outOfPlaneThickness=None)
                 # initialThicknessType=SPECIFY, initialThickness = 0.01, outOfPlaneThickness = None)

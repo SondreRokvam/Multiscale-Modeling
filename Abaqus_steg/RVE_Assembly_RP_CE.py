@@ -6,7 +6,7 @@ def Import_n_Transform(a,p):
     a.translate(instanceList=(instanceName,), vector=(0.0, 0.0, -tykkelse))  # Flytte modellen til origo
     a.rotate(instanceList=(instanceName,), axisPoint=(0.0, 0.0, 0.0),  # Rotere rundt y akse saa x er i fiberretning
              axisDirection=(0.0, 1.0, 0.0), angle=90.0)
-    print '\nImported to Assembly, Translated to origo with fibers longitudinal to x'
+    print 'Imported to Assembly, Translated to origo with fibers longitudinal to x'
 def ReferencePoints(a,xmax, ymax, zmax, xmin, ymin, zmin):        # Create X,Y,Z reference points
 
     a.ReferencePoint(point=(xmin - 0.2 * (xmax - xmin), 0.0, 0.0))
@@ -123,4 +123,4 @@ ReferencePoints(a,xmax, ymax, zmax, xmin, ymin, zmin)
 ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin)
 
 
-print '\nReference points created and constraint equ. applied'
+print 'Reference points created and constraint equ. applied'

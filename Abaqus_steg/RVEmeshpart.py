@@ -90,4 +90,4 @@ else:
 del mod.parts[partName].sets['Alt']
 Extrude_and_create_orphanmesh()
 
-print '\nRVEpart created, meshed and Orphanmesh created'
+print 'RVEpart created, meshed and Orphanmesh created'

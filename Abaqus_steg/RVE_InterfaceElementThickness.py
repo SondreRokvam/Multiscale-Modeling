@@ -2,7 +2,6 @@ def adjust():
     a = mod.rootAssembly
     nod = a.instances[instanceName].nodes
     count = 0
-    print 'del checkHere'
     for fiba in xydata:
         x = fiba[0]
         y = fiba[1]
@@ -40,11 +39,11 @@ def adjust():
 
                 if abs(nyy) > dL / 2 - tol and abs(yns) > dL / 2 - tol:
                     diff=(zns-nyz)/abs(zns-nyz)
-                    Iz=round(nyz + diff* ElementInterfaceT*1.4, 7)
+                    Iz=round(nyz + diff * ElementInterfaceT, 7)
                     Iy = nyy
                 elif abs(nyz) > dL / 2 - tol and abs(zns) > dL / 2 - tol:
                     diff=(yns-nyy)/abs(yns-nyy)
-                    Iy=round(nyy + diff* ElementInterfaceT*1.4, 7)
+                    Iy=round(nyy + diff* ElementInterfaceT, 7)
                     Iz = nyz
                 else:
                     Iy = round(nyy + (nyy - y) * RScaling, 7)
@@ -62,4 +61,4 @@ def adjust():
         count = count + 1
 if not ElementInterfaceT == 0:
     adjust()
-print '\nInterface elements adjusted'
+print 'Interface elements adjusted'

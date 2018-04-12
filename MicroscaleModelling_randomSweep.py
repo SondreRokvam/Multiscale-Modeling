@@ -46,13 +46,13 @@ Singlepin = 1                               #   Randbetingelse:    Laaser hjorne
 tripplepin = 0                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
 
 Dampening = 1
-Stabl_Magn =2e-4
-Atapt_Damp_Ratio = 0.05
+Stabl_Magn =2e-6
+Atapt_Damp_Ratio = 0.1
 Increments = {'maxNum': 1000, 'initial': 1e-3, 'min': 1e-5, 'max': 1e-1}
 
 Interface = 1                                   # ON/OFF CohesiveInterface
 rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
-ElementInterfaceT = 0.1                       # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
+ElementInterfaceT = 0                       # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
 noFibertest = 0                                     # ON/OFF Fiber i modellen.
 Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
@@ -67,7 +67,7 @@ meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resol
 #Material Density
 MaterialDens  = 1
 
-Sample=[20]   #Forste sweepvariabel
+Sample=[1]   #Forste sweepvariabel
 #Sample=np.round(np.linspace(2 ,80,79))
 for m in range(0,len(Sample)):
     """  RVE design parameters  """
@@ -222,9 +222,9 @@ for m in range(0,len(Sample)):
                 pass
                 n=n+1
         if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
-            strain = 0.03#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
+            strain = 0.003#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
             strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
-            strains = {'ShearExy': [0, strain, 0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
+            #strains = {'ShearExy': [0, strain, 0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
             #strains = {'ShearExy': [-strain,0,  0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
 
             if Interface:

@@ -1,0 +1,1592 @@
+# -*- coding: mbcs -*-
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+mdb.Model(modelType=STANDARD_EXPLICIT, name='Model-A')
+mdb.Model(modelType=STANDARD_EXPLICIT, name='Model-A')
+mdb.models['Model-A'].ConstrainedSketch(name='__profile__', sheetSize=
+    59.7886539131271)
+mdb.models['Model-A'].Part(dimensionality=THREE_D, name='Part-1', type=
+    DEFORMABLE_BODY)
+mdb.models['Model-A'].sketches['__profile__'].Line(point1=(-9.96477565218785, 
+    -9.96477565218785), point2=(9.96477565218785, -9.96477565218785))
+mdb.models['Model-A'].sketches['__profile__'].Line(point1=(9.96477565218785, 
+    -9.96477565218785), point2=(9.96477565218785, 9.96477565218785))
+mdb.models['Model-A'].sketches['__profile__'].Line(point1=(9.96477565218785, 
+    9.96477565218785), point2=(-9.96477565218785, 9.96477565218785))
+mdb.models['Model-A'].sketches['__profile__'].Line(point1=(-9.96477565218785, 
+    9.96477565218785), point2=(-9.96477565218785, -9.96477565218785))
+mdb.models['Model-A'].parts['Part-1'].BaseShell(sketch=
+    mdb.models['Model-A'].sketches['__profile__'])
+mdb.models['Model-A'].ConstrainedSketch(gridSpacing=0.797182052175028, name=
+    '__profile__', sheetSize=39.8591026087514, transform=
+    mdb.models['Model-A'].parts['Part-1'].MakeSketchTransform(
+    sketchPlane=mdb.models['Model-A'].parts['Part-1'].faces[0], 
+    sketchPlaneSide=SIDE1, 
+    sketchUpEdge=mdb.models['Model-A'].parts['Part-1'].edges[2], 
+    sketchOrientation=RIGHT, origin=(0.0, 0.0, 0.0)))
+mdb.models['Model-A'].parts['Part-1'].projectReferencesOntoSketch(filter=
+    COPLANAR_EDGES, sketch=mdb.models['Model-A'].sketches['__profile__'])
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    0.0, 0.0), point1=(-6.18214066527585, -6.18214066527585))
+mdb.models['Model-A'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    0.0, 0.0), point1=(-6.18832280594113, -6.18832280594113))
+mdb.models['Model-A'].parts['Part-1'].PartitionFaceBySketch(faces=
+    mdb.models['Model-A'].parts['Part-1'].faces.getSequenceFromMask(mask=(
+    '[#1 ]', ), ), sketch=mdb.models['Model-A'].sketches['__profile__'], 
+    sketchUpEdge=mdb.models['Model-A'].parts['Part-1'].edges[2])
+del mdb.models['Model-1']
+mdb.models['Model-A'].parts['Part-1'].Set(faces=
+    mdb.models['Model-A'].parts['Part-1'].faces, name='Alt')
+mdb.models['Model-A'].parts['Part-1'].Set(faces=
+    mdb.models['Model-A'].parts['Part-1'].faces.getSequenceFromMask(mask=(
+    '[#4 ]', ), ), name='Ffiber')
+mdb.models['Model-A'].parts['Part-1'].Set(faces=
+    mdb.models['Model-A'].parts['Part-1'].faces.getSequenceFromMask(mask=(
+    '[#5 ]', ), ), name='IFset')
+mdb.models['Model-A'].parts['Part-1'].SetByBoolean(name='Interface', operation=
+    DIFFERENCE, sets=(mdb.models['Model-A'].parts['Part-1'].sets['IFset'], 
+    mdb.models['Model-A'].parts['Part-1'].sets['Ffiber']))
+mdb.models['Model-A'].parts['Part-1'].SetByBoolean(name='Matrix', operation=
+    DIFFERENCE, sets=(mdb.models['Model-A'].parts['Part-1'].sets['Alt'], 
+    mdb.models['Model-A'].parts['Part-1'].sets['IFset']))
+del mdb.models['Model-A'].parts['Part-1'].sets['IFset']
+mdb.models['Model-A'].parts['Part-1'].seedPart(deviationFactor=0.1, 
+    minSizeFactor=0.1, size=2.73620153757057)
+mdb.models['Model-A'].parts['Part-1'].setMeshControls(elemShape=QUAD, regions=
+    [mdb.models['Model-A'].parts['Part-1'].faces[0]], technique=SWEEP)
+mdb.models['Model-A'].parts['Part-1'].generateMesh(regions=
+    mdb.models['Model-A'].parts['Part-1'].faces.getSequenceFromMask(mask=(
+    '[#1 ]', ), ))
+del mdb.models['Model-A'].parts['Part-1'].sets['Interface']
+mdb.models['Model-A'].parts['Part-1'].setMeshControls(elemShape=TRI, regions=
+    mdb.models['Model-A'].parts['Part-1'].faces.getSequenceFromMask(mask=(
+    '[#4 ]', ), ))
+mdb.models['Model-A'].parts['Part-1'].generateMesh()
+del mdb.models['Model-A'].parts['Part-1'].sets['Ffiber']
+del mdb.models['Model-A'].parts['Part-1'].sets['Matrix']
+del mdb.models['Model-A'].parts['Part-1'].sets['Alt']
+mdb.models['Model-A'].parts['Part-1'].generateBottomUpExtrudedMesh(
+    elemFacesSourceSide=mdb.models['Model-A'].parts['Part-1'].elementFaces, 
+    extrudeVector=((0.0, 0.0, 0.0), (0.0, 0.0, 5.47240307514113)), 
+    numberOfLayers=2)
+mdb.models['Model-A'].parts['Part-1'].deleteNode(nodes=
+    mdb.models['Model-A'].parts['Part-1'].nodes.getSequenceFromMask(mask=(
+    '[#ffffffff:3 #1 ]', ), ))
+mdb.models['Model-A'].parts['Part-1'].PartFromMesh(copySets=True, name=
+    'Part-1-mesh-1')
+mdb.models['Model-A'].parts['Part-1-mesh-1'].Set(elements=
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].elements, name='Alle')
+mdb.models['Model-A'].parts['Part-1-mesh-1'].Set(elements=
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].elements.getSequenceFromMask(
+    mask=('[#0 #fffff000 #ffffffff #ffffff ]', ), ), name='Fibers')
+mdb.models['Model-A'].parts['Part-1-mesh-1'].Set(elements=
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].elements.getSequenceFromMask(
+    mask=('[#fffff #fffff000 #ffffffff #ffffff ]', ), ), name='IandF')
+mdb.models['Model-A'].parts['Part-1-mesh-1'].SetByBoolean(name='Interfaces', 
+    operation=DIFFERENCE, sets=(
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['IandF'], 
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['Fibers']))
+mdb.models['Model-A'].parts['Part-1-mesh-1'].SetByBoolean(name='Matrix', 
+    operation=DIFFERENCE, sets=(
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['Alle'], 
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['IandF']))
+mdb.models['Model-A'].parts['Part-1-mesh-1'].Set(elements=
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].elements.getSequenceFromMask(
+    mask=('[#fffff ]', ), ), name='FiberInt0')
+del mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['IandF']
+del mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['Alle']
+mdb.models['Model-A'].parts['Part-1-mesh-1'].DatumCsysByThreePoints(
+    coordSysType=CYLINDRICAL, name='Fiber datum 0', origin=(0.0, 0.0, 0.0), 
+    point1=(1.0, 0.0, 0.0), point2=(1.0, 1.0, 0.0))
+mdb.models['Model-A'].parts['Part-1-mesh-1'].setElementType(elemTypes=(
+    ElemType(elemCode=COH3D8, elemLibrary=STANDARD, elemDeletion=ON, 
+    viscosity=0.0001), ), regions=
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['Interfaces'])
+mdb.models['Model-A'].Material(name='resin')
+mdb.models['Model-A'].materials['resin'].Elastic(table=((3.0, 0.35), ))
+mdb.models['Model-A'].materials['resin'].Density(table=((1.2e-06, ), ))
+mdb.models['Model-A'].materials['resin'].ConcreteDamagedPlasticity(table=((0.1, 
+    0.1, 1.16, 0.89, 0.0001), ))
+mdb.models['Model-A'].materials['resin'].concreteDamagedPlasticity.ConcreteCompressionHardening(
+    table=((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)))
+mdb.models['Model-A'].materials['resin'].concreteDamagedPlasticity.ConcreteCompressionDamage(
+    table=((0.0, 0.0), (0.0, 0.32), (0.9, 0.55)))
+mdb.models['Model-A'].materials['resin'].concreteDamagedPlasticity.ConcreteTensionStiffening(
+    table=((0.6, 0.09), ), type=GFI)
+mdb.models['Model-A'].materials['resin'].concreteDamagedPlasticity.ConcreteTensionDamage(
+    table=((0.0, 0.0), (0.9, 1.487)), type=DISPLACEMENT)
+mdb.models['Model-A'].Material(name='glass')
+mdb.models['Model-A'].materials['glass'].Elastic(table=((90, 0.22), ))
+mdb.models['Model-A'].materials['glass'].Density(table=((2.55e-06, ), ))
+mdb.models['Model-A'].Material(name='interface')
+mdb.models['Model-A'].materials['interface'].Elastic(table=((100.0, 100.0, 
+    100.0), ), type=TRACTION)
+mdb.models['Model-A'].materials['interface'].Density(table=((1.2e-06, ), ))
+mdb.models['Model-A'].materials['interface'].QuadsDamageInitiation(table=((
+    0.042, 0.063, 0.063), ))
+mdb.models['Model-A'].materials['interface'].quadsDamageInitiation.DamageEvolution(
+    mixedModeBehavior=BK, power=1.2, table=((0.0028, 0.0078, 0.0078), ), type=
+    ENERGY)
+mdb.models['Model-A'].HomogeneousSolidSection(material='resin', name='SSmatrix'
+    , thickness=None)
+mdb.models['Model-A'].parts['Part-1-mesh-1'].MaterialOrientation(
+    additionalRotationType=ROTATION_NONE, axis=AXIS_1, fieldName='', localCsys=
+    None, orientationType=GLOBAL, region=
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['Matrix'], 
+    stackDirection=STACK_3)
+mdb.models['Model-A'].parts['Part-1-mesh-1'].SectionAssignment(offset=0.0, 
+    offsetField='', offsetType=MIDDLE_SURFACE, region=
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['Matrix'], sectionName=
+    'SSmatrix', thicknessAssignment=FROM_SECTION)
+mdb.models['Model-A'].HomogeneousSolidSection(material='glass', name='SSfibers'
+    , thickness=None)
+mdb.models['Model-A'].parts['Part-1-mesh-1'].MaterialOrientation(
+    additionalRotationType=ROTATION_NONE, axis=AXIS_1, fieldName='', localCsys=
+    None, orientationType=GLOBAL, region=
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['Fibers'], 
+    stackDirection=STACK_3)
+mdb.models['Model-A'].parts['Part-1-mesh-1'].SectionAssignment(offset=0.0, 
+    offsetField='', offsetType=MIDDLE_SURFACE, region=
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['Fibers'], sectionName=
+    'SSfibers', thicknessAssignment=FROM_SECTION)
+mdb.models['Model-A'].CohesiveSection(initialThicknessType=GEOMETRY, material=
+    'interface', name='SSbond', outOfPlaneThickness=None, response=
+    TRACTION_SEPARATION)
+mdb.models['Model-A'].parts['Part-1-mesh-1'].SectionAssignment(offset=0.0, 
+    offsetField='', offsetType=MIDDLE_SURFACE, region=
+    mdb.models['Model-A'].parts['Part-1-mesh-1'].sets['Interfaces'], 
+    sectionName='SSbond', thicknessAssignment=FROM_SECTION)
+mdb.models['Model-A'].rootAssembly.DatumCsysByDefault(CARTESIAN)
+mdb.models['Model-A'].rootAssembly.Instance(dependent=ON, name=
+    'PART-1-MESH-1-1', part=mdb.models['Model-A'].parts['Part-1-mesh-1'])
+mdb.models['Model-A'].rootAssembly.translate(instanceList=('PART-1-MESH-1-1', )
+    , vector=(0.0, 0.0, -2.73620153757057))
+mdb.models['Model-A'].rootAssembly.rotate(angle=90.0, axisDirection=(0.0, 1.0, 
+    0.0), axisPoint=(0.0, 0.0, 0.0), instanceList=('PART-1-MESH-1-1', ))
+mdb.models['Model-A'].rootAssembly.ReferencePoint(point=(-0.547240317782969, 
+    0.0, 0.0))
+mdb.models['Model-A'].rootAssembly.Set(name='RPX', referencePoints=(
+    mdb.models['Model-A'].rootAssembly.referencePoints[4], ))
+mdb.models['Model-A'].rootAssembly.ReferencePoint(point=(0.0, 
+    -13.9506864547729, 0.0))
+mdb.models['Model-A'].rootAssembly.Set(name='RPY', referencePoints=(
+    mdb.models['Model-A'].rootAssembly.referencePoints[6], ))
+mdb.models['Model-A'].rootAssembly.ReferencePoint(point=(0.0, 0.0, 
+    -13.9506864547729))
+mdb.models['Model-A'].rootAssembly.Set(name='RPZ', referencePoints=(
+    mdb.models['Model-A'].rootAssembly.referencePoints[8], ))
+mdb.models['Model-A'].rootAssembly.Set(name='NL1', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:6 #2 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='NL2', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #200000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='NL3', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #400000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa0', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#1 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb0', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #2 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x0', terms=((1.0, 'Xb0', 1), (-1.0, 
+    'Xa0', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x0', terms=((1.0, 'Xb0', 2), (-1.0, 
+    'Xa0', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x0', terms=((1.0, 'Xb0', 3), (-1.0, 
+    'Xa0', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa1', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#2 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb1', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #4 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x1', terms=((1.0, 'Xb1', 1), (-1.0, 
+    'Xa1', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x1', terms=((1.0, 'Xb1', 2), (-1.0, 
+    'Xa1', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x1', terms=((1.0, 'Xb1', 3), (-1.0, 
+    'Xa1', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa2', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#4 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb2', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #8 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x2', terms=((1.0, 'Xb2', 1), (-1.0, 
+    'Xa2', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x2', terms=((1.0, 'Xb2', 2), (-1.0, 
+    'Xa2', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x2', terms=((1.0, 'Xb2', 3), (-1.0, 
+    'Xa2', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa3', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#8 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb3', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #10 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x3', terms=((1.0, 'Xb3', 1), (-1.0, 
+    'Xa3', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x3', terms=((1.0, 'Xb3', 2), (-1.0, 
+    'Xa3', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x3', terms=((1.0, 'Xb3', 3), (-1.0, 
+    'Xa3', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa4', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#10 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb4', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #20 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x4', terms=((1.0, 'Xb4', 1), (-1.0, 
+    'Xa4', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x4', terms=((1.0, 'Xb4', 2), (-1.0, 
+    'Xa4', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x4', terms=((1.0, 'Xb4', 3), (-1.0, 
+    'Xa4', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa5', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#20 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb5', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #40 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x5', terms=((1.0, 'Xb5', 1), (-1.0, 
+    'Xa5', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x5', terms=((1.0, 'Xb5', 2), (-1.0, 
+    'Xa5', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x5', terms=((1.0, 'Xb5', 3), (-1.0, 
+    'Xa5', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa6', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#40 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb6', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #80 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x6', terms=((1.0, 'Xb6', 1), (-1.0, 
+    'Xa6', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x6', terms=((1.0, 'Xb6', 2), (-1.0, 
+    'Xa6', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x6', terms=((1.0, 'Xb6', 3), (-1.0, 
+    'Xa6', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa7', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#80 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb7', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #100 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x7', terms=((1.0, 'Xb7', 1), (-1.0, 
+    'Xa7', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x7', terms=((1.0, 'Xb7', 2), (-1.0, 
+    'Xa7', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x7', terms=((1.0, 'Xb7', 3), (-1.0, 
+    'Xa7', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa8', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#100 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb8', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #200 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x8', terms=((1.0, 'Xb8', 1), (-1.0, 
+    'Xa8', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x8', terms=((1.0, 'Xb8', 2), (-1.0, 
+    'Xa8', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x8', terms=((1.0, 'Xb8', 3), (-1.0, 
+    'Xa8', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa9', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#200 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb9', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #400 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x9', terms=((1.0, 'Xb9', 1), (-1.0, 
+    'Xa9', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x9', terms=((1.0, 'Xb9', 2), (-1.0, 
+    'Xa9', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x9', terms=((1.0, 'Xb9', 3), (-1.0, 
+    'Xa9', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa10', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#400 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb10', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #800 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x10', terms=((1.0, 'Xb10', 1), (-1.0, 
+    'Xa10', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x10', terms=((1.0, 'Xb10', 2), (-1.0, 
+    'Xa10', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x10', terms=((1.0, 'Xb10', 3), (-1.0, 
+    'Xa10', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa11', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#800 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb11', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #1000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x11', terms=((1.0, 'Xb11', 1), (-1.0, 
+    'Xa11', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x11', terms=((1.0, 'Xb11', 2), (-1.0, 
+    'Xa11', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x11', terms=((1.0, 'Xb11', 3), (-1.0, 
+    'Xa11', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa12', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#1000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb12', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #2000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x12', terms=((1.0, 'Xb12', 1), (-1.0, 
+    'Xa12', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x12', terms=((1.0, 'Xb12', 2), (-1.0, 
+    'Xa12', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x12', terms=((1.0, 'Xb12', 3), (-1.0, 
+    'Xa12', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa13', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#2000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb13', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #4000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x13', terms=((1.0, 'Xb13', 1), (-1.0, 
+    'Xa13', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x13', terms=((1.0, 'Xb13', 2), (-1.0, 
+    'Xa13', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x13', terms=((1.0, 'Xb13', 3), (-1.0, 
+    'Xa13', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa14', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#4000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb14', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #8000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x14', terms=((1.0, 'Xb14', 1), (-1.0, 
+    'Xa14', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x14', terms=((1.0, 'Xb14', 2), (-1.0, 
+    'Xa14', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x14', terms=((1.0, 'Xb14', 3), (-1.0, 
+    'Xa14', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa15', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#8000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb15', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #10000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x15', terms=((1.0, 'Xb15', 1), (-1.0, 
+    'Xa15', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x15', terms=((1.0, 'Xb15', 2), (-1.0, 
+    'Xa15', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x15', terms=((1.0, 'Xb15', 3), (-1.0, 
+    'Xa15', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa16', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#10000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb16', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #20000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x16', terms=((1.0, 'Xb16', 1), (-1.0, 
+    'Xa16', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x16', terms=((1.0, 'Xb16', 2), (-1.0, 
+    'Xa16', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x16', terms=((1.0, 'Xb16', 3), (-1.0, 
+    'Xa16', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa17', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#20000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb17', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #40000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x17', terms=((1.0, 'Xb17', 1), (-1.0, 
+    'Xa17', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x17', terms=((1.0, 'Xb17', 2), (-1.0, 
+    'Xa17', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x17', terms=((1.0, 'Xb17', 3), (-1.0, 
+    'Xa17', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa18', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#40000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb18', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #80000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x18', terms=((1.0, 'Xb18', 1), (-1.0, 
+    'Xa18', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x18', terms=((1.0, 'Xb18', 2), (-1.0, 
+    'Xa18', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x18', terms=((1.0, 'Xb18', 3), (-1.0, 
+    'Xa18', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa19', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#80000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb19', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #100000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x19', terms=((1.0, 'Xb19', 1), (-1.0, 
+    'Xa19', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x19', terms=((1.0, 'Xb19', 2), (-1.0, 
+    'Xa19', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x19', terms=((1.0, 'Xb19', 3), (-1.0, 
+    'Xa19', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa20', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#100000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb20', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #200000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x20', terms=((1.0, 'Xb20', 1), (-1.0, 
+    'Xa20', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x20', terms=((1.0, 'Xb20', 2), (-1.0, 
+    'Xa20', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x20', terms=((1.0, 'Xb20', 3), (-1.0, 
+    'Xa20', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa21', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#200000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb21', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #400000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x21', terms=((1.0, 'Xb21', 1), (-1.0, 
+    'Xa21', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x21', terms=((1.0, 'Xb21', 2), (-1.0, 
+    'Xa21', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x21', terms=((1.0, 'Xb21', 3), (-1.0, 
+    'Xa21', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa22', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#400000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb22', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #800000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x22', terms=((1.0, 'Xb22', 1), (-1.0, 
+    'Xa22', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x22', terms=((1.0, 'Xb22', 2), (-1.0, 
+    'Xa22', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x22', terms=((1.0, 'Xb22', 3), (-1.0, 
+    'Xa22', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa23', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#800000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb23', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #1000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x23', terms=((1.0, 'Xb23', 1), (-1.0, 
+    'Xa23', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x23', terms=((1.0, 'Xb23', 2), (-1.0, 
+    'Xa23', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x23', terms=((1.0, 'Xb23', 3), (-1.0, 
+    'Xa23', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa24', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#1000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb24', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #2000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x24', terms=((1.0, 'Xb24', 1), (-1.0, 
+    'Xa24', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x24', terms=((1.0, 'Xb24', 2), (-1.0, 
+    'Xa24', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x24', terms=((1.0, 'Xb24', 3), (-1.0, 
+    'Xa24', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa25', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#2000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb25', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #4000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x25', terms=((1.0, 'Xb25', 1), (-1.0, 
+    'Xa25', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x25', terms=((1.0, 'Xb25', 2), (-1.0, 
+    'Xa25', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x25', terms=((1.0, 'Xb25', 3), (-1.0, 
+    'Xa25', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa26', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#4000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb26', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #8000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x26', terms=((1.0, 'Xb26', 1), (-1.0, 
+    'Xa26', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x26', terms=((1.0, 'Xb26', 2), (-1.0, 
+    'Xa26', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x26', terms=((1.0, 'Xb26', 3), (-1.0, 
+    'Xa26', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa27', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#8000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb27', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #10000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x27', terms=((1.0, 'Xb27', 1), (-1.0, 
+    'Xa27', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x27', terms=((1.0, 'Xb27', 2), (-1.0, 
+    'Xa27', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x27', terms=((1.0, 'Xb27', 3), (-1.0, 
+    'Xa27', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa28', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#10000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb28', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #20000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x28', terms=((1.0, 'Xb28', 1), (-1.0, 
+    'Xa28', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x28', terms=((1.0, 'Xb28', 2), (-1.0, 
+    'Xa28', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x28', terms=((1.0, 'Xb28', 3), (-1.0, 
+    'Xa28', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa29', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#20000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb29', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #40000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x29', terms=((1.0, 'Xb29', 1), (-1.0, 
+    'Xa29', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x29', terms=((1.0, 'Xb29', 2), (-1.0, 
+    'Xa29', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x29', terms=((1.0, 'Xb29', 3), (-1.0, 
+    'Xa29', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa30', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#40000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb30', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #80000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x30', terms=((1.0, 'Xb30', 1), (-1.0, 
+    'Xa30', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x30', terms=((1.0, 'Xb30', 2), (-1.0, 
+    'Xa30', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x30', terms=((1.0, 'Xb30', 3), (-1.0, 
+    'Xa30', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa31', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#80000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb31', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #1 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x31', terms=((1.0, 'Xb31', 1), (-1.0, 
+    'Xa31', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x31', terms=((1.0, 'Xb31', 2), (-1.0, 
+    'Xa31', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x31', terms=((1.0, 'Xb31', 3), (-1.0, 
+    'Xa31', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa32', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #1 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb32', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #2 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x32', terms=((1.0, 'Xb32', 1), (-1.0, 
+    'Xa32', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x32', terms=((1.0, 'Xb32', 2), (-1.0, 
+    'Xa32', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x32', terms=((1.0, 'Xb32', 3), (-1.0, 
+    'Xa32', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa33', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #2 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb33', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #4 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x33', terms=((1.0, 'Xb33', 1), (-1.0, 
+    'Xa33', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x33', terms=((1.0, 'Xb33', 2), (-1.0, 
+    'Xa33', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x33', terms=((1.0, 'Xb33', 3), (-1.0, 
+    'Xa33', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa34', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #4 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb34', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #8 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x34', terms=((1.0, 'Xb34', 1), (-1.0, 
+    'Xa34', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x34', terms=((1.0, 'Xb34', 2), (-1.0, 
+    'Xa34', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x34', terms=((1.0, 'Xb34', 3), (-1.0, 
+    'Xa34', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa35', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #8 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb35', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #10 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x35', terms=((1.0, 'Xb35', 1), (-1.0, 
+    'Xa35', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x35', terms=((1.0, 'Xb35', 2), (-1.0, 
+    'Xa35', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x35', terms=((1.0, 'Xb35', 3), (-1.0, 
+    'Xa35', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa36', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #10 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb36', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #20 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x36', terms=((1.0, 'Xb36', 1), (-1.0, 
+    'Xa36', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x36', terms=((1.0, 'Xb36', 2), (-1.0, 
+    'Xa36', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x36', terms=((1.0, 'Xb36', 3), (-1.0, 
+    'Xa36', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa37', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #20 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb37', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #40 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x37', terms=((1.0, 'Xb37', 1), (-1.0, 
+    'Xa37', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x37', terms=((1.0, 'Xb37', 2), (-1.0, 
+    'Xa37', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x37', terms=((1.0, 'Xb37', 3), (-1.0, 
+    'Xa37', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa38', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #40 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb38', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #80 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x38', terms=((1.0, 'Xb38', 1), (-1.0, 
+    'Xa38', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x38', terms=((1.0, 'Xb38', 2), (-1.0, 
+    'Xa38', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x38', terms=((1.0, 'Xb38', 3), (-1.0, 
+    'Xa38', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa39', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #80 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb39', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #100 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x39', terms=((1.0, 'Xb39', 1), (-1.0, 
+    'Xa39', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x39', terms=((1.0, 'Xb39', 2), (-1.0, 
+    'Xa39', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x39', terms=((1.0, 'Xb39', 3), (-1.0, 
+    'Xa39', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa40', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #100 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb40', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #200 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x40', terms=((1.0, 'Xb40', 1), (-1.0, 
+    'Xa40', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x40', terms=((1.0, 'Xb40', 2), (-1.0, 
+    'Xa40', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x40', terms=((1.0, 'Xb40', 3), (-1.0, 
+    'Xa40', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa41', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #200 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb41', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #400 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x41', terms=((1.0, 'Xb41', 1), (-1.0, 
+    'Xa41', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x41', terms=((1.0, 'Xb41', 2), (-1.0, 
+    'Xa41', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x41', terms=((1.0, 'Xb41', 3), (-1.0, 
+    'Xa41', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa42', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #400 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb42', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #800 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x42', terms=((1.0, 'Xb42', 1), (-1.0, 
+    'Xa42', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x42', terms=((1.0, 'Xb42', 2), (-1.0, 
+    'Xa42', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x42', terms=((1.0, 'Xb42', 3), (-1.0, 
+    'Xa42', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa43', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #800 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb43', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #1000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x43', terms=((1.0, 'Xb43', 1), (-1.0, 
+    'Xa43', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x43', terms=((1.0, 'Xb43', 2), (-1.0, 
+    'Xa43', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x43', terms=((1.0, 'Xb43', 3), (-1.0, 
+    'Xa43', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa44', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #1000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb44', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #2000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x44', terms=((1.0, 'Xb44', 1), (-1.0, 
+    'Xa44', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x44', terms=((1.0, 'Xb44', 2), (-1.0, 
+    'Xa44', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x44', terms=((1.0, 'Xb44', 3), (-1.0, 
+    'Xa44', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa45', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #2000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb45', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #4000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x45', terms=((1.0, 'Xb45', 1), (-1.0, 
+    'Xa45', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x45', terms=((1.0, 'Xb45', 2), (-1.0, 
+    'Xa45', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x45', terms=((1.0, 'Xb45', 3), (-1.0, 
+    'Xa45', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa46', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #4000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb46', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #8000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x46', terms=((1.0, 'Xb46', 1), (-1.0, 
+    'Xa46', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x46', terms=((1.0, 'Xb46', 2), (-1.0, 
+    'Xa46', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x46', terms=((1.0, 'Xb46', 3), (-1.0, 
+    'Xa46', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa47', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #8000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb47', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #10000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x47', terms=((1.0, 'Xb47', 1), (-1.0, 
+    'Xa47', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x47', terms=((1.0, 'Xb47', 2), (-1.0, 
+    'Xa47', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x47', terms=((1.0, 'Xb47', 3), (-1.0, 
+    'Xa47', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa48', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #10000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb48', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #20000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x48', terms=((1.0, 'Xb48', 1), (-1.0, 
+    'Xa48', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x48', terms=((1.0, 'Xb48', 2), (-1.0, 
+    'Xa48', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x48', terms=((1.0, 'Xb48', 3), (-1.0, 
+    'Xa48', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa49', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #20000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb49', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #40000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x49', terms=((1.0, 'Xb49', 1), (-1.0, 
+    'Xa49', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x49', terms=((1.0, 'Xb49', 2), (-1.0, 
+    'Xa49', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x49', terms=((1.0, 'Xb49', 3), (-1.0, 
+    'Xa49', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa50', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #40000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb50', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #80000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x50', terms=((1.0, 'Xb50', 1), (-1.0, 
+    'Xa50', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x50', terms=((1.0, 'Xb50', 2), (-1.0, 
+    'Xa50', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x50', terms=((1.0, 'Xb50', 3), (-1.0, 
+    'Xa50', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa51', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #80000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb51', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #100000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x51', terms=((1.0, 'Xb51', 1), (-1.0, 
+    'Xa51', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x51', terms=((1.0, 'Xb51', 2), (-1.0, 
+    'Xa51', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x51', terms=((1.0, 'Xb51', 3), (-1.0, 
+    'Xa51', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa52', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #100000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb52', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #200000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x52', terms=((1.0, 'Xb52', 1), (-1.0, 
+    'Xa52', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x52', terms=((1.0, 'Xb52', 2), (-1.0, 
+    'Xa52', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x52', terms=((1.0, 'Xb52', 3), (-1.0, 
+    'Xa52', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa53', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #200000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb53', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #400000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x53', terms=((1.0, 'Xb53', 1), (-1.0, 
+    'Xa53', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x53', terms=((1.0, 'Xb53', 2), (-1.0, 
+    'Xa53', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x53', terms=((1.0, 'Xb53', 3), (-1.0, 
+    'Xa53', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa54', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #400000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb54', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #800000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x54', terms=((1.0, 'Xb54', 1), (-1.0, 
+    'Xa54', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x54', terms=((1.0, 'Xb54', 2), (-1.0, 
+    'Xa54', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x54', terms=((1.0, 'Xb54', 3), (-1.0, 
+    'Xa54', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa55', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #800000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb55', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #1000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x55', terms=((1.0, 'Xb55', 1), (-1.0, 
+    'Xa55', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x55', terms=((1.0, 'Xb55', 2), (-1.0, 
+    'Xa55', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x55', terms=((1.0, 'Xb55', 3), (-1.0, 
+    'Xa55', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa56', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #1000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb56', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #2000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x56', terms=((1.0, 'Xb56', 1), (-1.0, 
+    'Xa56', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x56', terms=((1.0, 'Xb56', 2), (-1.0, 
+    'Xa56', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x56', terms=((1.0, 'Xb56', 3), (-1.0, 
+    'Xa56', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa57', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #2000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb57', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #4000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x57', terms=((1.0, 'Xb57', 1), (-1.0, 
+    'Xa57', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x57', terms=((1.0, 'Xb57', 2), (-1.0, 
+    'Xa57', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x57', terms=((1.0, 'Xb57', 3), (-1.0, 
+    'Xa57', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa58', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #4000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb58', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #8000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x58', terms=((1.0, 'Xb58', 1), (-1.0, 
+    'Xa58', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x58', terms=((1.0, 'Xb58', 2), (-1.0, 
+    'Xa58', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x58', terms=((1.0, 'Xb58', 3), (-1.0, 
+    'Xa58', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa59', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #8000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb59', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #10000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x59', terms=((1.0, 'Xb59', 1), (-1.0, 
+    'Xa59', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x59', terms=((1.0, 'Xb59', 2), (-1.0, 
+    'Xa59', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x59', terms=((1.0, 'Xb59', 3), (-1.0, 
+    'Xa59', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa60', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #10000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb60', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #20000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x60', terms=((1.0, 'Xb60', 1), (-1.0, 
+    'Xa60', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x60', terms=((1.0, 'Xb60', 2), (-1.0, 
+    'Xa60', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x60', terms=((1.0, 'Xb60', 3), (-1.0, 
+    'Xa60', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa61', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #20000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb61', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #40000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x61', terms=((1.0, 'Xb61', 1), (-1.0, 
+    'Xa61', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x61', terms=((1.0, 'Xb61', 2), (-1.0, 
+    'Xa61', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x61', terms=((1.0, 'Xb61', 3), (-1.0, 
+    'Xa61', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa62', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #40000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb62', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:4 #80000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x62', terms=((1.0, 'Xb62', 1), (-1.0, 
+    'Xa62', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x62', terms=((1.0, 'Xb62', 2), (-1.0, 
+    'Xa62', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x62', terms=((1.0, 'Xb62', 3), (-1.0, 
+    'Xa62', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa63', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #80000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb63', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #1 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x63', terms=((1.0, 'Xb63', 1), (-1.0, 
+    'Xa63', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x63', terms=((1.0, 'Xb63', 2), (-1.0, 
+    'Xa63', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x63', terms=((1.0, 'Xb63', 3), (-1.0, 
+    'Xa63', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa64', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #1 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb64', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #2 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x64', terms=((1.0, 'Xb64', 1), (-1.0, 
+    'Xa64', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x64', terms=((1.0, 'Xb64', 2), (-1.0, 
+    'Xa64', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x64', terms=((1.0, 'Xb64', 3), (-1.0, 
+    'Xa64', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa65', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #2 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb65', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #4 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x65', terms=((1.0, 'Xb65', 1), (-1.0, 
+    'Xa65', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x65', terms=((1.0, 'Xb65', 2), (-1.0, 
+    'Xa65', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x65', terms=((1.0, 'Xb65', 3), (-1.0, 
+    'Xa65', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa66', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #4 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb66', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #8 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x66', terms=((1.0, 'Xb66', 1), (-1.0, 
+    'Xa66', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x66', terms=((1.0, 'Xb66', 2), (-1.0, 
+    'Xa66', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x66', terms=((1.0, 'Xb66', 3), (-1.0, 
+    'Xa66', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa67', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #8 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb67', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #10 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x67', terms=((1.0, 'Xb67', 1), (-1.0, 
+    'Xa67', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x67', terms=((1.0, 'Xb67', 2), (-1.0, 
+    'Xa67', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x67', terms=((1.0, 'Xb67', 3), (-1.0, 
+    'Xa67', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa68', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #10 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb68', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #20 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x68', terms=((1.0, 'Xb68', 1), (-1.0, 
+    'Xa68', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x68', terms=((1.0, 'Xb68', 2), (-1.0, 
+    'Xa68', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x68', terms=((1.0, 'Xb68', 3), (-1.0, 
+    'Xa68', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa69', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #20 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb69', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #40 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x69', terms=((1.0, 'Xb69', 1), (-1.0, 
+    'Xa69', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x69', terms=((1.0, 'Xb69', 2), (-1.0, 
+    'Xa69', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x69', terms=((1.0, 'Xb69', 3), (-1.0, 
+    'Xa69', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa70', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #40 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb70', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #80 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x70', terms=((1.0, 'Xb70', 1), (-1.0, 
+    'Xa70', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x70', terms=((1.0, 'Xb70', 2), (-1.0, 
+    'Xa70', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x70', terms=((1.0, 'Xb70', 3), (-1.0, 
+    'Xa70', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa71', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #80 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb71', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #100 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x71', terms=((1.0, 'Xb71', 1), (-1.0, 
+    'Xa71', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x71', terms=((1.0, 'Xb71', 2), (-1.0, 
+    'Xa71', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x71', terms=((1.0, 'Xb71', 3), (-1.0, 
+    'Xa71', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa72', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #100 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb72', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #200 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x72', terms=((1.0, 'Xb72', 1), (-1.0, 
+    'Xa72', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x72', terms=((1.0, 'Xb72', 2), (-1.0, 
+    'Xa72', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x72', terms=((1.0, 'Xb72', 3), (-1.0, 
+    'Xa72', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa73', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #200 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb73', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #400 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x73', terms=((1.0, 'Xb73', 1), (-1.0, 
+    'Xa73', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x73', terms=((1.0, 'Xb73', 2), (-1.0, 
+    'Xa73', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x73', terms=((1.0, 'Xb73', 3), (-1.0, 
+    'Xa73', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa74', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #400 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb74', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #800 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x74', terms=((1.0, 'Xb74', 1), (-1.0, 
+    'Xa74', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x74', terms=((1.0, 'Xb74', 2), (-1.0, 
+    'Xa74', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x74', terms=((1.0, 'Xb74', 3), (-1.0, 
+    'Xa74', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa75', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #800 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb75', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #1000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x75', terms=((1.0, 'Xb75', 1), (-1.0, 
+    'Xa75', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x75', terms=((1.0, 'Xb75', 2), (-1.0, 
+    'Xa75', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x75', terms=((1.0, 'Xb75', 3), (-1.0, 
+    'Xa75', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa76', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #1000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb76', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #2000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x76', terms=((1.0, 'Xb76', 1), (-1.0, 
+    'Xa76', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x76', terms=((1.0, 'Xb76', 2), (-1.0, 
+    'Xa76', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x76', terms=((1.0, 'Xb76', 3), (-1.0, 
+    'Xa76', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa77', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #2000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb77', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #4000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x77', terms=((1.0, 'Xb77', 1), (-1.0, 
+    'Xa77', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x77', terms=((1.0, 'Xb77', 2), (-1.0, 
+    'Xa77', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x77', terms=((1.0, 'Xb77', 3), (-1.0, 
+    'Xa77', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa78', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #4000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb78', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #8000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x78', terms=((1.0, 'Xb78', 1), (-1.0, 
+    'Xa78', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x78', terms=((1.0, 'Xb78', 2), (-1.0, 
+    'Xa78', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x78', terms=((1.0, 'Xb78', 3), (-1.0, 
+    'Xa78', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa79', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #8000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb79', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #10000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x79', terms=((1.0, 'Xb79', 1), (-1.0, 
+    'Xa79', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x79', terms=((1.0, 'Xb79', 2), (-1.0, 
+    'Xa79', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x79', terms=((1.0, 'Xb79', 3), (-1.0, 
+    'Xa79', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa80', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #10000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb80', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #20000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x80', terms=((1.0, 'Xb80', 1), (-1.0, 
+    'Xa80', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x80', terms=((1.0, 'Xb80', 2), (-1.0, 
+    'Xa80', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x80', terms=((1.0, 'Xb80', 3), (-1.0, 
+    'Xa80', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa81', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #20000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb81', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #40000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x81', terms=((1.0, 'Xb81', 1), (-1.0, 
+    'Xa81', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x81', terms=((1.0, 'Xb81', 2), (-1.0, 
+    'Xa81', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x81', terms=((1.0, 'Xb81', 3), (-1.0, 
+    'Xa81', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa82', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #40000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb82', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #80000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x82', terms=((1.0, 'Xb82', 1), (-1.0, 
+    'Xa82', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x82', terms=((1.0, 'Xb82', 2), (-1.0, 
+    'Xa82', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x82', terms=((1.0, 'Xb82', 3), (-1.0, 
+    'Xa82', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa83', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #80000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb83', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #100000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x83', terms=((1.0, 'Xb83', 1), (-1.0, 
+    'Xa83', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x83', terms=((1.0, 'Xb83', 2), (-1.0, 
+    'Xa83', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x83', terms=((1.0, 'Xb83', 3), (-1.0, 
+    'Xa83', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa84', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #100000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb84', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #200000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x84', terms=((1.0, 'Xb84', 1), (-1.0, 
+    'Xa84', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x84', terms=((1.0, 'Xb84', 2), (-1.0, 
+    'Xa84', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x84', terms=((1.0, 'Xb84', 3), (-1.0, 
+    'Xa84', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa85', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #200000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb85', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #400000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x85', terms=((1.0, 'Xb85', 1), (-1.0, 
+    'Xa85', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x85', terms=((1.0, 'Xb85', 2), (-1.0, 
+    'Xa85', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x85', terms=((1.0, 'Xb85', 3), (-1.0, 
+    'Xa85', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa86', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #400000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb86', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #800000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x86', terms=((1.0, 'Xb86', 1), (-1.0, 
+    'Xa86', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x86', terms=((1.0, 'Xb86', 2), (-1.0, 
+    'Xa86', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x86', terms=((1.0, 'Xb86', 3), (-1.0, 
+    'Xa86', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa87', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #800000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb87', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #1000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x87', terms=((1.0, 'Xb87', 1), (-1.0, 
+    'Xa87', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x87', terms=((1.0, 'Xb87', 2), (-1.0, 
+    'Xa87', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x87', terms=((1.0, 'Xb87', 3), (-1.0, 
+    'Xa87', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa88', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #1000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb88', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #2000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x88', terms=((1.0, 'Xb88', 1), (-1.0, 
+    'Xa88', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x88', terms=((1.0, 'Xb88', 2), (-1.0, 
+    'Xa88', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x88', terms=((1.0, 'Xb88', 3), (-1.0, 
+    'Xa88', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa89', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #2000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb89', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #4000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x89', terms=((1.0, 'Xb89', 1), (-1.0, 
+    'Xa89', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x89', terms=((1.0, 'Xb89', 2), (-1.0, 
+    'Xa89', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x89', terms=((1.0, 'Xb89', 3), (-1.0, 
+    'Xa89', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa90', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #4000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb90', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #8000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x90', terms=((1.0, 'Xb90', 1), (-1.0, 
+    'Xa90', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x90', terms=((1.0, 'Xb90', 2), (-1.0, 
+    'Xa90', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x90', terms=((1.0, 'Xb90', 3), (-1.0, 
+    'Xa90', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa91', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #10000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb91', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:3 #1 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x91', terms=((1.0, 'Xb91', 1), (-1.0, 
+    'Xa91', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x91', terms=((1.0, 'Xb91', 2), (-1.0, 
+    'Xa91', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x91', terms=((1.0, 'Xb91', 3), (-1.0, 
+    'Xa91', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa92', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #20000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb92', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #8000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x92', terms=((1.0, 'Xb92', 1), (-1.0, 
+    'Xa92', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x92', terms=((1.0, 'Xb92', 2), (-1.0, 
+    'Xa92', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x92', terms=((1.0, 'Xb92', 3), (-1.0, 
+    'Xa92', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa93', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #40000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb93', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #10000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x93', terms=((1.0, 'Xb93', 1), (-1.0, 
+    'Xa93', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x93', terms=((1.0, 'Xb93', 2), (-1.0, 
+    'Xa93', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x93', terms=((1.0, 'Xb93', 3), (-1.0, 
+    'Xa93', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa94', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #80000000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb94', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #20000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x94', terms=((1.0, 'Xb94', 1), (-1.0, 
+    'Xa94', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x94', terms=((1.0, 'Xb94', 2), (-1.0, 
+    'Xa94', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x94', terms=((1.0, 'Xb94', 3), (-1.0, 
+    'Xa94', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa95', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:6 #1 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb95', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #40000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x95', terms=((1.0, 'Xb95', 1), (-1.0, 
+    'Xa95', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x95', terms=((1.0, 'Xb95', 2), (-1.0, 
+    'Xa95', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x95', terms=((1.0, 'Xb95', 3), (-1.0, 
+    'Xa95', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Xa96', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:6 #2 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Xb96', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:2 #80000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq11x96', terms=((1.0, 'Xb96', 1), (-1.0, 
+    'Xa96', 1), (-2.7362015247345, 'RPX', 1), (0, 'RPX', 2), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq21x96', terms=((1.0, 'Xb96', 2), (-1.0, 
+    'Xa96', 2), (-1.36810076236725, 'RPX', 2), (0, 'RPX', 1), (0, 'RPX', 3)))
+mdb.models['Model-A'].Equation(name='Cq31x96', terms=((1.0, 'Xb96', 3), (-1.0, 
+    'Xa96', 3), (-1.36810076236725, 'RPX', 3), (0, 'RPX', 1), (0, 'RPX', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Ya0', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #1000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Yb0', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #20000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq12y0', terms=((1.0, 'Yb0', 1), (-1.0, 
+    'Ya0', 1), (-9.96477603912354, 'RPY', 1), (0, 'RPY', 2), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq22y0', terms=((1.0, 'Yb0', 2), (-1.0, 
+    'Ya0', 2), (-19.9295520782471, 'RPY', 2), (0, 'RPY', 1), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq32y0', terms=((1.0, 'Yb0', 3), (-1.0, 
+    'Ya0', 3), (-9.96477603912354, 'RPY', 3), (0, 'RPY', 1), (0, 'RPY', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Ya1', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #2000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Yb1', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #10000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq12y1', terms=((1.0, 'Yb1', 1), (-1.0, 
+    'Ya1', 1), (-9.96477603912354, 'RPY', 1), (0, 'RPY', 2), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq22y1', terms=((1.0, 'Yb1', 2), (-1.0, 
+    'Ya1', 2), (-19.9295520782471, 'RPY', 2), (0, 'RPY', 1), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq32y1', terms=((1.0, 'Yb1', 3), (-1.0, 
+    'Ya1', 3), (-9.96477603912354, 'RPY', 3), (0, 'RPY', 1), (0, 'RPY', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Ya2', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #4000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Yb2', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #8000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq12y2', terms=((1.0, 'Yb2', 1), (-1.0, 
+    'Ya2', 1), (-9.96477603912354, 'RPY', 1), (0, 'RPY', 2), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq22y2', terms=((1.0, 'Yb2', 2), (-1.0, 
+    'Ya2', 2), (-19.9295520782471, 'RPY', 2), (0, 'RPY', 1), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq32y2', terms=((1.0, 'Yb2', 3), (-1.0, 
+    'Ya2', 3), (-9.96477603912354, 'RPY', 3), (0, 'RPY', 1), (0, 'RPY', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Ya3', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #8000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Yb3', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #4000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq12y3', terms=((1.0, 'Yb3', 1), (-1.0, 
+    'Ya3', 1), (-9.96477603912354, 'RPY', 1), (0, 'RPY', 2), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq22y3', terms=((1.0, 'Yb3', 2), (-1.0, 
+    'Ya3', 2), (-19.9295520782471, 'RPY', 2), (0, 'RPY', 1), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq32y3', terms=((1.0, 'Yb3', 3), (-1.0, 
+    'Ya3', 3), (-9.96477603912354, 'RPY', 3), (0, 'RPY', 1), (0, 'RPY', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Ya4', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #10000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Yb4', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #2000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq12y4', terms=((1.0, 'Yb4', 1), (-1.0, 
+    'Ya4', 1), (-9.96477603912354, 'RPY', 1), (0, 'RPY', 2), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq22y4', terms=((1.0, 'Yb4', 2), (-1.0, 
+    'Ya4', 2), (-19.9295520782471, 'RPY', 2), (0, 'RPY', 1), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq32y4', terms=((1.0, 'Yb4', 3), (-1.0, 
+    'Ya4', 3), (-9.96477603912354, 'RPY', 3), (0, 'RPY', 1), (0, 'RPY', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Ya5', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #20000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Yb5', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #1000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq12y5', terms=((1.0, 'Yb5', 1), (-1.0, 
+    'Ya5', 1), (-9.96477603912354, 'RPY', 1), (0, 'RPY', 2), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq22y5', terms=((1.0, 'Yb5', 2), (-1.0, 
+    'Ya5', 2), (-19.9295520782471, 'RPY', 2), (0, 'RPY', 1), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq32y5', terms=((1.0, 'Yb5', 3), (-1.0, 
+    'Ya5', 3), (-9.96477603912354, 'RPY', 3), (0, 'RPY', 1), (0, 'RPY', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Ya6', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:6 #1 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Yb6', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #80000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq12y6', terms=((1.0, 'Yb6', 1), (-1.0, 
+    'Ya6', 1), (-9.96477603912354, 'RPY', 1), (0, 'RPY', 2), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq22y6', terms=((1.0, 'Yb6', 2), (-1.0, 
+    'Ya6', 2), (-19.9295520782471, 'RPY', 2), (0, 'RPY', 1), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq32y6', terms=((1.0, 'Yb6', 3), (-1.0, 
+    'Ya6', 3), (-9.96477603912354, 'RPY', 3), (0, 'RPY', 1), (0, 'RPY', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Ya7', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:6 #2 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Yb7', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:5 #10000000 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq12y7', terms=((1.0, 'Yb7', 1), (-1.0, 
+    'Ya7', 1), (-9.96477603912354, 'RPY', 1), (0, 'RPY', 2), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq22y7', terms=((1.0, 'Yb7', 2), (-1.0, 
+    'Ya7', 2), (-19.9295520782471, 'RPY', 2), (0, 'RPY', 1), (0, 'RPY', 3)))
+mdb.models['Model-A'].Equation(name='Cq32y7', terms=((1.0, 'Yb7', 3), (-1.0, 
+    'Ya7', 3), (-9.96477603912354, 'RPY', 3), (0, 'RPY', 1), (0, 'RPY', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Za0', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #40000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Zb0', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #800 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq13z0', terms=((1.0, 'Zb0', 1), (-1.0, 
+    'Za0', 1), (-9.96477603912354, 'RPZ', 1), (0, 'RPZ', 2), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq23z0', terms=((1.0, 'Zb0', 2), (-1.0, 
+    'Za0', 2), (-9.96477603912354, 'RPZ', 2), (0, 'RPZ', 1), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq33z0', terms=((1.0, 'Zb0', 3), (-1.0, 
+    'Za0', 3), (-19.9295520782471, 'RPZ', 3), (0, 'RPZ', 1), (0, 'RPZ', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Za1', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #80000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Zb1', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #400 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq13z1', terms=((1.0, 'Zb1', 1), (-1.0, 
+    'Za1', 1), (-9.96477603912354, 'RPZ', 1), (0, 'RPZ', 2), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq23z1', terms=((1.0, 'Zb1', 2), (-1.0, 
+    'Za1', 2), (-9.96477603912354, 'RPZ', 2), (0, 'RPZ', 1), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq33z1', terms=((1.0, 'Zb1', 3), (-1.0, 
+    'Za1', 3), (-19.9295520782471, 'RPZ', 3), (0, 'RPZ', 1), (0, 'RPZ', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Za2', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #100000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Zb2', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #200 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq13z2', terms=((1.0, 'Zb2', 1), (-1.0, 
+    'Za2', 1), (-9.96477603912354, 'RPZ', 1), (0, 'RPZ', 2), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq23z2', terms=((1.0, 'Zb2', 2), (-1.0, 
+    'Za2', 2), (-9.96477603912354, 'RPZ', 2), (0, 'RPZ', 1), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq33z2', terms=((1.0, 'Zb2', 3), (-1.0, 
+    'Za2', 3), (-19.9295520782471, 'RPZ', 3), (0, 'RPZ', 1), (0, 'RPZ', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Za3', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #200000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Zb3', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #100 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq13z3', terms=((1.0, 'Zb3', 1), (-1.0, 
+    'Za3', 1), (-9.96477603912354, 'RPZ', 1), (0, 'RPZ', 2), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq23z3', terms=((1.0, 'Zb3', 2), (-1.0, 
+    'Za3', 2), (-9.96477603912354, 'RPZ', 2), (0, 'RPZ', 1), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq33z3', terms=((1.0, 'Zb3', 3), (-1.0, 
+    'Za3', 3), (-19.9295520782471, 'RPZ', 3), (0, 'RPZ', 1), (0, 'RPZ', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Za4', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #400000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Zb4', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #80 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq13z4', terms=((1.0, 'Zb4', 1), (-1.0, 
+    'Za4', 1), (-9.96477603912354, 'RPZ', 1), (0, 'RPZ', 2), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq23z4', terms=((1.0, 'Zb4', 2), (-1.0, 
+    'Za4', 2), (-9.96477603912354, 'RPZ', 2), (0, 'RPZ', 1), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq33z4', terms=((1.0, 'Zb4', 3), (-1.0, 
+    'Za4', 3), (-19.9295520782471, 'RPZ', 3), (0, 'RPZ', 1), (0, 'RPZ', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Za5', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #800000 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Zb5', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0 #40 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq13z5', terms=((1.0, 'Zb5', 1), (-1.0, 
+    'Za5', 1), (-9.96477603912354, 'RPZ', 1), (0, 'RPZ', 2), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq23z5', terms=((1.0, 'Zb5', 2), (-1.0, 
+    'Za5', 2), (-9.96477603912354, 'RPZ', 2), (0, 'RPZ', 1), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq33z5', terms=((1.0, 'Zb5', 3), (-1.0, 
+    'Za5', 3), (-19.9295520782471, 'RPZ', 3), (0, 'RPZ', 1), (0, 'RPZ', 2)))
+mdb.models['Model-A'].rootAssembly.Set(name='Za6', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:6 #2 ]', ), ))
+mdb.models['Model-A'].rootAssembly.Set(name='Zb6', nodes=
+    mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'].nodes.getSequenceFromMask(
+    mask=('[#0:6 #1 ]', ), ))
+mdb.models['Model-A'].Equation(name='Cq13z6', terms=((1.0, 'Zb6', 1), (-1.0, 
+    'Za6', 1), (-9.96477603912354, 'RPZ', 1), (0, 'RPZ', 2), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq23z6', terms=((1.0, 'Zb6', 2), (-1.0, 
+    'Za6', 2), (-9.96477603912354, 'RPZ', 2), (0, 'RPZ', 1), (0, 'RPZ', 3)))
+mdb.models['Model-A'].Equation(name='Cq33z6', terms=((1.0, 'Zb6', 3), (-1.0, 
+    'Za6', 3), (-19.9295520782471, 'RPZ', 3), (0, 'RPZ', 1), (0, 'RPZ', 2)))
+mdb.models['Model-A'].PinnedBC(createStepName='Initial', localCsys=None, name=
+    'Laas-3', region=mdb.models['Model-A'].rootAssembly.sets['NL1'])
+mdb.models['Model-A'].StaticStep(name='Lasttoyinger', nlgeom=ON, previous=
+    'Initial')
+mdb.models['Model-A'].steps['Lasttoyinger'].setValues(convertSDI=
+    CONVERT_SDI_OFF, initialInc=0.001, maxInc=0.1, maxNumInc=1000, minInc=
+    1e-05)
+mdb.models['Model-A'].steps['Lasttoyinger'].setValues(adaptiveDampingRatio=0.1, 
+    stabilizationMagnitude=2e-06, stabilizationMethod=DAMPING_FACTOR)
+mdb.models['Model-A'].fieldOutputRequests['F-Output-1'].setValues(frequency=1, 
+    variables=('DAMAGEC', 'DAMAGET', 'LE', 'PE', 'PEEQ', 'RT', 'S', 'SDEG', 
+    'STATUS', 'STATUSXFEM', 'U', 'EVOL'))
+mdb.models['Model-A'].historyOutputRequests['H-Output-1'].setValues(variables=(
+    'ALLDMD', 'ALLIE', 'ALLSD'))
+mdb.models['Model-A'].rootAssembly.SetByBoolean(name='RPS', sets=(
+    mdb.models['Model-A'].rootAssembly.sets['RPX'], 
+    mdb.models['Model-A'].rootAssembly.sets['RPY'], 
+    mdb.models['Model-A'].rootAssembly.sets['RPZ']))
+mdb.models['Model-A'].HistoryOutputRequest(createStepName='Lasttoyinger', name=
+    'H-Output-2', rebar=EXCLUDE, region=
+    mdb.models['Model-A'].rootAssembly.sets['RPS'], sectionPoints=DEFAULT, 
+    variables=('RT', 'UT'))
+mdb.models['Model-A'].DisplacementBC(amplitude=UNSET, createStepName=
+    'Lasttoyinger', distributionType=UNIFORM, fieldName='', fixed=OFF, 
+    localCsys=None, name='BCX', region=
+    mdb.models['Model-A'].rootAssembly.sets['RPX'], u1=0, u2=0.003, u3=0, ur1=
+    UNSET, ur2=UNSET, ur3=UNSET)
+mdb.models['Model-A'].DisplacementBC(amplitude=UNSET, createStepName=
+    'Lasttoyinger', distributionType=UNIFORM, fieldName='', fixed=OFF, 
+    localCsys=None, name='BCY', region=
+    mdb.models['Model-A'].rootAssembly.sets['RPY'], u1=0.003, u2=-0.001, u3=0, 
+    ur1=UNSET, ur2=UNSET, ur3=UNSET)
+mdb.models['Model-A'].DisplacementBC(amplitude=UNSET, createStepName=
+    'Lasttoyinger', distributionType=UNIFORM, fieldName='', fixed=OFF, 
+    localCsys=None, name='BCZ', region=
+    mdb.models['Model-A'].rootAssembly.sets['RPZ'], u1=0, u2=0, u3=0, ur1=UNSET
+    , ur2=UNSET, ur3=UNSET)
+mdb.Job(atTime=None, contactPrint=OFF, description='', echoPrint=OFF, 
+    explicitPrecision=SINGLE, getMemoryFromAnalysis=True, historyPrint=OFF, 
+    memory=90, memoryUnits=PERCENTAGE, model='Model-A', modelPrint=OFF, 
+    multiprocessingMode=DEFAULT, name='ShearExyjob0', nodalOutputPrecision=
+    SINGLE, numCpus=1, numDomains=1, numGPUs=1, queue=None, resultsFormat=ODB, 
+    scratch='', type=ANALYSIS, userSubroutine='', waitHours=0, waitMinutes=0)
+mdb.jobs['ShearExyjob0'].submit(consistencyChecking=OFF)
+mdb.jobs['ShearExyjob0'].waitForCompletion()
+mdb.jobs['ShearExyjob0']._Message(ERROR, {
+    'message': 'Abaqus/Standard Analysis exited with an error - Please see the  message file for possible error messages if the file exists.', 
+    'jobName': 'ShearExyjob0'})
+mdb.jobs['ShearExyjob0']._Message(JOB_ABORTED, {
+    'message': 'Abaqus/Standard Analysis exited with an error - Please see the  message file for possible error messages if the file exists.', 
+    'jobName': 'ShearExyjob0'})

@@ -67,5 +67,6 @@ if not noFiber and Interface:
                              origin=(x, y, 0.0), point1=(x + 1.0, y, 0.0), point2=(x + 1.0, y + 1.0, 0.0))
     if nonLinearAnalysis:# Set cohesive elementtype paa Interface
         p.setElementType(regions=p.sets['Interfaces'],elemTypes=(mesh.ElemType(elemCode=COH3D8, elemLibrary=STANDARD,
-                                                                               elemDeletion=ON, viscosity=0.01),))
-print '\nElement sets (and Fiber center datums) created'
+                                                                               elemDeletion=ON, viscosity=0.0001),))
+        #p.orientElements(referenceRegion=q[1227], pickedElements=p.sets['FiberInt0'])
+print 'Element sets (and Fiber center datums) created'

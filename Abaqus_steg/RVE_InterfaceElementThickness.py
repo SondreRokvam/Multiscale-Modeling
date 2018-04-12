@@ -1,7 +1,7 @@
 a = mod.rootAssembly
 nod = a.instances[instanceName].nodes
 count = 0
-# del checkHere
+print 'del checkHere'
 for fiba in xydata:
     x = fiba[0]
     y = fiba[1]
@@ -34,10 +34,20 @@ for fiba in xydata:
             nyx = round(FN[0].coordinates[0], 7)
             nyy = round(FN[0].coordinates[1], 7)
             nyz = round(FN[0].coordinates[2], 7)
+
             RScaling = ElementInterfaceT / r
 
-            Iy = round(nyy + (nyy - y) * RScaling, 7)
-            Iz = round(nyz + (nyz + x) * RScaling, 7)
+            if abs(nyy) > dL / 2 - tol and abs(yns) > dL / 2 - tol:
+                diff=(zns-nyz)/abs(zns-nyz)
+                Iz=round(nyz + diff* ElementInterfaceT*1.4, 7)
+                Iy = nyy
+            elif abs(nyz) > dL / 2 - tol and abs(zns) > dL / 2 - tol:
+                diff=(yns-nyy)/abs(yns-nyy)
+                Iy=round(nyy + diff* ElementInterfaceT*1.4, 7)
+                Iz = nyz
+            else:
+                Iy = round(nyy + (nyy - y) * RScaling, 7)
+                Iz = round(nyz + (nyz + x) * RScaling, 7)
             if abs(Iy) > dL / 2:
                 Iy = (Iy / abs(Iy)) * dL / 2
             if abs(Iz) > dL / 2:

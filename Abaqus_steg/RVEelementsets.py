@@ -65,6 +65,7 @@ if not noFiber and Interface:
         y = xydata[ie][1]
         p.DatumCsysByThreePoints(name=('Fiber datum ' + str(ie)), coordSysType=CYLINDRICAL,
                              origin=(x, y, 0.0), point1=(x + 1.0, y, 0.0), point2=(x + 1.0, y + 1.0, 0.0))
-    if nonLinearDeformation:# Set cohesive elementtype paa Interface
-        p.setElementType(regions=p.sets['Interfaces'],elemTypes=(mesh.ElemType(elemCode=COH3D8, elemLibrary=STANDARD, elemDeletion=ON, viscosity=0.0001),))
+    if nonLinearAnalysis:# Set cohesive elementtype paa Interface
+        p.setElementType(regions=p.sets['Interfaces'],elemTypes=(mesh.ElemType(elemCode=COH3D8, elemLibrary=STANDARD,
+                                                                               elemDeletion=ON, viscosity=0.01),))
 print '\nElement sets (and Fiber center datums) created'

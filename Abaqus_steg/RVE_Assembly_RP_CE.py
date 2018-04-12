@@ -26,22 +26,22 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
     nodesXa = allNodes.getByBoundingBox(xmin-tol,ymin-tol,zmin-tol,xmin+tol, ymax+tol,zmax+tol)    
     nodesXb = allNodes.getByBoundingBox(xmax-tol,ymin-tol,zmin-tol,xmax+tol, ymax+tol,zmax+tol)  
     
-    NL1=nodesXa.getByBoundingCylinder((-tol,-dL/2,-dL/2), (tol,-dL/2,-dL/2), tol)
+    NL1=nodesXa.getByBoundingCylinder((xmin-tol,-dL/2,-dL/2), (xmax+tol,-dL/2,-dL/2), tol)
     if len(NL1)==1:
         a.Set(nodes=NL1, name='NL1')
     else:
         del FinnerIkkeHjornenode
-    NL2=nodesXa.getByBoundingBox(xmin-tol,-dL/10,zmin-tol,xmin+tol,dL/10,zmin+tol)
+    NL2=nodesXa.getByBoundingBox(xmin-tol,-dL/10,zmin-tol,xmax+tol,dL/10,zmin+tol)
     NL2 = NL2[int(len(NL2)/2):int(len(NL2)/2) + 1 ]
     if len(NL2)==1:
         a.Set(nodes=NL2, name='NL2')
     else:          
         del FinnerIkkeKantenode
     if not nf==0:
-        NL3=nodesXa.getByBoundingCylinder((-tol,0,0), (tol,0,0), dL/10)
+        NL3=nodesXa.getByBoundingCylinder((xmin-tol,0,0), (xmax+tol,0,0), dL/10)
         NL3 = NL3[int(len(NL2)/2):int(len(NL2)/2) + 1 ]
     else:
-        NL3 = nodesXa.getByBoundingCylinder((-tol, 0, 0), (tol, 0, 0), dL / 3)
+        NL3 = nodesXa.getByBoundingCylinder((xmin-tol, 0, 0), (xmax+tol, 0, 0), dL / 3)
         NL3 = NL3[int(len(NL2) / 2):int(len(NL2) / 2) + 1]
     if len(NL3)==1:
         a.Set(nodes=NL3, name='NL3')

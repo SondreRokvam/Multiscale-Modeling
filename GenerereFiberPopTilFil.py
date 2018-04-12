@@ -135,6 +135,8 @@ def modellereRVEsnitt():  # Lage fiber populasjon
         if l < (len(coord)-1):
             g.write('\n')
     g.close()
+    global xydata
+    xydata = coord
     del Iterasjonsflag
     del fVfforrige
     del nplassert  # antall fiber plassert

@@ -2,17 +2,15 @@ def create_nonLinearstrainedlastcases(Strain, bob):
     a = mod.rootAssembly
     mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
     mod.steps['Lasttoyinger'].setValues(maxNumInc=Increments['maxNum'], initialInc=Increments['initial'] ,minInc=Increments['min'],
-        maxInc=Increments['max'])
+        maxInc=Increments['max'],convertSDI=CONVERT_SDI_OFF)
     if Dampening:
-        mod.steps['Lasttoyinger'].setValues(stabilizationMagnitude=0.0002,
-                                                              stabilizationMethod=DAMPING_FACTOR,
-                                                              continueDampingFactors=False, adaptiveDampingRatio=0.05)
-    mdb.models['Model-A'].fieldOutputRequests['F-Output-1'].setValues(variables=(
-        'DAMAGEC', 'DAMAGET', 'LE', 'MISES', 'PE', 'PEEQ', 'RT', 'S', 'SDEG',
-        'STATUS', 'STATUSXFEM', 'U'),frequency=1)
+        mod.steps['Lasttoyinger'].setValues(stabilizationMethod=DAMPING_FACTOR, stabilizationMagnitude=Stabl_Magn,
+                                            adaptiveDampingRatio=Atapt_Damp_Ratio)
+        # stabilizationMethod=DAMPING_FACTOR, stabilizationMagnitude=Stabl_Magn,
+    mod.fieldOutputRequests['F-Output-1'].setValues(variables=('DAMAGEC', 'DAMAGET', 'LE',
+                                    'PE', 'PEEQ', 'RT', 'S', 'SDEG','STATUS', 'STATUSXFEM', 'U','EVOL'),frequency=1)
 
-    mod.historyOutputRequests['H-Output-1'].setValues(variables=(
-        'ALLDMD', 'ALLIE', 'ALLSD'))
+    mod.historyOutputRequests['H-Output-1'].setValues(variables=( 'ALLDMD', 'ALLIE', 'ALLSD'))
     a.SetByBoolean(name='RPS', sets=(a.sets['RPX'], a.sets['RPY'], a.sets['RPZ'],))
     regDef = mdb.models['Model-A'].rootAssembly.sets['RPS']
     mod.HistoryOutputRequest(name='H-Output-2',

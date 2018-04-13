@@ -2,6 +2,7 @@ from random import *
 from math import *
 import numpy as np
 import os
+from sets import Set
 import multiprocessing
 print'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n', 'Multiscale Modelling, Microscale  \n',
 def CreateNewRVEModel():
@@ -38,7 +39,7 @@ RunningCleanup = 0
 Createmodel = 1
 Savemodel = 0
 
-Runjobs = 1                             #   ON/OFF Start analyser or create .inp
+Runjobs = 0                             #   ON/OFF Start analyser or create .inp
 linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
 
@@ -46,19 +47,19 @@ Singlepin = 1                               #   Randbetingelse:    Laaser hjorne
 tripplepin = 0                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
 
 Dampening = 1
-Stabl_Magn =2e-6
-Atapt_Damp_Ratio = 0.1
+Stabl_Magn =2e-4
+Atapt_Damp_Ratio = 0.05
 Increments = {'maxNum': 1000, 'initial': 1e-3, 'min': 1e-5, 'max': 1e-1}
-
-Interface = 1                                   # ON/OFF CohesiveInterface
-rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
-ElementInterfaceT = 0                       # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
 noFibertest = 0                                     # ON/OFF Fiber i modellen.
 Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
 
 rmean = 8.7096                              # Gjennomsnittradius pa fiber
 Rstdiv = 0.6374                             # OStandard avvik fra gjennomsnittsradius
+
+Interface = 1                                   # ON/OFF CohesiveInterface
+rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
+ElementInterfaceT = rmean*0.1                       # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
 # Meshsize
 FiberSirkelResolution = 20                                  # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
@@ -67,7 +68,7 @@ meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resol
 #Material Density
 MaterialDens  = 1
 
-Sample=[1]   #Forste sweepvariabel
+Sample=[1   ]   #Forste sweepvariabel
 #Sample=np.round(np.linspace(2 ,80,79))
 for m in range(0,len(Sample)):
     """  RVE design parameters  """
@@ -222,7 +223,7 @@ for m in range(0,len(Sample)):
                 pass
                 n=n+1
         if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
-            strain = 0.003#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
+            strain = 0.3#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
             strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
             #strains = {'ShearExy': [0, strain, 0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
             #strains = {'ShearExy': [-strain,0,  0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}

@@ -57,11 +57,11 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
         nodes2 = nodesXb.getByBoundingCylinder((-dL, y, z), (dL, y, z), tol)
         a.Set(nodes=nodes2, name=name2)
         mod.Equation(name="Cq11x%i" % (counter),
-                         terms=((1.0, name2, 1), (-1.0, name1, 1), (-(xmax - xmin), 'RPX', 1),(0, 'RPX', 2),(0, 'RPX', 3),))  # 11
+                         terms=((1.0, name2, 1), (-1.0, name1, 1), (-(xmax - xmin), 'RPX', 1),))#,(0, 'RPX', 2),(0, 'RPX', 3),))  # 11
         mod.Equation(name="Cq21x%i" % (counter),
-                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(xmax - xmin) / 2, 'RPX', 2),(0, 'RPX', 1),(0, 'RPX', 3),))  # 21
+                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(xmax - xmin) / 2, 'RPX', 2),))#,(0, 'RPX', 1),(0, 'RPX', 3),))  # 21
         mod.Equation(name="Cq31x%i" % (counter),
-                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(xmax - xmin) / 2, 'RPX', 3),(0, 'RPX', 1),(0, 'RPX', 2),))  # 31
+                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(xmax - xmin) / 2, 'RPX', 3),))#,(0, 'RPX', 1),(0, 'RPX', 2),))  # 31
 
         counter = counter + 1
 
@@ -79,11 +79,11 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq12y%i" % (counter),
-                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(ymax - ymin) / 2, 'RPY', 1),(0, 'RPY', 2),(0, 'RPY', 3),))  # 12
+                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(ymax - ymin) / 2, 'RPY', 1),))#,(0, 'RPY', 2),(0, 'RPY', 3),))  # 12
         mod.Equation(name="Cq22y%i" % (counter),
-                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(ymax - ymin), 'RPY', 2),(0, 'RPY', 1),(0, 'RPY', 3),))  # 22
+                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(ymax - ymin), 'RPY', 2),))#,(0, 'RPY', 1),(0, 'RPY', 3),))  # 22
         mod.Equation(name="Cq32y%i" % (counter),
-                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(ymax - ymin) / 2, 'RPY', 3),(0, 'RPY', 1),(0, 'RPY', 2)))  # 32
+                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(ymax - ymin) / 2, 'RPY', 3),))#,(0, 'RPY', 1),(0, 'RPY', 2)))  # 32
 
         counter = counter + 1
 
@@ -101,11 +101,11 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq13z%i" % (counter),
-                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(zmax - zmin) / 2, 'RPZ', 1),(0, 'RPZ', 2),(0, 'RPZ', 3),))  # 13
+                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(zmax - zmin) / 2, 'RPZ', 1),))#,(0, 'RPZ', 2),(0, 'RPZ', 3),))  # 13
         mod.Equation(name="Cq23z%i" % (counter),
-                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(zmax - zmin) / 2, 'RPZ', 2),(0, 'RPZ', 1),(0, 'RPZ', 3),))  # 23
+                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(zmax - zmin) / 2, 'RPZ', 2),))#,(0, 'RPZ', 1),(0, 'RPZ', 3),))  # 23
         mod.Equation(name="Cq33z%i" % (counter),
-                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(zmax - zmin), 'RPZ', 3),(0, 'RPZ', 1),(0, 'RPZ', 2),))  # 33
+                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(zmax - zmin), 'RPZ', 3),))#,(0, 'RPZ', 1),(0, 'RPZ', 2),))  # 33
 
         counter = counter + 1
 

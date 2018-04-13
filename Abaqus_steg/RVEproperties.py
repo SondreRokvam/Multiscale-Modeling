@@ -74,14 +74,16 @@ def SectionsAndOrientations():                                  # Create and ass
                             thicknessAssignment=FROM_SECTION)
         if Interface:
             if nonLinearAnalysis:
-                """for Fdats in range(0, len(xydata)):
+                # Materialorientering hjelper ikke paa coheesive element orientering
+                """
+                for Fdats in range(0, len(xydata)):
                     datId = p.features['Fiber datum ' + str(Fdats)].id
                     fibCsys = p.datums[datId]
                     region = p.sets['FiberInt' + str(Fdats)]
                     p.MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=fibCsys,fieldName='',
                                           additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='',
                                           stackDirection=STACK_ORIENTATION)
-
+                    
                                     # additionalRotationType = ROTATION_ANGLE, angle=-90.0, additionalRotationField='',
                                     # additionalRotationType = ROTATION_NONE,  angle = 0.0, additionalRotationField='',
                 """

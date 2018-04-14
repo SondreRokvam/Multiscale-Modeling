@@ -14,31 +14,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="MicroscaleModelling_randomSweep.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="490">
-              <caret line="64" column="0" lean-forward="true" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="21" />
-              <folding>
-                <element signature="e#0#20#0" expanded="true" />
-                <element signature="e#1420#2254#0" expanded="false" />
-                <element signature="e#4976#6791#0" expanded="false" />
-                <element signature="e#7510#7738#0" expanded="false" />
-                <element signature="e#7871#9212#0" expanded="false" />
-                <element signature="e#9279#10169#0" expanded="false" />
-                <element signature="e#10257#11261#0" expanded="false" />
-                <element signature="e#11419#11550#0" expanded="false" />
-                <element signature="e#12836#13101#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="RVE_Assembly_RP_CE.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVE_Assembly_RP_CE.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="650">
-              <caret line="25" column="14" lean-forward="false" selection-start-line="25" selection-start-column="14" selection-end-line="25" selection-end-column="95" />
+            <state relative-caret-position="3094">
+              <caret line="119" column="60" lean-forward="false" selection-start-line="119" selection-start-column="60" selection-end-line="119" selection-end-column="60" />
               <folding />
             </state>
           </provider>
@@ -47,7 +27,7 @@
       <file leaf-file-name="RVE_InterfaceElementThickness.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVE_InterfaceElementThickness.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1010">
+            <state relative-caret-position="546">
               <caret line="44" column="47" lean-forward="false" selection-start-line="44" selection-start-column="47" selection-end-line="44" selection-end-column="47" />
               <folding />
             </state>
@@ -57,8 +37,8 @@
       <file leaf-file-name="RVEmeshpart.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEmeshpart.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="74" column="29" lean-forward="false" selection-start-line="74" selection-start-column="29" selection-end-line="74" selection-end-column="29" />
+            <state relative-caret-position="0">
+              <caret line="34" column="30" lean-forward="true" selection-start-line="34" selection-start-column="30" selection-end-line="34" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -67,7 +47,7 @@
       <file leaf-file-name="RVEsketching.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEsketching.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="606">
+            <state relative-caret-position="1000">
               <caret line="106" column="0" lean-forward="true" selection-start-line="106" selection-start-column="0" selection-end-line="106" selection-end-column="0" />
               <folding />
             </state>
@@ -87,8 +67,8 @@
       <file leaf-file-name="RVEproperties.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEproperties.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="230">
-              <caret line="76" column="54" lean-forward="false" selection-start-line="76" selection-start-column="54" selection-end-line="76" selection-end-column="54" />
+            <state relative-caret-position="0">
+              <caret line="57" column="52" lean-forward="true" selection-start-line="57" selection-start-column="52" selection-end-line="57" selection-end-column="52" />
               <folding />
             </state>
           </provider>
@@ -97,9 +77,31 @@
       <file leaf-file-name="abaqusMacros.py" pinned="false" current-in-tab="false">
         <entry file="file://$USER_HOME$/abaqusMacros.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="438">
-              <caret line="34" column="0" lean-forward="true" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="1378">
+              <caret line="60" column="38" lean-forward="true" selection-start-line="60" selection-start-column="38" selection-end-line="60" selection-end-column="38" />
+              <folding>
+                <element signature="e#66#86#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MicroscaleModelling_randomSweep.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="312">
+              <caret line="61" column="30" lean-forward="false" selection-start-line="61" selection-start-column="30" selection-end-line="61" selection-end-column="30" />
+              <folding>
+                <element signature="e#0#20#0" expanded="true" />
+                <element signature="e#1420#2254#0" expanded="false" />
+                <element signature="e#4970#6785#0" expanded="false" />
+                <element signature="e#7504#7732#0" expanded="false" />
+                <element signature="e#7865#9206#0" expanded="false" />
+                <element signature="e#9273#10163#0" expanded="false" />
+                <element signature="e#10251#11255#0" expanded="false" />
+                <element signature="e#11413#11544#0" expanded="false" />
+                <element signature="e#12830#13095#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -107,9 +109,11 @@
       <file leaf-file-name="RVEelementsets.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEelementsets.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="364">
-              <caret line="101" column="33" lean-forward="false" selection-start-line="101" selection-start-column="33" selection-end-line="101" selection-end-column="33" />
-              <folding />
+            <state relative-caret-position="940">
+              <caret line="133" column="71" lean-forward="false" selection-start-line="133" selection-start-column="71" selection-end-line="133" selection-end-column="71" />
+              <folding>
+                <element signature="e#136#2376#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -129,8 +133,17 @@
       <find>Atapt_Damp_Ratio</find>
       <find>dif</find>
       <find>del</find>
+      <find>p.sets['elementi'].nodes</find>
+      <find>rinterface</find>
+      <find>y0</find>
       <find>del</find>
     </findStrings>
+    <replaceStrings>
+      <replace>elemNOdes</replace>
+      <replace>rinterface*r</replace>
+      <replace>XX</replace>
+      <replace>YY</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -143,12 +156,12 @@
         <option value="$PROJECT_DIR$/GenerereFiberPopTilFil.py" />
         <option value="$PROJECT_DIR$/Abaqus_steg/nonLinearAnalysis.py" />
         <option value="$PROJECT_DIR$/Abaqus_steg/RVE_InterfaceElementThickness.py" />
-        <option value="$PROJECT_DIR$/Abaqus_steg/RVEproperties.py" />
         <option value="$PROJECT_DIR$/Abaqus_steg/RVEsketching.py" />
         <option value="$PROJECT_DIR$/Abaqus_steg/RVEmeshpart.py" />
         <option value="$PROJECT_DIR$/Abaqus_steg/RVE_Assembly_RP_CE.py" />
-        <option value="$PROJECT_DIR$/MicroscaleModelling_randomSweep.py" />
         <option value="$USER_HOME$/abaqusMacros.py" />
+        <option value="$PROJECT_DIR$/Abaqus_steg/RVEproperties.py" />
+        <option value="$PROJECT_DIR$/MicroscaleModelling_randomSweep.py" />
         <option value="$PROJECT_DIR$/Abaqus_steg/RVEelementsets.py" />
       </list>
     </option>
@@ -159,9 +172,9 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="5" />
+  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
+    <option name="x" value="-11" />
+    <option name="y" value="6" />
     <option name="width" value="1928" />
     <option name="height" value="1033" />
   </component>
@@ -238,7 +251,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="5" width="1928" height="1033" extended-state="0" />
+    <frame x="0" y="0" width="2400" height="1350" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -271,7 +284,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <option name="time" value="5" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -283,13 +296,13 @@
           <folding>
             <element signature="e#0#20#0" expanded="true" />
             <element signature="e#1420#2254#0" expanded="false" />
-            <element signature="e#4976#6791#0" expanded="false" />
-            <element signature="e#7510#7738#0" expanded="false" />
-            <element signature="e#7871#9212#0" expanded="false" />
-            <element signature="e#9279#10169#0" expanded="false" />
-            <element signature="e#10257#11261#0" expanded="false" />
-            <element signature="e#11419#11550#0" expanded="false" />
-            <element signature="e#12836#13101#0" expanded="false" />
+            <element signature="e#4970#6785#0" expanded="false" />
+            <element signature="e#7504#7732#0" expanded="false" />
+            <element signature="e#7865#9206#0" expanded="false" />
+            <element signature="e#9273#10163#0" expanded="false" />
+            <element signature="e#10251#11255#0" expanded="false" />
+            <element signature="e#11413#11544#0" expanded="false" />
+            <element signature="e#12830#13095#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -360,7 +373,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5304">
           <caret line="206" column="4" lean-forward="true" selection-start-line="206" selection-start-column="4" selection-end-line="206" selection-end-column="81" />
-          <folding />
+          <folding>
+            <element signature="e#66#86#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -368,7 +383,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1794">
           <caret line="69" column="110" lean-forward="false" selection-start-line="69" selection-start-column="110" selection-end-line="69" selection-end-column="110" />
-          <folding />
+          <folding>
+            <element signature="e#136#2376#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -379,13 +396,13 @@
           <folding>
             <element signature="e#0#20#0" expanded="true" />
             <element signature="e#1420#2254#0" expanded="false" />
-            <element signature="e#4976#6791#0" expanded="false" />
-            <element signature="e#7510#7738#0" expanded="false" />
-            <element signature="e#7871#9212#0" expanded="false" />
-            <element signature="e#9279#10169#0" expanded="false" />
-            <element signature="e#10257#11261#0" expanded="false" />
-            <element signature="e#11419#11550#0" expanded="false" />
-            <element signature="e#12836#13101#0" expanded="false" />
+            <element signature="e#4970#6785#0" expanded="false" />
+            <element signature="e#7504#7732#0" expanded="false" />
+            <element signature="e#7865#9206#0" expanded="false" />
+            <element signature="e#9273#10163#0" expanded="false" />
+            <element signature="e#10251#11255#0" expanded="false" />
+            <element signature="e#11413#11544#0" expanded="false" />
+            <element signature="e#12830#13095#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -394,7 +411,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1794">
           <caret line="69" column="7" lean-forward="false" selection-start-line="69" selection-start-column="7" selection-end-line="69" selection-end-column="7" />
-          <folding />
+          <folding>
+            <element signature="e#136#2376#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -402,7 +421,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3276">
           <caret line="128" column="0" lean-forward="true" selection-start-line="127" selection-start-column="0" selection-end-line="128" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#66#86#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -442,13 +463,13 @@
           <folding>
             <element signature="e#0#20#0" expanded="true" />
             <element signature="e#1420#2254#0" expanded="false" />
-            <element signature="e#4976#6791#0" expanded="false" />
-            <element signature="e#7510#7738#0" expanded="false" />
-            <element signature="e#7871#9212#0" expanded="false" />
-            <element signature="e#9279#10169#0" expanded="false" />
-            <element signature="e#10257#11261#0" expanded="false" />
-            <element signature="e#11419#11550#0" expanded="false" />
-            <element signature="e#12836#13101#0" expanded="false" />
+            <element signature="e#4970#6785#0" expanded="false" />
+            <element signature="e#7504#7732#0" expanded="false" />
+            <element signature="e#7865#9206#0" expanded="false" />
+            <element signature="e#9273#10163#0" expanded="false" />
+            <element signature="e#10251#11255#0" expanded="false" />
+            <element signature="e#11413#11544#0" expanded="false" />
+            <element signature="e#12830#13095#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -503,13 +524,13 @@
           <folding>
             <element signature="e#0#20#0" expanded="true" />
             <element signature="e#1420#2254#0" expanded="false" />
-            <element signature="e#4976#6791#0" expanded="false" />
-            <element signature="e#7510#7738#0" expanded="false" />
-            <element signature="e#7871#9212#0" expanded="false" />
-            <element signature="e#9279#10169#0" expanded="false" />
-            <element signature="e#10257#11261#0" expanded="false" />
-            <element signature="e#11419#11550#0" expanded="false" />
-            <element signature="e#12836#13101#0" expanded="false" />
+            <element signature="e#4970#6785#0" expanded="false" />
+            <element signature="e#7504#7732#0" expanded="false" />
+            <element signature="e#7865#9206#0" expanded="false" />
+            <element signature="e#9273#10163#0" expanded="false" />
+            <element signature="e#10251#11255#0" expanded="false" />
+            <element signature="e#11413#11544#0" expanded="false" />
+            <element signature="e#12830#13095#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -556,13 +577,13 @@
           <folding>
             <element signature="e#0#20#0" expanded="true" />
             <element signature="e#1420#2254#0" expanded="false" />
-            <element signature="e#4976#6791#0" expanded="false" />
-            <element signature="e#7510#7738#0" expanded="false" />
-            <element signature="e#7871#9212#0" expanded="false" />
-            <element signature="e#9279#10169#0" expanded="false" />
-            <element signature="e#10257#11261#0" expanded="false" />
-            <element signature="e#11419#11550#0" expanded="false" />
-            <element signature="e#12836#13101#0" expanded="false" />
+            <element signature="e#4970#6785#0" expanded="false" />
+            <element signature="e#7504#7732#0" expanded="false" />
+            <element signature="e#7865#9206#0" expanded="false" />
+            <element signature="e#9273#10163#0" expanded="false" />
+            <element signature="e#10251#11255#0" expanded="false" />
+            <element signature="e#11413#11544#0" expanded="false" />
+            <element signature="e#12830#13095#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -574,13 +595,13 @@
           <folding>
             <element signature="e#0#20#0" expanded="true" />
             <element signature="e#1420#2254#0" expanded="false" />
-            <element signature="e#4976#6791#0" expanded="false" />
-            <element signature="e#7510#7738#0" expanded="false" />
-            <element signature="e#7871#9212#0" expanded="false" />
-            <element signature="e#9279#10169#0" expanded="false" />
-            <element signature="e#10257#11261#0" expanded="false" />
-            <element signature="e#11419#11550#0" expanded="false" />
-            <element signature="e#12836#13101#0" expanded="false" />
+            <element signature="e#4970#6785#0" expanded="false" />
+            <element signature="e#7504#7732#0" expanded="false" />
+            <element signature="e#7865#9206#0" expanded="false" />
+            <element signature="e#9273#10163#0" expanded="false" />
+            <element signature="e#10251#11255#0" expanded="false" />
+            <element signature="e#11413#11544#0" expanded="false" />
+            <element signature="e#12830#13095#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -631,6 +652,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-40">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -657,16 +679,18 @@
     </entry>
     <entry file="file://$USER_HOME$/abaqusMacros.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="438">
-          <caret line="34" column="0" lean-forward="true" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="1378">
+          <caret line="60" column="38" lean-forward="true" selection-start-line="60" selection-start-column="38" selection-end-line="60" selection-end-column="38" />
+          <folding>
+            <element signature="e#66#86#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEproperties.py">
+    <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVE_InterfaceElementThickness.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="76" column="54" lean-forward="false" selection-start-line="76" selection-start-column="54" selection-end-line="76" selection-end-column="54" />
+        <state relative-caret-position="546">
+          <caret line="44" column="47" lean-forward="false" selection-start-line="44" selection-start-column="47" selection-end-line="44" selection-end-column="47" />
           <folding />
         </state>
       </provider>
@@ -681,59 +705,61 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEsketching.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="606">
+        <state relative-caret-position="1000">
           <caret line="106" column="0" lean-forward="true" selection-start-line="106" selection-start-column="0" selection-end-line="106" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEmeshpart.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="74" column="29" lean-forward="false" selection-start-line="74" selection-start-column="29" selection-end-line="74" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVE_InterfaceElementThickness.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1010">
-          <caret line="44" column="47" lean-forward="false" selection-start-line="44" selection-start-column="47" selection-end-line="44" selection-end-column="47" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVE_Assembly_RP_CE.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="650">
-          <caret line="25" column="14" lean-forward="false" selection-start-line="25" selection-start-column="14" selection-end-line="25" selection-end-column="95" />
+        <state relative-caret-position="3094">
+          <caret line="119" column="60" lean-forward="false" selection-start-line="119" selection-start-column="60" selection-end-line="119" selection-end-column="60" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="490">
-          <caret line="64" column="0" lean-forward="true" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="21" />
+        <state relative-caret-position="312">
+          <caret line="61" column="30" lean-forward="false" selection-start-line="61" selection-start-column="30" selection-end-line="61" selection-end-column="30" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
             <element signature="e#1420#2254#0" expanded="false" />
-            <element signature="e#4976#6791#0" expanded="false" />
-            <element signature="e#7510#7738#0" expanded="false" />
-            <element signature="e#7871#9212#0" expanded="false" />
-            <element signature="e#9279#10169#0" expanded="false" />
-            <element signature="e#10257#11261#0" expanded="false" />
-            <element signature="e#11419#11550#0" expanded="false" />
-            <element signature="e#12836#13101#0" expanded="false" />
+            <element signature="e#4970#6785#0" expanded="false" />
+            <element signature="e#7504#7732#0" expanded="false" />
+            <element signature="e#7865#9206#0" expanded="false" />
+            <element signature="e#9273#10163#0" expanded="false" />
+            <element signature="e#10251#11255#0" expanded="false" />
+            <element signature="e#11413#11544#0" expanded="false" />
+            <element signature="e#12830#13095#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEmeshpart.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="34" column="30" lean-forward="true" selection-start-line="34" selection-start-column="30" selection-end-line="34" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEproperties.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="57" column="52" lean-forward="true" selection-start-line="57" selection-start-column="52" selection-end-line="57" selection-end-column="52" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEelementsets.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="101" column="33" lean-forward="false" selection-start-line="101" selection-start-column="33" selection-end-line="101" selection-end-column="33" />
-          <folding />
+        <state relative-caret-position="940">
+          <caret line="133" column="71" lean-forward="false" selection-start-line="133" selection-start-column="71" selection-end-line="133" selection-end-column="71" />
+          <folding>
+            <element signature="e#136#2376#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

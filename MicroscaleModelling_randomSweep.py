@@ -39,7 +39,7 @@ RunningCleanup = 0
 Createmodel = 1
 Savemodel = 0
 
-Runjobs = 0                             #   ON/OFF Start analyser or create .inp
+Runjobs = 1                             #   ON/OFF Start analyser or create .inp
 linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
 
@@ -59,16 +59,16 @@ Rstdiv = 0.6374                             # OStandard avvik fra gjennomsnittsr
 
 Interface = 1                                   # ON/OFF CohesiveInterface
 rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
-ElementInterfaceT = rmean*0.1                       # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
+ElementInterfaceT = rmean*0.01                  # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
 # Meshsize
-FiberSirkelResolution = 20                                  # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
+FiberSirkelResolution =  24                                 # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
 
 #Material Density
 MaterialDens  = 1
 
-Sample=[1   ]   #Forste sweepvariabel
+Sample=[10]   #Forste sweepvariabel
 #Sample=np.round(np.linspace(2 ,80,79))
 for m in range(0,len(Sample)):
     """  RVE design parameters  """

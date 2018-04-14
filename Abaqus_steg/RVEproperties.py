@@ -74,8 +74,13 @@ def SectionsAndOrientations():                                  # Create and ass
                             thicknessAssignment=FROM_SECTION)
         if Interface:
             if nonLinearAnalysis:
-                # Materialorientering hjelper ikke paa coheesive element orientering
-                """
+                """# Lage fiber datums for material orientering av Interface UNCLEAR IF NEEDED
+                for ie in range(0, len(xydata)):
+                    x = xydata[ie][0]
+                    y = xydata[ie][1]
+                    p.DatumCsysByThreePoints(name=('Fiber datum ' + str(ie)), coordSysType=CYLINDRICAL,
+                                                 origin=(x, y, 0.0), point1=(x + 1.0, y, 0.0), point2=(x + 1.0, y + 1.0, 0.0))
+                # Materialorientering paa coheesive materiale UNCLEAR IF NEEDED
                 for Fdats in range(0, len(xydata)):
                     datId = p.features['Fiber datum ' + str(Fdats)].id
                     fibCsys = p.datums[datId]

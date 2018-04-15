@@ -7,7 +7,7 @@ ResCon2 = {'E,v':(3,0.35), 'Den':1.2e-06,
           'cdpCTS':(0.6, 0.09),
           'cdpCTD':((0.0, 0.0), (0.9, 1.487)),
           'cdpCCD':((0.0, 0.0), (0.0, 0.32), (0.9, 0.55))}
-ResCon = {'E,v':(3.5,0.33), 'Den':1.2e-06,
+ResCon = {'E,v':(3.0,0.35), 'Den':1.2e-06,
           'CDP':(0.1, 0.1, 1.16, 0.89, 0.0001),
           'cdpCCH':((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)),
           'cdpCTS':(0.6, 0.09),
@@ -26,7 +26,7 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
     res.Elastic(table=(ResCon['E,v'],))
     if MaterialDens:
         res.Density(table=((ResCon['Den'],),))
-    if nonLinearDeformation:
+    if nonLinearAnalysis:
         res.ConcreteDamagedPlasticity(table=(ResCon['CDP'],))
         RCDP = res.concreteDamagedPlasticity
         RCDP.ConcreteCompressionHardening(table=ResCon['cdpCCH'])
@@ -41,7 +41,7 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
             mod.materials['glass'].Density(table=((FibCon['Den'],),))
         if Interface:
             mod.Material(name='interface')
-            if nonLinearDeformation:
+            if nonLinearAnalysis:
                 intF= mod.materials['interface']
                 intF.Elastic(type=TRACTION, table=(IntCon['Trac'],))
                 if MaterialDens:
@@ -73,7 +73,14 @@ def SectionsAndOrientations():                                  # Create and ass
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
         if Interface:
-            if nonLinearDeformation:
+            if nonLinearAnalysis:
+                """# Lage fiber datums for material orientering av Interface UNCLEAR IF NEEDED
+                for ie in range(0, len(xydata)):
+                    x = xydata[ie][0]
+                    y = xydata[ie][1]
+                    p.DatumCsysByThreePoints(name=('Fiber datum ' + str(ie)), coordSysType=CYLINDRICAL,
+                                                 origin=(x, y, 0.0), point1=(x + 1.0, y, 0.0), point2=(x + 1.0, y + 1.0, 0.0))
+                # Materialorientering paa coheesive materiale UNCLEAR IF NEEDED
                 for Fdats in range(0, len(xydata)):
                     datId = p.features['Fiber datum ' + str(Fdats)].id
                     fibCsys = p.datums[datId]
@@ -81,13 +88,13 @@ def SectionsAndOrientations():                                  # Create and ass
                     p.MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=fibCsys,fieldName='',
                                           additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='',
                                           stackDirection=STACK_ORIENTATION)
-
+                    
                                     # additionalRotationType = ROTATION_ANGLE, angle=-90.0, additionalRotationField='',
                                     # additionalRotationType = ROTATION_NONE,  angle = 0.0, additionalRotationField='',
-
+                """
                 mod.CohesiveSection(name='SSbond', material='interface', response=TRACTION_SEPARATION,
                                     initialThicknessType=GEOMETRY, outOfPlaneThickness=None)
-                # initialThicknessType=SPECIFY, initialThickness = 0.0001, outOfPlaneThickness = None)
+                # initialThicknessType=SPECIFY, initialThickness = 0.01, outOfPlaneThickness = None)
                 # initialThicknessType=GEOMETRY,outOfPlaneThickness=None)
             else:
                 mod.HomogeneousSolidSection(name='SSbond', material='interface', thickness=None)
@@ -98,4 +105,4 @@ def SectionsAndOrientations():                                  # Create and ass
 SetMaterialConstants(ResCon,FibCon,IntCon)
 SectionsAndOrientations()
 
-print '\nMaterial properties assigned to element sets in model'
+print 'Material properties assigned to element sets in model'

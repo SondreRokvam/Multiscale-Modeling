@@ -30,8 +30,8 @@ def Extract_parameterdata():
     print 'Computing stresses for ' + str(sweepcases) + ' sweep cases'
     for case in range(0,sweepcases):
         odb = session.openOdb(workpath + Sweeptoyinger[case] + '.odb')
-        nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL).values
-        nodalStrains = odb.steps[difstpNm].frames[-1].fieldOutputs['E'].getSubset(position=ELEMENT_NODAL).values
+        nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=Centroid).values
+        for
         if not nf==0:
             Matrix = odb.rootAssembly.instances[instanceName].elementSets['MATRIX']
             nodalStresses = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=ELEMENT_NODAL,

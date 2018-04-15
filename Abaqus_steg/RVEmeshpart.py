@@ -44,6 +44,7 @@ def LageFiberRegionSetsForMeshing():
         p = mod.parts[partName]
         p.SetByBoolean(name='Matrix', sets=(p.sets['Alt'], p.sets['Ffiber'],), operation=DIFFERENCE)
 
+
 def meshOrphanRVEpart():
     p = mod.parts[partName]
     p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
@@ -54,11 +55,10 @@ def meshOrphanRVEpart():
             mosh.append(ma)
             p.setMeshControls(regions=mosh, elemShape=QUAD, technique=SWEEP)
         p.generateMesh(regions=p.sets['Interface'].faces)
-        del mod.parts[partName].sets['Interface']
     p = mod.parts[partName]
     p.setMeshControls(regions=p.sets['Ffiber'].faces, elemShape=TRI)
     p.generateMesh()                                                                                     # Generate mesh
-    del mod.parts[partName].sets['Ffiber'], mod.parts[partName].sets['Matrix']
+
 
 def meshOrphanSlabpart():
     p = mod.parts[partName]
@@ -87,7 +87,8 @@ if not nf == 0:
     meshOrphanRVEpart()
 else:
     meshOrphanSlabpart()
-del mod.parts[partName].sets['Alt']
 Extrude_and_create_orphanmesh()
+del mod.parts[partName]
 
-print '\nRVEpart created, meshed and Orphanmesh created'
+
+print 'RVEpart created, meshed and Orphanmesh created'

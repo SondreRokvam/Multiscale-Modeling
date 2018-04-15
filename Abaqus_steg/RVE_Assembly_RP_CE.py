@@ -6,7 +6,7 @@ def Import_n_Transform(a,p):
     a.translate(instanceList=(instanceName,), vector=(0.0, 0.0, -tykkelse))  # Flytte modellen til origo
     a.rotate(instanceList=(instanceName,), axisPoint=(0.0, 0.0, 0.0),  # Rotere rundt y akse saa x er i fiberretning
              axisDirection=(0.0, 1.0, 0.0), angle=90.0)
-    print '\nImported to Assembly, Translated to origo with fibers longitudinal to x'
+    print 'Imported to Assembly, Translated to origo with fibers longitudinal to x'
 def ReferencePoints(a,xmax, ymax, zmax, xmin, ymin, zmin):        # Create X,Y,Z reference points
 
     a.ReferencePoint(point=(xmin - 0.2 * (xmax - xmin), 0.0, 0.0))
@@ -26,22 +26,22 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
     nodesXa = allNodes.getByBoundingBox(xmin-tol,ymin-tol,zmin-tol,xmin+tol, ymax+tol,zmax+tol)    
     nodesXb = allNodes.getByBoundingBox(xmax-tol,ymin-tol,zmin-tol,xmax+tol, ymax+tol,zmax+tol)  
     
-    NL1=nodesXa.getByBoundingCylinder((-tol,-dL/2,-dL/2), (tol,-dL/2,-dL/2), tol)
+    NL1=nodesXa.getByBoundingCylinder((xmin-tol,-dL/2,-dL/2), (xmax+tol,-dL/2,-dL/2), tol)
     if len(NL1)==1:
         a.Set(nodes=NL1, name='NL1')
     else:
         del FinnerIkkeHjornenode
-    NL2=nodesXa.getByBoundingBox(xmin-tol,-dL/10,zmin-tol,xmin+tol,dL/10,zmin+tol)
+    NL2=nodesXa.getByBoundingBox(xmin-tol,-dL/10,zmin-tol,xmax+tol,dL/10,zmin+tol)
     NL2 = NL2[int(len(NL2)/2):int(len(NL2)/2) + 1 ]
     if len(NL2)==1:
         a.Set(nodes=NL2, name='NL2')
     else:          
         del FinnerIkkeKantenode
     if not nf==0:
-        NL3=nodesXa.getByBoundingCylinder((-tol,0,0), (tol,0,0), dL/10)
+        NL3=nodesXa.getByBoundingCylinder((xmin-tol,0,0), (xmax+tol,0,0), dL/10)
         NL3 = NL3[int(len(NL2)/2):int(len(NL2)/2) + 1 ]
     else:
-        NL3 = nodesXa.getByBoundingCylinder((-tol, 0, 0), (tol, 0, 0), dL / 3)
+        NL3 = nodesXa.getByBoundingCylinder((xmin-tol, 0, 0), (xmax+tol, 0, 0), dL / 3)
         NL3 = NL3[int(len(NL2) / 2):int(len(NL2) / 2) + 1]
     if len(NL3)==1:
         a.Set(nodes=NL3, name='NL3')
@@ -57,11 +57,11 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
         nodes2 = nodesXb.getByBoundingCylinder((-dL, y, z), (dL, y, z), tol)
         a.Set(nodes=nodes2, name=name2)
         mod.Equation(name="Cq11x%i" % (counter),
-                         terms=((1.0, name2, 1), (-1.0, name1, 1), (-(xmax - xmin), 'RPX', 1),(0, 'RPX', 2),(0, 'RPX', 3),))  # 11
+                         terms=((1.0, name2, 1), (-1.0, name1, 1), (-(xmax - xmin), 'RPX', 1),))#,(0, 'RPX', 2),(0, 'RPX', 3),))  # 11
         mod.Equation(name="Cq21x%i" % (counter),
-                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(xmax - xmin) / 2, 'RPX', 2),(0, 'RPX', 1),(0, 'RPX', 3),))  # 21
+                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(xmax - xmin) / 2, 'RPX', 2),))#,(0, 'RPX', 1),(0, 'RPX', 3),))  # 21
         mod.Equation(name="Cq31x%i" % (counter),
-                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(xmax - xmin) / 2, 'RPX', 3),(0, 'RPX', 1),(0, 'RPX', 2),))  # 31
+                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(xmax - xmin) / 2, 'RPX', 3),))#,(0, 'RPX', 1),(0, 'RPX', 2),))  # 31
 
         counter = counter + 1
 
@@ -79,11 +79,11 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq12y%i" % (counter),
-                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(ymax - ymin) / 2, 'RPY', 1),(0, 'RPY', 2),(0, 'RPY', 3),))  # 12
+                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(ymax - ymin) / 2, 'RPY', 1),))#,(0, 'RPY', 2),(0, 'RPY', 3),))  # 12
         mod.Equation(name="Cq22y%i" % (counter),
-                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(ymax - ymin), 'RPY', 2),(0, 'RPY', 1),(0, 'RPY', 3),))  # 22
+                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(ymax - ymin), 'RPY', 2),))#,(0, 'RPY', 1),(0, 'RPY', 3),))  # 22
         mod.Equation(name="Cq32y%i" % (counter),
-                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(ymax - ymin) / 2, 'RPY', 3),(0, 'RPY', 1),(0, 'RPY', 2)))  # 32
+                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(ymax - ymin) / 2, 'RPY', 3),))#,(0, 'RPY', 1),(0, 'RPY', 2)))  # 32
 
         counter = counter + 1
 
@@ -101,11 +101,11 @@ def ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin):
         a.Set(nodes=nodes2, name=name2)
 
         mod.Equation(name="Cq13z%i" % (counter),
-                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(zmax - zmin) / 2, 'RPZ', 1),(0, 'RPZ', 2),(0, 'RPZ', 3),))  # 13
+                     terms=((1.0, name2, 1), (-1.0, name1, 1), (-(zmax - zmin) / 2, 'RPZ', 1),))#,(0, 'RPZ', 2),(0, 'RPZ', 3),))  # 13
         mod.Equation(name="Cq23z%i" % (counter),
-                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(zmax - zmin) / 2, 'RPZ', 2),(0, 'RPZ', 1),(0, 'RPZ', 3),))  # 23
+                     terms=((1.0, name2, 2), (-1.0, name1, 2), (-(zmax - zmin) / 2, 'RPZ', 2),))#,(0, 'RPZ', 1),(0, 'RPZ', 3),))  # 23
         mod.Equation(name="Cq33z%i" % (counter),
-                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(zmax - zmin), 'RPZ', 3),(0, 'RPZ', 1),(0, 'RPZ', 2),))  # 33
+                     terms=((1.0, name2, 3), (-1.0, name1, 3), (-(zmax - zmin), 'RPZ', 3),))#,(0, 'RPZ', 1),(0, 'RPZ', 2),))  # 33
 
         counter = counter + 1
 
@@ -123,4 +123,4 @@ ReferencePoints(a,xmax, ymax, zmax, xmin, ymin, zmin)
 ConstraintEquations(a,allNodes,xmax, ymax, zmax, xmin, ymin, zmin)
 
 
-print '\nReference points created and constraint equ. applied'
+print 'Reference points created and constraint equ. applied'

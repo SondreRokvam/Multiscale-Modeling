@@ -16,6 +16,23 @@ def CreateNewRVEModel():
     execfile(GitHub + Abaqus + 'RVE_Assembly_RP_CE.py')     # Assembly med RVE med x i fiber retning. Lage constrain equations til RVE modell og fixe boundary condition for rigid body movement
     if not noFiber and Interface:        # Rearrange fiber interface nodes for controlled elementthickness and stable simulations
         execfile(GitHub + Abaqus + 'RVE_InterfaceElementThickness.py')
+    """ Boundaryconditions mot rigid body movement"""
+    if True:
+        if Singlepin:
+            region = mod.rootAssembly.sets['NL1']
+            mod.PinnedBC(name='Laas-3', createStepName='Initial',
+                         region=region, localCsys=None)
+        if tripplepin and Singlepin:
+            region = mod.rootAssembly.sets['NL2']
+            mod.DisplacementBC(name='Laas-2', createStepName='Initial',
+                               region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                               amplitude=UNSET, distributionType=UNIFORM, fieldName='',
+                               localCsys=None)
+            region = mod.rootAssembly.sets['NL3']
+            mod.DisplacementBC(name='Laas-1', createStepName='Initial',
+                               region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                               amplitude=UNSET, distributionType=UNIFORM, fieldName='',
+                               localCsys=None)
 def run_Job(Jobb, modelName):
     mdb.Job(name=Jobb, model=modelName, description='', type=ANALYSIS,
             atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
@@ -36,20 +53,22 @@ numCPU = multiprocessing.cpu_count()
 
 """         PROCESS FLAGS                                       """
 RunningCleanup = 0
-Createmodel = 0
-Savemodel = 0
+Createmodel = 1
+Savemodel = 1
 
-Runjobs = 0                             #   ON/OFF Start analyser or create .inp
+Runjobs = 1                             #   ON/OFF Start analyser or create .inp
 linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
-
-Singlepin = 1                               #   Randbetingelse:    Laaser hjornenode mot forskyvning i 3 retninger
-tripplepin = 0                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
+Increments = {'maxNum': 1000, 'initial': 5e-3, 'min': 1e-5, 'max': 1e-1}
 
 Dampening = 1
 Stabl_Magn =2e-4
 Atapt_Damp_Ratio = 0.05
-Increments = {'maxNum': 1000, 'initial': 5e-3, 'min': 1e-5, 'max': 1e-1}
+
+
+
+Singlepin = 1                               #   Randbetingelse:    Laaser hjornenode mot forskyvning i 3 retninger
+tripplepin = 0                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
 
 noFibertest = 0                                     # ON/OFF Fiber i modellen.
 Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
@@ -65,10 +84,13 @@ ElementInterfaceT = rmean*0.01                  # Interfacetykkelse paa elemente
 FiberSirkelResolution =  24                                 # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
 
+
+
+
 #Material Density
 MaterialDens  = 1
 
-Sample=[10]   #Forste sweepvariabel
+Sample=[50]   #Forste sweepvariabel
 #Sample=np.round(np.linspace(2 ,80,79))
 for m in range(0,len(Sample)):
     """  RVE design parameters  """
@@ -180,7 +202,7 @@ for m in range(0,len(Sample)):
             Envelope = GitHub + Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn legges til i funksjonen
             coordpath = GitHub + Tekstfiler + 'RVEcoordinatsandRadiuses'+ str(int(Sample[m])) + '_' + str(Q)+'.txt'  # Skrives ned i genererefiberPop for reference
         """ Get Abaqus RVE model """
-        if True:
+        if 0:
             Mdb()  # reset Abaqus
             model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
             mod = mdb.models[modelName]
@@ -198,22 +220,6 @@ for m in range(0,len(Sample)):
             else:
                 openMdb(pathName=workpath + 'RVE-' + str(Sample[m]) + '-' + str(int(Q)))
 
-            """ Boundaryconditions mot rigid body movement"""
-            if Singlepin:
-                region = mod.rootAssembly.sets['NL1']
-                mod.PinnedBC(name='Laas-3', createStepName='Initial',
-                             region=region, localCsys=None)
-            if tripplepin and Singlepin:
-                region = mod.rootAssembly.sets['NL2']
-                mod.DisplacementBC(name='Laas-2', createStepName='Initial',
-                                   region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                                   amplitude=UNSET, distributionType=UNIFORM, fieldName='',
-                                   localCsys=None)
-                region = mod.rootAssembly.sets['NL3']
-                mod.DisplacementBC(name='Laas-1', createStepName='Initial',
-                                   region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                                   amplitude=UNSET, distributionType=UNIFORM, fieldName='',
-                                   localCsys=None)
         """ SIMULERINGER    """
         if linearAnalysis:                                  # LinearAnalysis for stiffness and small deformation
             try:
@@ -234,6 +240,7 @@ for m in range(0,len(Sample)):
 
             for Case in cases:
                 Jobbnavn, Strain = Case
+                execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
                 try:
                     execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
                 except:

@@ -1,0 +1,26 @@
+# -*- coding: mbcs -*-
+#
+# Abaqus/CAE Release 6.14-4 replay file
+# Internal Version: 2015_06_11-22.41.13 135079
+# Run by Blue on Sun Apr 15 04:00:24 2018
+#
+
+# from driverUtils import executeOnCaeGraphicsStartup
+# executeOnCaeGraphicsStartup()
+#: Executing "onCaeGraphicsStartup()" in the site directory ...
+from abaqus import *
+from abaqusConstants import *
+session.Viewport(name='Viewport: 1', origin=(1.55729, 1.55556), width=229.233, 
+    height=154.311)
+session.viewports['Viewport: 1'].makeCurrent()
+from driverUtils import executeOnCaeStartup
+executeOnCaeStartup()
+execfile('C:/Multiscale-Modeling/MicroscaleModelling_randomSweep.py', 
+    __main__.__dict__)
+#: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#: Multiscale Modelling, Microscale  
+#: 10
+#* IOError: C:/Temp/RVE-10-0.cae: No such file or directory
+#* File "C:/Multiscale-Modeling/MicroscaleModelling_randomSweep.py", line 218, 
+#* in <module>
+#*     openMdb(pathName=workpath + 'RVE-' + str(Sample[m]) + '-' + str(int(Q)))

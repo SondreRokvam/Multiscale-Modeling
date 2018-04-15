@@ -36,10 +36,10 @@ numCPU = multiprocessing.cpu_count()
 
 """         PROCESS FLAGS                                       """
 RunningCleanup = 0
-Createmodel = 1
+Createmodel = 0
 Savemodel = 0
 
-Runjobs = 1                             #   ON/OFF Start analyser or create .inp
+Runjobs = 0                             #   ON/OFF Start analyser or create .inp
 linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
 
@@ -49,7 +49,7 @@ tripplepin = 0                              #   Randbetingelse:    Laaser to nod
 Dampening = 1
 Stabl_Magn =2e-4
 Atapt_Damp_Ratio = 0.05
-Increments = {'maxNum': 1000, 'initial': 1e-3, 'min': 1e-5, 'max': 1e-1}
+Increments = {'maxNum': 1000, 'initial': 5e-3, 'min': 1e-5, 'max': 1e-1}
 
 noFibertest = 0                                     # ON/OFF Fiber i modellen.
 Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
@@ -79,9 +79,9 @@ for m in range(0,len(Sample)):
 
         Rclearing  = 0.05                    # Minimumsavstand mellom fiberkant og RVE kant. Verdi relativ til radius. Skal den settes lik meshsize?
         tol = rinterface*0.4                  # Modelleringstoleranse - Mindre en minste modelleringsvariabel (rInterface)
-    """   Stess sweeps settings     """
-    sweepcases = 1              # Stress sweeps cases. Decides sweep resolution
-    id = np.identity(6)         # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
+        """   Stess sweeps settings     """
+        sweepcases = 1              # Stress sweeps cases. Decides sweep resolution
+        id = np.identity(6)         # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
     #Generelle instilliger
     if True:                     # For aa kunne kollapse instillinger
         print Sample[m]
@@ -132,7 +132,6 @@ for m in range(0,len(Sample)):
     #Random modellering lokke
     n = 1           #  Itererer med random nokkeler fra 0 til n
     Q = 0
-
     while Q<n:
         from abaqus import *
         from abaqusConstants import *
@@ -198,8 +197,8 @@ for m in range(0,len(Sample)):
                         mdb.saveAs(pathName=workpath + 'RVE-' + str(Sample[m]) + '-0-int-' + str(int(Q)))
             else:
                 openMdb(pathName=workpath + 'RVE-' + str(Sample[m]) + '-' + str(int(Q)))
-        """ Boundaryconditions mot rigid body movement"""
-        if True:
+
+            """ Boundaryconditions mot rigid body movement"""
             if Singlepin:
                 region = mod.rootAssembly.sets['NL1']
                 mod.PinnedBC(name='Laas-3', createStepName='Initial',
@@ -225,8 +224,6 @@ for m in range(0,len(Sample)):
         if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
             strain = 0.3#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
             strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
-            #strains = {'ShearExy': [0, strain, 0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
-            #strains = {'ShearExy': [-strain,0,  0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
 
             if Interface:
                 ### DEBUGGING FOR INTERFACE PROBLEMS
@@ -236,32 +233,15 @@ for m in range(0,len(Sample)):
                 cases = [['ShearExyNoInterface', strains['ShearExy']]]
 
             for Case in cases:
-                sim = 0
                 Jobbnavn, Strain = Case
-
                 try:
                     execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
-                    sim=1
                 except:
                     pass
-                if not sim:
-                    try:
-                        Increments = {'maxNum': 100, 'initial': 1e-4, 'min': 1e-10, 'max': 1e-1}
-                        execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
-                        sim = 1
-                    except:
-                        pass
+                    n = n + 1
 
-        try:
-            session.odbs['C:/Temp/ShearExyjob0.odb'].close()
-            o3 = session.openOdb(name='C:/Temp/ShearExyjob0.odb')
-            session.viewports['Viewport: 1'].setValues(displayedObject=o3)
-            session.viewports['Viewport: 1'].odbDisplay.display.setValues(plotState=(
-            CONTOURS_ON_UNDEF, CONTOURS_ON_DEF,))
-            leaf = dgo.LeafFromElementSets(elementSets=('PART-1-MESH-1-1.INTERFACES',))
-            session.viewports['Viewport: 1'].odbDisplay.displayGroup.replace(leaf=leaf)
-        except:
-            pass
+
+
 
 
         print 'Reached end of random key Iteration'

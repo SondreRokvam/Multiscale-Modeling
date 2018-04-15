@@ -202,7 +202,7 @@ for m in range(0,len(Sample)):
             Envelope = GitHub + Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn legges til i funksjonen
             coordpath = GitHub + Tekstfiler + 'RVEcoordinatsandRadiuses'+ str(int(Sample[m])) + '_' + str(Q)+'.txt'  # Skrives ned i genererefiberPop for reference
         """ Get Abaqus RVE model """
-        if 0:
+        if 1:
             Mdb()  # reset Abaqus
             model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
             mod = mdb.models[modelName]

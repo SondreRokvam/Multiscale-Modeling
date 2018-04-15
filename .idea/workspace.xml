@@ -17,7 +17,7 @@
       <file leaf-file-name="RVE_Assembly_RP_CE.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVE_Assembly_RP_CE.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="805">
+            <state relative-caret-position="3094">
               <caret line="119" column="60" lean-forward="false" selection-start-line="119" selection-start-column="60" selection-end-line="119" selection-end-column="60" />
               <folding />
             </state>
@@ -27,8 +27,8 @@
       <file leaf-file-name="nonLinearAnalysis.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Abaqus_steg/nonLinearAnalysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="753">
-              <caret line="63" column="40" lean-forward="false" selection-start-line="63" selection-start-column="40" selection-end-line="63" selection-end-column="49" />
+            <state relative-caret-position="-1014">
+              <caret line="11" column="0" lean-forward="true" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -37,8 +37,8 @@
       <file leaf-file-name="abaqusMacros.py" pinned="false" current-in-tab="false">
         <entry file="file://$USER_HOME$/abaqusMacros.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="675">
-              <caret line="159" column="4" lean-forward="true" selection-start-line="159" selection-start-column="4" selection-end-line="162" selection-end-column="10" />
+            <state relative-caret-position="4082">
+              <caret line="159" column="4" lean-forward="false" selection-start-line="159" selection-start-column="4" selection-end-line="162" selection-end-column="10" />
               <folding>
                 <element signature="e#66#86#0" expanded="true" />
               </folding>
@@ -49,8 +49,8 @@
       <file leaf-file-name="MicroscaleModelling_randomSweep.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="441">
-              <caret line="204" column="12" lean-forward="false" selection-start-line="204" selection-start-column="12" selection-end-line="204" selection-end-column="12" />
+            <state relative-caret-position="157">
+              <caret line="232" column="12" lean-forward="false" selection-start-line="232" selection-start-column="12" selection-end-line="232" selection-end-column="12" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
                 <element signature="e#261#2409#0" expanded="false" />
@@ -60,6 +60,7 @@
                 <element signature="e#6011#7826#0" expanded="false" />
                 <element signature="e#6910#7168#0" expanded="false" />
                 <element signature="e#8544#8772#0" expanded="false" />
+                <element signature="e#11359#11490#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -104,7 +105,7 @@
       <file leaf-file-name="RVEelementsets.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEelementsets.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="914">
+            <state relative-caret-position="507">
               <caret line="130" column="17" lean-forward="false" selection-start-line="130" selection-start-column="17" selection-end-line="130" selection-end-column="17" />
               <folding>
                 <element signature="e#136#2376#0" expanded="false" />
@@ -169,7 +170,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-11" />
     <option name="y" value="6" />
     <option name="width" value="1928" />
@@ -248,13 +249,13 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="2418" height="1318" extended-state="6" />
+    <frame x="-9" y="-9" width="1938" height="1048" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32914287" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32925764" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17277487" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -340,6 +341,7 @@
             <element signature="e#6011#7826#0" expanded="false" />
             <element signature="e#6910#7168#0" expanded="false" />
             <element signature="e#8544#8772#0" expanded="false" />
+            <element signature="e#11359#11490#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -436,6 +438,7 @@
             <element signature="e#6011#7826#0" expanded="false" />
             <element signature="e#6910#7168#0" expanded="false" />
             <element signature="e#8544#8772#0" expanded="false" />
+            <element signature="e#11359#11490#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -502,6 +505,7 @@
             <element signature="e#6011#7826#0" expanded="false" />
             <element signature="e#6910#7168#0" expanded="false" />
             <element signature="e#8544#8772#0" expanded="false" />
+            <element signature="e#11359#11490#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -561,6 +565,7 @@
             <element signature="e#6011#7826#0" expanded="false" />
             <element signature="e#6910#7168#0" expanded="false" />
             <element signature="e#8544#8772#0" expanded="false" />
+            <element signature="e#11359#11490#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -613,6 +618,7 @@
             <element signature="e#6011#7826#0" expanded="false" />
             <element signature="e#6910#7168#0" expanded="false" />
             <element signature="e#8544#8772#0" expanded="false" />
+            <element signature="e#11359#11490#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -630,6 +636,7 @@
             <element signature="e#6011#7826#0" expanded="false" />
             <element signature="e#6910#7168#0" expanded="false" />
             <element signature="e#8544#8772#0" expanded="false" />
+            <element signature="e#11359#11490#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -734,9 +741,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVE_Assembly_RP_CE.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3094">
+          <caret line="119" column="60" lean-forward="false" selection-start-line="119" selection-start-column="60" selection-end-line="119" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/abaqusMacros.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4082">
+          <caret line="159" column="4" lean-forward="false" selection-start-line="159" selection-start-column="4" selection-end-line="162" selection-end-column="10" />
+          <folding>
+            <element signature="e#66#86#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEelementsets.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="914">
+        <state relative-caret-position="507">
           <caret line="130" column="17" lean-forward="false" selection-start-line="130" selection-start-column="17" selection-end-line="130" selection-end-column="17" />
           <folding>
             <element signature="e#136#2376#0" expanded="false" />
@@ -745,36 +770,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVE_Assembly_RP_CE.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="805">
-          <caret line="119" column="60" lean-forward="false" selection-start-line="119" selection-start-column="60" selection-end-line="119" selection-end-column="60" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/abaqusMacros.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="675">
-          <caret line="159" column="4" lean-forward="true" selection-start-line="159" selection-start-column="4" selection-end-line="162" selection-end-column="10" />
-          <folding>
-            <element signature="e#66#86#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Abaqus_steg/nonLinearAnalysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="753">
-          <caret line="63" column="40" lean-forward="false" selection-start-line="63" selection-start-column="40" selection-end-line="63" selection-end-column="49" />
+        <state relative-caret-position="-1014">
+          <caret line="11" column="0" lean-forward="true" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="441">
-          <caret line="204" column="12" lean-forward="false" selection-start-line="204" selection-start-column="12" selection-end-line="204" selection-end-column="12" />
+        <state relative-caret-position="157">
+          <caret line="232" column="12" lean-forward="false" selection-start-line="232" selection-start-column="12" selection-end-line="232" selection-end-column="12" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
             <element signature="e#261#2409#0" expanded="false" />
@@ -784,6 +791,7 @@
             <element signature="e#6011#7826#0" expanded="false" />
             <element signature="e#6910#7168#0" expanded="false" />
             <element signature="e#8544#8772#0" expanded="false" />
+            <element signature="e#11359#11490#0" expanded="false" />
           </folding>
         </state>
       </provider>

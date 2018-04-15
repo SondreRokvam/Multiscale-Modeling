@@ -71,4 +71,4 @@ def getAverageStressStrain():
     ggg.close()
     odb.close()
 create_nonLinearstrainedlastcases(Strain, Jobbnavn)
-getAverageStressStrain()
+#getAverageStressStrain()

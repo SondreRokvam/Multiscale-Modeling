@@ -59,7 +59,7 @@ Savemodel = 1
 Runjobs = 1                             #   ON/OFF Start analyser or create .inp
 linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
-Increments = {'maxNum': 1000, 'initial': 5e-3, 'min': 1e-5, 'max': 1e-1}
+Increments = {'maxNum': 1000, 'initial': 1e-3, 'min': 1e-6, 'max': 1e-1}
 
 Dampening = 1
 Stabl_Magn =2e-4
@@ -228,29 +228,21 @@ for m in range(0,len(Sample)):
                 pass
                 n=n+1
         if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
-            strain = 0.3#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
+            strain = 0.03#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
             strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
-
-            if Interface:
-                ### DEBUGGING FOR INTERFACE PROBLEMS
-                #       CASES: Name, Strains
-                cases = [['ShearExy', strains['ShearExy']]]  # , ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
-            else:
-                cases = [['ShearExyNoInterface', strains['ShearExy']]]
-
+            cases = [['ShearExy', strains['ShearExy']] , ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
             for Case in cases:
                 Jobbnavn, Strain = Case
-                execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
                 try:
                     execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
                 except:
                     pass
-                    n = n + 1
-
-
-
-
-
+                    try:
+                        Increments['initial'] = Increments['initial']/10
+                        execfile(GitHub + Abaqus + 'nonLinearAnalysis.py')
+                    except:
+                        pass
+                        n = n + 1
         print 'Reached end of random key Iteration'
         Q = Q + 1
         del section, regionToolset, dgm, part, material, assembly, step, interaction

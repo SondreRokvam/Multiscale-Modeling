@@ -51,44 +51,8 @@ def run_Job(Jobb, modelName):
         qw.close()
 numCPU = multiprocessing.cpu_count()
 
-"""         PROCESS FLAGS                                       """
-RunningCleanup = 0
-Createmodel = 1
-Savemodel = 1
-
-Runjobs = 1                             #   ON/OFF Start analyser or create .inp
-linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
-nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
-Increments = {'maxNum': 1000, 'initial': 1e-3, 'min': 1e-6, 'max': 1e-1}
-
-Dampening = 1
-Stabl_Magn =2e-4
-Atapt_Damp_Ratio = 0.05
-
-
-
-Singlepin = 1                               #   Randbetingelse:    Laaser hjornenode mot forskyvning i 3 retninger
-tripplepin = 0                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
-
-noFibertest = 0                                     # ON/OFF Fiber i modellen.
-Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
-
-rmean = 8.7096                              # Gjennomsnittradius pa fiber
-Rstdiv = 0.6374                             # OStandard avvik fra gjennomsnittsradius
-
-Interface = 1                                   # ON/OFF CohesiveInterface
-rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
-ElementInterfaceT = rmean*0.01                  # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
-
-# Meshsize
-FiberSirkelResolution =  24                                 # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
-meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
-
-
-
-
-#Material Density
-MaterialDens  = 1
+#Hent Test variabler
+execfile('C:\Multiscale-Modeling\TestVariabler.py')
 
 Sample=[50]   #Forste sweepvariabel
 #Sample=np.round(np.linspace(2 ,80,79))
@@ -99,7 +63,7 @@ for m in range(0,len(Sample)):
         Vf   =      0.6                 #
         RVEt =      meshsize            #      RVE tykkelse i fiberretning
 
-        Rclearing  = 0.05                    # Minimumsavstand mellom fiberkant og RVE kant. Verdi relativ til radius. Skal den settes lik meshsize?
+        Rclearing  = 0.01                    # Minimumsavstand mellom fiberkant og RVE kant. Verdi relativ til radius. Skal den settes lik meshsize?
         tol = rinterface*0.4                  # Modelleringstoleranse - Mindre en minste modelleringsvariabel (rInterface)
         """   Stess sweeps settings     """
         sweepcases = 1              # Stress sweeps cases. Decides sweep resolution
@@ -229,8 +193,8 @@ for m in range(0,len(Sample)):
                 n=n+1
         if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
             strain = 0.03#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
-            strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
-            cases = [['ShearExy', strains['ShearExy']] , ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
+            #strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
+            cases = [['ShearCompression',(0, -strain, 0, 0,strain, 0)]]       # Shear + Compression
             for Case in cases:
                 Jobbnavn, Strain = Case
                 try:

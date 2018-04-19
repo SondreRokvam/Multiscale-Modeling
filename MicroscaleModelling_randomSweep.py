@@ -205,18 +205,17 @@ while Q<n:
             n=n+1
     if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
 
-        strain = 0.05#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
+        strain = 1e-5#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
         #strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
         #strains = {'CompressionYCompressionZ': [-strain/3, -strain/3, 0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
         #cases = [['ShearExy', strains['ShearExy']] , ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
         cases = [['TensionX_NothingElse', [strain, 0, 0, 0, 0, 0]]]
         #cases = [['CompressionYCompressionZ', [0, -strain, -strain, 0, 0, 0]]]
         #strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
-        cases = [['ShearCompression',(0, -strain, 0, 0,strain, 0)]]       # Shear + Compression
+        #cases = [['ShearCompression',(0, -strain, 0, 0,strain, 0)]]       # Shear + Compression
 
         for Case in cases:
             Jobbnavn, Strain = Case
-            execfile(Modellering +'nonLinearAnalysis.py')
             try:
                 execfile(Modellering +'nonLinearAnalysis.py')
             except:

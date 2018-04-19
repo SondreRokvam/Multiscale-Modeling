@@ -15,7 +15,7 @@ global Runjobs,linearAnalysis,nonLinearAnalysis,Increments,Dampening,Stabl_Magn,
 Runjobs = 1                             #   ON/OFF Start analyser or create .inp
 linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
-Increments = {'maxNum': 1000, 'initial': 1e-3, 'min': 1e-12, 'max': 1e-1}
+Increments = {'maxNum': 100, 'initial': 1e-02, 'min': 1e-4, 'max': 1e-1}
 
 Dampening = 1
 Stabl_Magn =2e-4

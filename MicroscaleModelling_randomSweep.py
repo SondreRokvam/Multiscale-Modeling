@@ -56,16 +56,14 @@ RunningCleanup = 0
 Createmodel = 1
 Savemodel = 1
 
-Runjobs = 1                             #   ON/OFF Start analyser or create .inp
+Runjobs = 0                             #   ON/OFF Start analyser or create .inp
 linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
-Increments = {'maxNum': 1000, 'initial': 1e-3, 'min': 1e-6, 'max': 1e-1}
+Increments = {'maxNum': 1000, 'initial': 1e-3, 'min': 1e-9, 'max': 1e-1}
 
 Dampening = 1
 Stabl_Magn =2e-4
 Atapt_Damp_Ratio = 0.05
-
-
 
 Singlepin = 1                               #   Randbetingelse:    Laaser hjornenode mot forskyvning i 3 retninger
 tripplepin = 0                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
@@ -78,7 +76,7 @@ Rstdiv = 0.6374                             # OStandard avvik fra gjennomsnittsr
 
 Interface = 1                                   # ON/OFF CohesiveInterface
 rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
-ElementInterfaceT = rmean*0.01                  # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
+ElementInterfaceT = 0#rmean*0.01                  # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
 # Meshsize
 FiberSirkelResolution =  24                                 # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
@@ -88,7 +86,7 @@ meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resol
 
 
 #Material Density
-MaterialDens  = 1
+MaterialDens  = 0
 
 Sample=[50]   #Forste sweepvariabel
 #Sample=np.round(np.linspace(2 ,80,79))
@@ -218,7 +216,14 @@ for m in range(0,len(Sample)):
                     else:
                         mdb.saveAs(pathName=workpath + 'RVE-' + str(Sample[m]) + '-0-int-' + str(int(Q)))
             else:
-                openMdb(pathName=workpath + 'RVE-' + str(Sample[m]) + '-' + str(int(Q)))
+                try:
+                    Q=0
+                    Mdb()  # reset Abaqus
+                    mod = mdb.models[modelName]
+                    model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
+                    openMdb(pathName=workpath + 'RVE-' + str(Sample[m]) + '-' + str(int(Q)))
+                except:
+                    pass
 
         """ SIMULERINGER    """
         if linearAnalysis:                                  # LinearAnalysis for stiffness and small deformation
@@ -228,9 +233,13 @@ for m in range(0,len(Sample)):
                 pass
                 n=n+1
         if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
-            strain = 0.03#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
-            strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
-            cases = [['ShearExy', strains['ShearExy']] , ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
+            strain = 0.05#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
+            #strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
+            #strains = {'CompressionYCompressionZ': [-strain/3, -strain/3, 0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
+            #cases = [['ShearExy', strains['ShearExy']] , ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
+            cases = [['TensionX_NothingElse', [strain, 0, 0, 0, 0, 0]]]
+            #cases = [['CompressionYCompressionZ', [0, -strain, -strain, 0, 0, 0]]]
+
             for Case in cases:
                 Jobbnavn, Strain = Case
                 try:

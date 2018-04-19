@@ -36,15 +36,31 @@ def create_nonLinearstrainedlastcases(Strain, bob):
     run_Job(bob, modelName)
 def getAverageStressStrain():
     path = workpath + Jobbnavn
-    odb = session.openOdb(path+'.odb')
-    """
-    xyList = xyPlot.xyDataListFromField(odb=odb, outputPosition=INTEGRATION_POINT,
-                                        variable=(('S', INTEGRATION_POINT, ((INVARIANT, 'Max. Principal'),)),
-                                                  ),
-                                        elementSets=('PART-1-MESH-1-1.INTERFACES', 'PART-1-MESH-1-1.MATRIX',
-                                                     ))
-    kjk =  [sum(abs(xyList[:][0])),xyList[:][1]]
-    odb.close()
+    odb = session.openOdb(name='C:/Temp/TensionX_NothingElse.odb')
+    global s11xy, s22xy, s33xy, Evol
+    s11xy = session.xyDataListFromField(odb=odb, outputPosition=ELEMENT_CENTROID,
+                                        variable=(('S', INTEGRATION_POINT, ((COMPONENT, 'S11'),)),),
+                                        elementSets=(' ALL ELEMENTS',))
+    s22xy = session.xyDataListFromField(odb=odb, outputPosition=ELEMENT_CENTROID,
+                                        variable=(('S', INTEGRATION_POINT, ((COMPONENT, 'S22'),)),),
+                                        elementSets=(' ALL ELEMENTS',))
+    s33xy = session.xyDataListFromField(odb=odb, outputPosition=ELEMENT_CENTROID,
+                                        variable=(('S', INTEGRATION_POINT, ((COMPONENT, 'S33'),)),),
+                                        elementSets=(' ALL ELEMENTS',))
+    Evol = session.xyDataListFromField(odb=odb, outputPosition=WHOLE_ELEMENT, variable=((
+                                                                                            'EVOL', WHOLE_ELEMENT),),
+                                       elementSets=(' ALL ELEMENTS',))
+    VolumePerTime = []
+    VolweightedS11 = []
+
+    for frame in range(0,len(Evol[0])):
+        elementVolumes = []
+        for Element in Evol:
+            elementVolumes.append(Element[frame][1])
+        VolumePerTime.append(sum(elementVolumes))
+    ggg = open('C:/Users/Rockv/Desktop/Nytt tekstdokument.txt', "w")
+    ggg.write(VolumePerTime)
+    ggg.close()
     """
     instance = odb.rootAssembly.instances['PART-1-MESH-1-1']
     Intface = instance.elements

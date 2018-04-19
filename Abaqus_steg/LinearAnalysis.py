@@ -9,7 +9,6 @@ def create_Linearunitstrainslastcases():
     #Run the simulations to create stiffnessmatrix
     print '\nComputing stresses for normalized unit strains'
     for i in range(0,6):#   arg:   +   ,len(id)+1
-
         #Laste inn toyningscase
         exx, eyy, ezz, exy, exz, eyz = id[i]
         mod.DisplacementBC(name='BCX', createStepName=stepName,

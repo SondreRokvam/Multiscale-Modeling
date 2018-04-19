@@ -51,8 +51,10 @@ def run_Job(Jobb, modelName):
         qw.close()
 numCPU = multiprocessing.cpu_count()
 
+
 #Hent Test variabler
 execfile('C:\Multiscale-Modeling\TestVariabler.py')
+
 
 Sample=[50]   #Forste sweepvariabel
 #Sample=np.round(np.linspace(2 ,80,79))
@@ -182,7 +184,14 @@ for m in range(0,len(Sample)):
                     else:
                         mdb.saveAs(pathName=workpath + 'RVE-' + str(Sample[m]) + '-0-int-' + str(int(Q)))
             else:
-                openMdb(pathName=workpath + 'RVE-' + str(Sample[m]) + '-' + str(int(Q)))
+                try:
+                    Q=0
+                    Mdb()  # reset Abaqus
+                    mod = mdb.models[modelName]
+                    model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
+                    openMdb(pathName=workpath + 'RVE-' + str(Sample[m]) + '-' + str(int(Q)))
+                except:
+                    pass
 
         """ SIMULERINGER    """
         if linearAnalysis:                                  # LinearAnalysis for stiffness and small deformation
@@ -192,9 +201,16 @@ for m in range(0,len(Sample)):
                 pass
                 n=n+1
         if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
-            strain = 0.03#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
+
+            strain = 0.05#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
+            #strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
+            #strains = {'CompressionYCompressionZ': [-strain/3, -strain/3, 0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
+            #cases = [['ShearExy', strains['ShearExy']] , ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
+            cases = [['TensionX_NothingElse', [strain, 0, 0, 0, 0, 0]]]
+            #cases = [['CompressionYCompressionZ', [0, -strain, -strain, 0, 0, 0]]]
             #strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
             cases = [['ShearCompression',(0, -strain, 0, 0,strain, 0)]]       # Shear + Compression
+
             for Case in cases:
                 Jobbnavn, Strain = Case
                 try:

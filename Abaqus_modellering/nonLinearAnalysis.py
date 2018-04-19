@@ -35,6 +35,7 @@ def create_nonLinearstrainedlastcases(Strain, bob):
 
     run_Job(bob, modelName)
 def getAverageStressStrain():
+    """
     path = workpath + Jobbnavn
     odb = session.openOdb(name='C:/Temp/TensionX_NothingElse.odb')
     global s11xy, s22xy, s33xy, Evol

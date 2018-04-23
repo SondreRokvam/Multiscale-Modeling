@@ -50,14 +50,6 @@ Tekstfiler, Modellering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/'
 execfile(Modellering+'TestVariabler.py')        # Sette Test variabler
 execfile(Modellering+'IterationParameters.py')  # Sette iterasjonsnummer
 
-"""  RVE design parameters  """
-Jobsss = workpath + 'Abaqusjobs.bat'
-
-"""   Stess sweeps settings     """
-sweepcases = 1  # Stress sweeps cases. Decides sweep resolution
-id = np.identity(6)  # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
-sweepresolution = 2 * pi / sweepcases
-Retning = ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
 """   Details  """
 if Interface and Createmodel:
     print('Aspect ratio for Interface elements ved modellering = ' + str(round(meshsize / (rinterface * rmean), 2)) +
@@ -129,19 +121,6 @@ while Q<n:
         seed(Q)                                                         # Q er randomfunksjonensnokkelen
         wiggle = random() * rmean                                       # Omplasseringsgrenser for fiberomplassering
 
-        """ Navn for lineare tester """
-
-        Enhetstoyinger =['']*6                                          # Enhetstoyinger for lineare retninger
-        for g in range(0, 6):                                                   # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
-            Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
-        Sweeptoyinger = [''] * sweepcases                               # Sweepcasesog n relative ABAQUS Jobb navn
-        for g in range(0,sweepcases):
-            Sweeptoyinger[g] = ('Sweep_strain'+ str(int(ParameterSweep[ItraPara])) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
-
-        """ Datalagring """
-        lagrestiffpath =  Tekstfiler + 'Stiffness__NF-'+ str(int(nf))+'.txt'  # Skrives ned statistikk til ett annet script
-        Envelope =  Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn legges til i funksjonen
-        coordpath =  Tekstfiler + 'RVEcoordinatsandRadiuses'+ str(int(ParameterSweep[ItraPara])) + '_' + str(Q)+'.txt'  # Skrives ned i genererefiberPop for reference
     """ Get Abaqus RVE model """
     if 1:
         Mdb()  # reset Abaqus
@@ -169,7 +148,30 @@ while Q<n:
                 pass
 
     """ SIMULERINGER    """
+    Jobsss = workpath + 'Abaqusjobs.bat'
+
+    """   Stess sweeps settings     """
+    sweepcases = 1              # Stress sweeps cases. Decides sweep resolution
+    id   =   np.identity(6)          # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
+    sweepresolution =    2 * pi / sweepcases
+    Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
+
+    """ Datalagring """
+    Lagrestiffpath = Tekstfiler + 'Stiffness__NF-' + str(int(nf)) + '.txt'  # Skrives ned statistikk til ett annet script
+    lagrestiffpath = Tekstfiler + 'StiffnessM.txt'  # Skrives ned statistikk til ett annet script
+    Envelope = Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn legges til i funksjonen
+
     if linearAnalysis:                                  # LinearAnalysis for stiffness and small deformation
+        """ Navn for lineare tester """
+        Enhetstoyinger = [''] * 6  # Enhetstoyinger for lineare retninger
+        for g in range(0, 6):  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
+            Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
+
+        Sweeptoyinger = [''] * sweepcases  # Sweepcasesog n relative ABAQUS Jobb navn
+        for g in range(0, sweepcases):
+            Sweeptoyinger[g] = ('Sweep_strain' + str(int(ParameterSweep[ItraPara])) + '_' + str(
+                int(g * 180 * sweepresolution / pi)) + '__' + str(int(Q)))
+
         try:
             execfile(Modellering +'LinearAnalysis.py')
         except:

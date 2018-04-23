@@ -106,7 +106,7 @@ create_Linearunitstrainslastcases()     # Unit strain cases. Set boundary condit
 
 
 """Post processing"""
-#Stiffmatrix = get_stiffness()           # Faa stiffnessmatrix
+Stiffmatrix = get_stiffness()           # Faa stiffnessmatrix
 
 
 """     Compliance matrix and sweepes stress envelopes"""

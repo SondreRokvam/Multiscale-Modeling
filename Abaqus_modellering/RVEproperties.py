@@ -26,13 +26,13 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
     res.Elastic(table=(ResCon['E,v'],))
     if MaterialDens:
         res.Density(table=((ResCon['Den'],),))
-    if nonLinearAnalysis:
-        res.ConcreteDamagedPlasticity(table=(ResCon['CDP'],))
-        RCDP = res.concreteDamagedPlasticity
-        RCDP.ConcreteCompressionHardening(table=ResCon['cdpCCH'])
-        RCDP.ConcreteCompressionDamage(table=ResCon['cdpCCD'])
-        RCDP.ConcreteTensionStiffening(table=(ResCon['cdpCTS'],), type=GFI)
-        RCDP.ConcreteTensionDamage(table=ResCon['cdpCTD'], type=DISPLACEMENT)
+    #if nonLinearAnalysis:
+    res.ConcreteDamagedPlasticity(table=(ResCon['CDP'],))
+    RCDP = res.concreteDamagedPlasticity
+    RCDP.ConcreteCompressionHardening(table=ResCon['cdpCCH'])
+    RCDP.ConcreteCompressionDamage(table=ResCon['cdpCCD'])
+    RCDP.ConcreteTensionStiffening(table=(ResCon['cdpCTS'],), type=GFI)
+    RCDP.ConcreteTensionDamage(table=ResCon['cdpCTD'], type=DISPLACEMENT)
 
     if not nf == 0:
         mod.Material(name='glass')
@@ -41,18 +41,14 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
             mod.materials['glass'].Density(table=((FibCon['Den'],),))
         if Interface:
             mod.Material(name='interface')
-            if nonLinearAnalysis:
-                intF= mod.materials['interface']
-                intF.Elastic(type=TRACTION, table=(IntCon['Trac'],))
-                if MaterialDens:
-                    intF.Density(table=((IntCon['Den'],),))
-                intF.QuadsDamageInitiation(table=(IntCon['QDI'],))
-                intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
-                                                           power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
-            else:
-                mod.materials['interface'].Elastic(table=(ResCon['E,v'],))
-                if MaterialDens:
-                    mod.materials['interface'].Density(table=((FibCon['Den'],),))
+            intF= mod.materials['interface']
+            intF.Elastic(type=TRACTION, table=(IntCon['Trac'],))
+            if MaterialDens:
+                intF.Density(table=((IntCon['Den'],),))
+            #if nonLinearAnalysis:
+            intF.QuadsDamageInitiation(table=(IntCon['QDI'],))
+            intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
+                                                       power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
 
 def SectionsAndOrientations():                                  # Create and assign sections to materials
     p = mdb.models['Model-A'].parts['Part-1-mesh-1']
@@ -73,8 +69,8 @@ def SectionsAndOrientations():                                  # Create and ass
                             offsetType=MIDDLE_SURFACE, offsetField='',
                             thicknessAssignment=FROM_SECTION)
         if Interface:
-            if nonLinearAnalysis:
-                """# Lage fiber datums for material orientering av Interface UNCLEAR IF NEEDED
+            #if nonLinearAnalysis:
+            """# Lage fiber datums for material orientering av Interface UNCLEAR IF NEEDED
                 for ie in range(0, len(xydata)):
                     x = xydata[ie][0]
                     y = xydata[ie][1]
@@ -91,13 +87,13 @@ def SectionsAndOrientations():                                  # Create and ass
                     
                                     # additionalRotationType = ROTATION_ANGLE, angle=-90.0, additionalRotationField='',
                                     # additionalRotationType = ROTATION_NONE,  angle = 0.0, additionalRotationField='',
-                """
-                mod.CohesiveSection(name='SSbond', material='interface', response=TRACTION_SEPARATION,
+            """
+            mod.CohesiveSection(name='SSbond', material='interface', response=TRACTION_SEPARATION,
                                     initialThicknessType=GEOMETRY, outOfPlaneThickness=None)
                 # initialThicknessType=SPECIFY, initialThickness = 0.01, outOfPlaneThickness = None)
                 # initialThicknessType=GEOMETRY,outOfPlaneThickness=None)
-            else:
-                mod.HomogeneousSolidSection(name='SSbond', material='interface', thickness=None)
+            #else:
+            #   mod.HomogeneousSolidSection(name='SSbond', material='interface', thickness=None)
             region = p.sets['Interfaces']
             p.SectionAssignment(region=region, sectionName='SSbond', offset=0.0,offsetType=MIDDLE_SURFACE,
                                 offsetField='',thicknessAssignment=FROM_SECTION)

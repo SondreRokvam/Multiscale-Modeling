@@ -11,16 +11,17 @@ def create_Linearunitstrainslastcases():
     for i in range(0,6):#   arg:   +   ,len(id)+1
         #Laste inn toyningscase
         exx, eyy, ezz, exy, exz, eyz = id[i]
+        #Strainsene var mulighens litt store.Delr paa 1000 for test
         mod.DisplacementBC(name='BCX', createStepName=stepName,
-                           region=a.sets['RPX'], u1=exx, u2=exy, u3=exz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                           region=a.sets['RPX'], u1=exx/1000, u2=exy/1000, u3=exz/1000, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
         mod.DisplacementBC(name='BCY', createStepName=stepName,
-                           region=a.sets['RPY'], u1=exy, u2=eyy, u3=eyz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                           region=a.sets['RPY'], u1=exy/1000, u2=eyy/1000, u3=eyz/1000, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
         mod.DisplacementBC(name='BCZ', createStepName=stepName,
-                           region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                           region=a.sets['RPZ'], u1=exz/1000, u2=eyz/1000, u3=ezz/1000, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
         run_Job(Enhetstoyinger[i][0],modelName)
         del exx, eyy, ezz, exy, exz, eyz

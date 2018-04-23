@@ -3,7 +3,7 @@
 GitHub, workpath = 'C:/Multiscale-Modeling/', 'C:/Temp/'
 Tekstfiler, Modellering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/'
 
-#Nullsette iterasjoner
+#Nullsette iterasjoner tracking
 Itra = open(Tekstfiler+'Iterasjoner.txt', "w")
 Itra.close()
 

@@ -63,9 +63,9 @@ def COHstackDir():  # Slette og lage nye element i interface for cohesive elemen
             p.SetFromElementLabels(name='elementi', elementLabels=(element.label,))
             elemNOdes = p.sets['elementi'].nodes
             min, max = -dL / 2 - tol, dL / 2 + tol
-            nodesZa = elemNOdes.getByBoundingBox(min, min, RVEt - tol, max, max,
-                                                 RVEt + tol)  # Velge noder front og bak av fiber i Z
-            nodesZb = elemNOdes.getByBoundingBox(min, min, 2 * RVEt - tol, max, max, 2 * RVEt + tol)
+            nodesZa = elemNOdes.getByBoundingBox(min, min, tykkelse - tol, max, max,
+                                                 tykkelse + tol)  # Velge noder front og bak av fiber i Z
+            nodesZb = elemNOdes.getByBoundingBox(min, min, 2 * tykkelse - tol, max, max, 2 * tykkelse + tol)
             del min, max
             ZaFibnodes = nodesZa.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (
                         rinterface + 1) - tol)  # Velge fiber og interface noder i front og bak av fiber
@@ -97,16 +97,16 @@ def COHstackDir():  # Slette og lage nye element i interface for cohesive elemen
                     XX, YY = x1, y1
 
             p.Set(name='N1',
-                  nodes=p.sets['ZbFib'].nodes.getByBoundingCylinder((XX, YY, 0), (XX, YY, 3 * RVEt), meshsize / 4))
+                  nodes=p.sets['ZbFib'].nodes.getByBoundingCylinder((XX, YY, 0), (XX, YY, 3 * tykkelse), meshsize / 4))
             p.SetByBoolean(name='N2', sets=(p.sets['ZbFib'], p.sets['N1'],), operation=DIFFERENCE)
             p.Set(name='N4',
-                  nodes=p.sets['ZaFib'].nodes.getByBoundingCylinder((XX, YY, 0), (XX, YY, 3 * RVEt), meshsize / 4))
+                  nodes=p.sets['ZaFib'].nodes.getByBoundingCylinder((XX, YY, 0), (XX, YY, 3 * tykkelse), meshsize / 4))
             p.SetByBoolean(name='N3', sets=(p.sets['ZaFib'], p.sets['N4'],), operation=DIFFERENCE)
             p.Set(name='N5',
-                  nodes=p.sets['ZbInt'].nodes.getByBoundingCylinder((XX, YY, 0), (XX, YY, 3 * RVEt), meshsize / 4))
+                  nodes=p.sets['ZbInt'].nodes.getByBoundingCylinder((XX, YY, 0), (XX, YY, 3 * tykkelse), meshsize / 4))
             p.SetByBoolean(name='N6', sets=(p.sets['ZbInt'], p.sets['N5'],), operation=DIFFERENCE)
             p.Set(name='N8',
-                  nodes=p.sets['ZaInt'].nodes.getByBoundingCylinder((XX, YY, 0), (XX, YY, 3 * RVEt), meshsize / 4))
+                  nodes=p.sets['ZaInt'].nodes.getByBoundingCylinder((XX, YY, 0), (XX, YY, 3 * tykkelse), meshsize / 4))
             p.SetByBoolean(name='N7', sets=(p.sets['ZaInt'], p.sets['N8'],), operation=DIFFERENCE)
             n1 = p.sets['N1'].nodes[0]
             n2 = p.sets['N2'].nodes[0]

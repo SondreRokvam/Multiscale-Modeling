@@ -50,32 +50,12 @@ Tekstfiler, Modellering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/'
 execfile(Modellering+'TestVariabler.py')        # Sette Test variabler
 execfile(Modellering+'IterationParameters.py')  # Sette iterasjonsnummer
 
-"""     Modelleringsvariabler   """
-
-""" ABAQUS modelleringsnavn    """
-modelName = 'Model-A'
-partName, meshPartName = 'Part-1', 'Part-1-mesh-1'
-instanceName = 'PART-1-MESH-1-1'
-stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
 """  RVE design parameters  """
-RVEt = meshsize  # RVE tykkelse i fiberretning
-tol = rinterface * 0.4  # Modelleringstoleranse - Mindre en minste modelleringsvariabel (rInterface)
-Rclearing = 0.01  # Minimumsavstand mellom fiberkant og RVE kant. Verdi relativ til radius. Skal den settes lik meshsize?
 Jobsss = workpath + 'Abaqusjobs.bat'
+
 """   Stess sweeps settings     """
 sweepcases = 1  # Stress sweeps cases. Decides sweep resolution
 id = np.identity(6)  # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
-
-# RVE tykkelse
-tykkelse = RVEt
-
-r = rmean
-gtol = Rclearing * r  # Dodsone klaring toleranse
-ytredodgrense = r + gtol  # Dodzone avstand, lengst fra kantene
-indredodgrense = r - gtol  # Dodzone avstand, naermest kantene
-
-iterasjonsgrense = 10000  # iterasjonsgrense i Fiberutplassering loop
-
 sweepresolution = 2 * pi / sweepcases
 Retning = ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
 """   Details  """
@@ -87,21 +67,14 @@ if Interface and Createmodel:
 
         # Generelle instilliger
 
-
-
-
 """Iterasjonsprameter"""
 #Meshsize/ Fiberresolution, Sweepe fiberresolution
-
 #Interface element thickness, Sweepe nedover til crash, analysere data
-
 #RVE size from nf       # Trenger minimum RVE convergence test
-
 #Klareringsavstand, sweepe nedover til crash, analysere data
-
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[3]
+ParameterSweep=[4]
 
 nf = 50
 Vf = 0.6  #
@@ -164,7 +137,6 @@ while Q<n:
         Sweeptoyinger = [''] * sweepcases                               # Sweepcasesog n relative ABAQUS Jobb navn
         for g in range(0,sweepcases):
             Sweeptoyinger[g] = ('Sweep_strain'+ str(int(ParameterSweep[ItraPara])) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
-            Sweeptoyinger[g] = ('Sweep_strain'+ str(int(ParameterSweep[ItraPara])) + '_'+str(int(g*180*sweepresolution/pi))+'__'+str(int(Q)))
 
         """ Datalagring """
         lagrestiffpath =  Tekstfiler + 'Stiffness__NF-'+ str(int(nf))+'.txt'  # Skrives ned statistikk til ett annet script
@@ -205,7 +177,7 @@ while Q<n:
             n=n+1
     if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
 
-        strain = 1e-5#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
+        strain = 1e-4#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
         #strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
         #strains = {'CompressionYCompressionZ': [-strain/3, -strain/3, 0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
         #cases = [['ShearExy', strains['ShearExy']] , ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression

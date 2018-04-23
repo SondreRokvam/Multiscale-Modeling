@@ -26,13 +26,13 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
     res.Elastic(table=(ResCon['E,v'],))
     if MaterialDens:
         res.Density(table=((ResCon['Den'],),))
-    #if nonLinearAnalysis:
-    res.ConcreteDamagedPlasticity(table=(ResCon['CDP'],))
-    RCDP = res.concreteDamagedPlasticity
-    RCDP.ConcreteCompressionHardening(table=ResCon['cdpCCH'])
-    RCDP.ConcreteCompressionDamage(table=ResCon['cdpCCD'])
-    RCDP.ConcreteTensionStiffening(table=(ResCon['cdpCTS'],), type=GFI)
-    RCDP.ConcreteTensionDamage(table=ResCon['cdpCTD'], type=DISPLACEMENT)
+    if nonLinearAnalysis:
+        res.ConcreteDamagedPlasticity(table=(ResCon['CDP'],))
+        RCDP = res.concreteDamagedPlasticity
+        RCDP.ConcreteCompressionHardening(table=ResCon['cdpCCH'])
+        RCDP.ConcreteCompressionDamage(table=ResCon['cdpCCD'])
+        RCDP.ConcreteTensionStiffening(table=(ResCon['cdpCTS'],), type=GFI)
+        RCDP.ConcreteTensionDamage(table=ResCon['cdpCTD'], type=DISPLACEMENT)
 
     if not nf == 0:
         mod.Material(name='glass')
@@ -45,9 +45,9 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
             intF.Elastic(type=TRACTION, table=(IntCon['Trac'],))
             if MaterialDens:
                 intF.Density(table=((IntCon['Den'],),))
-            #if nonLinearAnalysis:
-            intF.QuadsDamageInitiation(table=(IntCon['QDI'],))
-            intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
+            if nonLinearAnalysis:
+                intF.QuadsDamageInitiation(table=(IntCon['QDI'],))
+                intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
                                                        power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
 
 def SectionsAndOrientations():                                  # Create and assign sections to materials

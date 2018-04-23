@@ -52,8 +52,8 @@
           <file leaf-file-name="abaqusMacros.py" pinned="false" current-in-tab="false">
             <entry file="file://$USER_HOME$/abaqusMacros.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="125">
-                  <caret line="401" column="0" lean-forward="false" selection-start-line="401" selection-start-column="0" selection-end-line="401" selection-end-column="0" />
+                <state relative-caret-position="323">
+                  <caret line="486" column="4" lean-forward="false" selection-start-line="486" selection-start-column="4" selection-end-line="490" selection-end-column="75" />
                   <folding>
                     <element signature="e#66#86#0" expanded="true" />
                   </folding>
@@ -61,13 +61,23 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="RVEproperties.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="StiffnessMatrixand Degredation.py" pinned="false" current-in-tab="true">
+            <entry file="file://$USER_HOME$/StiffnessMatrixand Degredation.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="26">
+                  <caret line="1" column="40" lean-forward="false" selection-start-line="1" selection-start-column="40" selection-end-line="1" selection-end-column="40" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="RVEproperties.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Abaqus_modellering/RVEproperties.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="347">
-                  <caret line="90" column="12" lean-forward="false" selection-start-line="90" selection-start-column="12" selection-end-line="90" selection-end-column="12" />
+                <state relative-caret-position="-572">
+                  <caret line="28" column="4" lean-forward="false" selection-start-line="28" selection-start-column="4" selection-end-line="28" selection-end-column="4" />
                   <folding>
-                    <element signature="e#3880#5222#1" expanded="false" />
+                    <element signature="e#3910#5252#1" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -181,8 +191,9 @@
         <option value="$PROJECT_DIR$/MicroscaleModelling_randomSweep.py" />
         <option value="$PROJECT_DIR$/Abaqus_modellering/LinearAnalysis.py" />
         <option value="$PROJECT_DIR$/Abaqus_modellering/RVEelementsets.py" />
-        <option value="$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py" />
         <option value="$PROJECT_DIR$/Abaqus_modellering/RVEproperties.py" />
+        <option value="$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py" />
+        <option value="$USER_HOME$/StiffnessMatrixand Degredation.py" />
       </list>
     </option>
   </component>
@@ -192,7 +203,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="613" />
     <option name="y" value="-16" />
     <option name="width" value="1542" />
@@ -219,7 +230,7 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.tabs" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Abaqus_modellering/LinearAnalysis.py" />
+    <property name="last_opened_file_path" value="$USER_HOME$/abaqusMacros.py" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -299,7 +310,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1938" height="1048" extended-state="7" />
+    <frame x="-9" y="-9" width="1938" height="1048" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -337,7 +348,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Abaqus_steg/LinearAnalysis.py" />
     <entry file="file://$USER_HOME$/abaqusMacros.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5304">
@@ -525,16 +535,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/abaqusMacros.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="401" column="0" lean-forward="false" selection-start-line="401" selection-start-column="0" selection-end-line="401" selection-end-column="0" />
-          <folding>
-            <element signature="e#66#86#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3562">
@@ -571,6 +571,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Abaqus_modellering/RVEproperties.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-572">
+          <caret line="28" column="4" lean-forward="false" selection-start-line="28" selection-start-column="4" selection-end-line="28" selection-end-column="4" />
+          <folding>
+            <element signature="e#3910#5252#1" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="468">
@@ -579,13 +589,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Abaqus_modellering/RVEproperties.py">
+    <entry file="file://$USER_HOME$/abaqusMacros.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="347">
-          <caret line="90" column="12" lean-forward="false" selection-start-line="90" selection-start-column="12" selection-end-line="90" selection-end-column="12" />
+        <state relative-caret-position="323">
+          <caret line="486" column="4" lean-forward="false" selection-start-line="486" selection-start-column="4" selection-end-line="490" selection-end-column="75" />
           <folding>
-            <element signature="e#3880#5222#1" expanded="false" />
+            <element signature="e#66#86#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/StiffnessMatrixand Degredation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="26">
+          <caret line="1" column="40" lean-forward="false" selection-start-line="1" selection-start-column="40" selection-end-line="1" selection-end-column="40" />
+          <folding />
         </state>
       </provider>
     </entry>

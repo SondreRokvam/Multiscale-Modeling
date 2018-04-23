@@ -14,9 +14,9 @@ numCPU = 1
 
 global Runjobs,linearAnalysis,nonLinearAnalysis,Increments,Dampening,Stabl_Magn, Atapt_Damp_Ratio,Singlepin,tripplepin,MaterialDens
 
-Runjobs =  0                            #   ON/OFF Start analyser or create .inp
-linearAnalysis = 1                     #   ON/OFF Linear analyse for stiffness
-nonLinearAnalysis = 0                   #   ON/OFF non-linear analyse for strength
+Runjobs =  1                            #   ON/OFF Start analyser or create .inp
+linearAnalysis = 0                     #   ON/OFF Linear analyse for stiffness
+nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
 Increments = {'maxNum': 100, 'initial': 1e-02, 'min': 1e-4, 'max': 1e-1}
 
 Dampening = 1
@@ -32,7 +32,7 @@ MaterialDens  = 0                           #Material Density
 """         Test variabler                                      """
 
 global noFibertest,Fibervariation,rmean,Rstdiv,Interface,rinterface,ElementInterfaceT,FiberSirkelResolution,meshsize,tykkelse,tol
-noFibertest = 0                                     # ON/OFF Fiber i modellen.
+noFibertest = 1                                     # ON/OFF Fiber i modellen.
 Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
 
 rmean = 8.7096                              # Gjennomsnittradius pa fiber

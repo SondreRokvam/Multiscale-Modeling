@@ -12,16 +12,26 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/Multiscale_Modeling$Prepare_test.coverage" NAME="Prepare_test Coverage Results" MODIFIED="1524409635356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Multiscale_Modeling$Test.coverage" NAME="Test Coverage Results" MODIFIED="1523287123950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Multiscale_Modeling$Cleanup.coverage" NAME="Cleanup Coverage Results" MODIFIED="1524519662858" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <splitter split-orientation="horizontal" split-proportion="0.55533856">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="109">
-          <file leaf-file-name="MicroscaleModelling_randomSweep.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="MicroscaleModelling_randomSweep.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="104">
-                  <caret line="165" column="54" selection-start-line="165" selection-start-column="54" selection-end-line="165" selection-end-column="54" />
+                <state relative-caret-position="121">
+                  <caret line="109" selection-start-line="109" selection-end-line="109" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="Cleanup.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/Cleanup.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="17">
+                  <caret line="1" column="3" lean-forward="true" selection-start-line="1" selection-start-column="3" selection-end-line="1" selection-end-column="3" />
                 </state>
               </provider>
             </entry>
@@ -186,6 +196,7 @@
         <option value="$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py" />
         <option value="$PROJECT_DIR$/Abaqus_modellering/LinearAnalysis.py" />
         <option value="$PROJECT_DIR$/MicroscaleModelling_randomSweep.py" />
+        <option value="$PROJECT_DIR$/Cleanup.py" />
       </list>
     </option>
   </component>
@@ -212,7 +223,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/StiffnessMatrixand Degredation.py" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.tabs" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -226,7 +237,26 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Prepare_test">
+  <component name="RunManager" selected="Python.Cleanup">
+    <configuration name="Cleanup" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Multiscale-Modeling" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Cleanup.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
     <configuration name="Prepare_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Multiscale-Modeling" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -268,9 +298,11 @@
     <list>
       <item itemvalue="Python.Test" />
       <item itemvalue="Python.Prepare_test" />
+      <item itemvalue="Python.Cleanup" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.Cleanup" />
         <item itemvalue="Python.Prepare_test" />
       </list>
     </recent_temporary>
@@ -289,7 +321,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="840" extended-state="7" />
+    <frame x="-7" y="-7" width="1550" height="840" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -327,7 +359,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Abaqus_steg/RVEelementsets.py" />
     <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -507,8 +538,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="104">
-          <caret line="165" column="54" selection-start-line="165" selection-start-column="54" selection-end-line="165" selection-end-column="54" />
+        <state relative-caret-position="121">
+          <caret line="109" selection-start-line="109" selection-end-line="109" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Cleanup.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="3" lean-forward="true" selection-start-line="1" selection-start-column="3" selection-end-line="1" selection-end-column="3" />
         </state>
       </provider>
     </entry>

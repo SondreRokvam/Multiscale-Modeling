@@ -107,15 +107,6 @@ while Q<n:
     import displayGroupOdbToolset as dgo
     import connectorBehavior
 
-    # Rydde for neste iterasjon
-    if RunningCleanup:
-        filelist = [f for f in os.listdir(workpath)if not f.endswith('.bat')]# if not f.endswith('.inp')]
-        for f in filelist:
-            try:
-                os.remove(os.path.join(workpath, f))
-            except:
-                pass
-
     """Random variabler og iterasjonsnavn"""
     if True:                     # For aa kunne kollapse variabler
         seed(Q)                                                         # Q er randomfunksjonensnokkelen

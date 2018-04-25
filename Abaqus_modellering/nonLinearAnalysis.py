@@ -44,6 +44,29 @@ def create_nonLinearstrainedlastcases(Strain, bob):
 
 
     run_Job(bob, modelName)
+
+def getSum22_33():
+    path = workpath + Jobbnavn
+    odb = session.openOdb(path + '.odb')
+    instance = odb.rootAssembly.instances[instanceName]
+    vol=0.0
+    Sigs=[0.0]*6
+    print len(instance.elements)
+    for j in range(0, len(instance.elements)):
+        elvol = odb.steps[difstpNm].frames[-1].fieldOutputs['EVOL']
+        vol=vol + elvol.values[j].data
+        S = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=CENTROID)
+        for p in range(0, 6):
+            Sigs[p] = Sigs[p] + S.values[j].data[p] * elvol.values[j].data
+        print j, Sigs, vol
+    odb.close()
+    #print(tykkelse * (dL) ** 2), vol, Sigs
+    Sag=[0.0]*6
+    for k in range(0, 6):
+        Sag[k] = Sigs[k] / (tykkelse * (dL) ** 2)  # Volume
+        Sigs[k] = Sigs[k] / vol  # Volume
+    print Sigs,Sag
+    return
 def getAverageStressStrain():
     """
     path = workpath + Jobbnavn
@@ -98,4 +121,5 @@ def getAverageStressStrain():
     ggg.close()
     odb.close()
 create_nonLinearstrainedlastcases(Strain, Jobbnavn)
+getSum22_33()
 #getAverageStressStrain()

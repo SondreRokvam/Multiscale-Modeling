@@ -162,15 +162,17 @@ while Q<n:
         for g in range(0, sweepcases):
             Sweeptoyinger[g] = ('Sweep_strain' + str(int(ParameterSweep[ItraPara])) + '_' + str(
                 int(g * 180 * sweepresolution / pi)) + '__' + str(int(Q)))
-
+        execfile(Modellering + 'LinearAnalysis.py')
+        """
         try:
             execfile(Modellering +'LinearAnalysis.py')
         except:
             pass
             n=n+1
+        """
     if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
 
-        strain = 1e-4#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
+        strain = 1e-2#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
         #strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
         #strains = {'CompressionYCompressionZ': [-strain/3, -strain/3, 0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
         #cases = [['ShearExy', strains['ShearExy']] , ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
@@ -181,6 +183,8 @@ while Q<n:
 
         for Case in cases:
             Jobbnavn, Strain = Case
+            execfile(Modellering + 'nonLinearAnalysis.py')
+            """
             try:
                 execfile(Modellering +'nonLinearAnalysis.py')
             except:
@@ -191,6 +195,7 @@ while Q<n:
                 except:
                     pass
                     n = n + 1
+                    """
     print 'Reached end of random key Iteration'
     Q = Q + 1
     del section, regionToolset, dgm, part, material, assembly, step, interaction

@@ -17,42 +17,39 @@ def CreateNewRVEModel():
     if not noFiber and Interface:                       # Rearrange fiber interface nodes for controlled elementthickness and stable simulations
         execfile(Modellering + 'RVE_InterfaceElementThickness.py')
     execfile(Modellering + 'RVE_Boundaryconditions.py') # Boundaryconditions mot rigid body movement
+
+
 def run_Job(Jobb, modelName):
-    if numCPU==1:
-        mdb.Job(name=Jobb, model=modelName, description='', type=ANALYSIS,
+    mdb.Job(name=Jobb, model=modelName, description='', type=ANALYSIS,
             atTime=None, memory=90,
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
             explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
-            numDomains=1, numGPUs=1)
-    else:
-        mdb.Job(name=Jobb, model=modelName, description='', type=ANALYSIS,
-                atTime=None, memory=90,
-                memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-                explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
-                modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-                scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCPU,
-                numDomains=numCPU, numGPUs=1)
+            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCPU,
+            numDomains=numCPU, numGPUs=1)
     if Runjobs:
         mdb.jobs[Jobb].submit(consistencyChecking=OFF)
         mdb.jobs[Jobb].waitForCompletion()
     else:
         mdb.jobs[Jobb].writeInput(consistencyChecking=OFF)
         qw = open(Jobsss, "a")
-        qw.write('call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job=' + Jobb + ' cpus=' + str(numCPU))
+        qw.write('call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job=' + Jobb + ' interactive cpus=' + str(numCPU))
         qw.close()
 
-#Directories
+#Globale Directories
 GitHub, workpath = 'C:/Multiscale-Modeling/', 'C:/Temp/'
 Tekstfiler, Modellering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/'
 
-execfile(Modellering+'TestVariabler.py')        # Sette Test variabler
-execfile(Modellering+'IterationParameters.py')  # Sette iterasjonsnummer
+#Globale Paths
+Jobsss = workpath + 'Abaqusjobs.bat'
 
-"""   Details  """
+# Sette variabler
+execfile(Modellering+'TestVariabler.py')            # Sette Test variabler
+execfile(Modellering+'IterationParameters.py')      # Sette iterasjonsnummer
+
+
 if Interface and Createmodel:
-    print('Aspect ratio for Interface elements ved modellering = ' + str(round(meshsize / (rinterface * rmean), 2)) +
+    print('Aspect ratio for Interface elementsn= ' + str(round(meshsize / (rinterface * rmean), 2)) +
           '\t Interface element thickness = ' + str(float(ElementInterfaceT * rmean)))
 
 
@@ -84,9 +81,10 @@ if not nf == 0:  # RVE dL er relativ av nf, rmean og V
     noFiber = 0
 
 #Random modellering lokke
-n = 1           #  Itererer med random nokkeler fra 0 til n
-Q = 0
+n = int(1)           #  Itererer med random nokkeler fra 0 til n
+Q = int(0)
 while Q<n:
+    #IMPORTERER ALT FRA ABAQUS
     from abaqus import *
     from abaqusConstants import *
     from odbAccess import *
@@ -107,61 +105,49 @@ while Q<n:
     import displayGroupOdbToolset as dgo
     import connectorBehavior
 
-    """Random variabler og iterasjonsnavn"""
-    if True:                     # For aa kunne kollapse variabler
-        seed(Q)                                                         # Q er randomfunksjonensnokkelen
-        wiggle = random() * rmean                                       # Omplasseringsgrenser for fiberomplassering
-
-    """ Get Abaqus RVE model """
-    if 1:
-        Mdb()  # reset Abaqus
-        model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
-        mod = mdb.models[modelName]
-        if Createmodel:
-            xydata = None                       # Fiber kordinater og radiuser
-            if not noFiber:
-                execfile(Modellering+'GenerereFiberPopTilFil.py')            # create a random population
-            CreateNewRVEModel()
-            if Savemodel:
-                if Interface:
-                    ### DEBUGGING FOR INTERFACE PROBLEMS
-                    mdb.saveAs(pathName=workpath+'RVE-'+str(ParameterSweep[ItraPara])+'-'+str(int(Q)))
-                else:
-                    mdb.saveAs(pathName=workpath + 'RVE-' + str(ParameterSweep[ItraPara]) + '-0-int-' + str(int(Q)))
-        else:
-            try:
-                Q=0
-                Mdb()  # reset Abaqus
-                mod = mdb.models[modelName]
-                model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
-                openMdb(pathName=workpath + 'RVE-' + str(ParameterSweep[ItraPara]) + '-' + str(int(Q)))
-            except:
-                pass
-
-    """ SIMULERINGER    """
-    Jobsss = workpath + 'Abaqusjobs.bat'
-
-    """   Stess sweeps settings     """
-    sweepcases = 1              # Stress sweeps cases. Decides sweep resolution
-    id   =   np.identity(6)          # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
-    sweepresolution =    2 * pi / sweepcases
-    Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
-
     """ Datalagring """
-    Lagrestiffpath = Tekstfiler + 'Stiffness__NF-' + str(int(nf)) + '.txt'  # Skrives ned statistikk til ett annet script
+    Lagrestiffpath = Tekstfiler + 'Stiffness__NF-' + str(
+        int(nf)) + '.txt'  # Skrives ned statistikk til ett annet script
     lagrestiffpath = Tekstfiler + 'StiffnessM.txt'  # Skrives ned statistikk til ett annet script
     Envelope = Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn legges til i funksjonen
+    """Random variabler og iterasjonsnavn"""
 
+    seed(Q)                                                         # Q er randomfunksjonensnokkelen
+    wiggle = random() * rmean                                       # Omplasseringsgrenser for fiberomplassering
+    RVEmodellpath = workpath + 'RVEmodel__Parameter-' + str(ParameterSweep[ItraPara]) + '__RandKey-' + str(Q)
+
+
+    """ Abaqus RVE model """
+    Mdb()  # reset Abaqus
+    model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
+    mod = mdb.models[modelName]                                     # Lage snarvei
+    if Createmodel:
+        xydata = None                       # Fiber kordinater og radiuser
+        if not noFiber:
+            execfile(Modellering+'GenerereFiberPopTilFil.py')            # create a random population
+        CreateNewRVEModel()
+        if Savemodel:
+            mdb.saveAs(pathName=RVEmodellpath)
+    # Prov aa aapne tidlig
+    if not Createmodel:
+        try:
+            openMdb(pathName=RVEmodellpath)
+        except:
+            print 'Cae not found'
+            pass
+
+    """Simulering, linear stivhetsmatrise og nonlinear unidirectional strain and stress cases"""
     if linearAnalysis:                                  # LinearAnalysis for stiffness and small deformation
         """ Navn for lineare tester """
         Enhetstoyinger = [''] * 6  # Enhetstoyinger for lineare retninger
         for g in range(0, 6):  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
             Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
-
-        Sweeptoyinger = [''] * sweepcases  # Sweepcasesog n relative ABAQUS Jobb navn
-        for g in range(0, sweepcases):
-            Sweeptoyinger[g] = ('Sweep_strain' + str(int(ParameterSweep[ItraPara])) + '_' + str(
-                int(g * 180 * sweepresolution / pi)) + '__' + str(int(Q)))
+        #sweepcases = 1  # Stress sweeps cases. Decides sweep resolution
+        #sweepresolution = 2 * pi / sweepcases
+        #Sweeptoyinger = [''] * sweepcases  # Sweepcasesog n relative ABAQUS Jobb navn
+        #for g in range(0, sweepcases):
+        #    Sweeptoyinger[g] = ('Sweep_strain' + str(int(ParameterSweep[ItraPara])) + '_' + str(
+        #        int(g * 180 * sweepresolution / pi)) + '__' + str(int(Q)))
         execfile(Modellering + 'LinearAnalysis.py')
         """
         try:

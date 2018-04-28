@@ -235,6 +235,7 @@ if Fibervariation:
     for fib in range(0, nf):
         radiuser.append(gauss(rmean, Rstdiv))
 modellereRVEsnitt()
+#Finne Vf etter modellering
 fA = []
 for radius in radiuser:
     fA.append(pi * radius ** 2)

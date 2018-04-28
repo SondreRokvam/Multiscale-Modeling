@@ -1,8 +1,6 @@
 """         Script variabler                                      """
-
 global RunningCleanup,Createmodel,Savemodel,numCPU
 
-Trackstiffness = 1
 RunningCleanup = 0
 Createmodel = 1
 Savemodel = 0
@@ -10,14 +8,19 @@ numCPU = 1
 #numCPU = multiprocessing.cpu_count()
 
 
-"""Analyse varialbler       """
-
-global Runjobs,linearAnalysis,nonLinearAnalysis,Increments,Dampening,Stabl_Magn, Atapt_Damp_Ratio,Singlepin,tripplepin,MaterialDens
+"""Analyse variabler   """
+global Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 
 Runjobs =  1                            #   ON/OFF Start analyser or create .inp
+
 linearAnalysis = 0                     #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
-Increments = {'maxNum': 100, 'initial': 1e-02, 'min': 1e-4, 'max': 1e-1}
+
+Increments = {'maxNum': 20, 'initial': 1e-02, 'min': 1e-4, 'max': 1e-1}
+
+
+"""Simuleringsvariabler """
+global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin,MaterialDens
 
 Dampening = 1
 Stabl_Magn =2e-4
@@ -30,8 +33,8 @@ MaterialDens  = 0                           #Material Density
 
 
 """         Test variabler                                      """
+global noFibertest,Fibervariation,rmean,Rstdiv,Interface,rinterface,ElementInterfaceT,id, Retning
 
-global noFibertest,Fibervariation,rmean,Rstdiv,Interface,rinterface,ElementInterfaceT,FiberSirkelResolution,meshsize,tykkelse,tol
 noFibertest = 1                                     # ON/OFF Fiber i modellen.
 Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
 
@@ -42,28 +45,32 @@ Interface = 1                                   # ON/OFF CohesiveInterface
 rinterface = 0.0001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
 ElementInterfaceT = 0                  # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
-# Meshsize
+id   =   np.identity(6)          # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
+Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
+
+
+"""Meshsize"""
+global FiberSirkelResolution,meshsize,tykkelse,tol
+
 FiberSirkelResolution =  24                                 # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
 
-
-tol = rinterface * 0.4  # Modelleringstoleranse - Mindre en minste modelleringsvariabel (rInterface)
 tykkelse = meshsize    # RVE tykkelse
+tol = rinterface * 0.4  # Modelleringstoleranse - Mindre en minste modelleringsvariabel (rInterface)
 
 
 """RVE populasjon"""
-
-
 global r,gtol,ytredodgrense,indredodgrense,iterasjonsgrense,Rclearing
 
 Rclearing = 0.02  # Minimumsavstand mellom fiberkant og RVE kant. Verdi relativ til radius. Skal den settes lik meshsize?
 
-r = rmean
-gtol = Rclearing * r  # Dodsone klaring toleranse
-ytredodgrense = r + gtol  # Dodzone avstand, lengst fra kantene
-indredodgrense = r - gtol  # Dodzone avstand, naermest kantene
+r = rmean       #Fordi jeg skrev koden med r som radius foer radius variasjon ble introdusert
+gtol = Rclearing * r  # Fibers relative dodsone klarering for toleranse
+ytredodgrense = r + gtol  # Dodzone avstand, ytre grense fra kanter/hjorner
+indredodgrense = r - gtol  # Dodzone avstand, indre grense fra kanter/hjorner
 
 iterasjonsgrense = 10000  # iterasjonsgrense i Fiberutplassering loop
+
 
 """ ABAQUS modelleringsnavn    """
 
@@ -72,4 +79,3 @@ modelName = 'Model-A'
 partName, meshPartName = 'Part-1', 'Part-1-mesh-1'
 instanceName = 'PART-1-MESH-1-1'
 stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'
-

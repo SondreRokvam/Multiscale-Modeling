@@ -66,7 +66,7 @@ if not noFibertest and FiberSirkelResolution<20:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[1]
+ParameterSweep=[50]
 
 nf = 50
 Vf = 0.6  #
@@ -115,6 +115,8 @@ while Q<n:
         int(nf)) + '.txt'                               # Skrives ned statistikk til ett annet script
     lagrestiffpath = Tekstfiler + 'StiffnessM.txt'      # Lagrer ned Stiffnessmatrix
     Envelope = Tekstfiler + 'envelope'                  # Parameteravhengig - Spesifikt navn i funksjonen
+    Sigmapaths = Tekstfiler +'Sigmas'+str(
+        int(ParameterSweep[ItraPara])) + '_' + str( Q) + '.txt'
 
     """Random variabler og iterasjonsnavn"""
     seed(Q)                                                         # Q er randomfunksjonensnokkelen
@@ -150,19 +152,19 @@ while Q<n:
 
     #Kjore Linear analyse
     if linearAnalysis:  # LinearAnalysis for stiffness and small deformation
-        execfile(Modellering + 'LinearAnalysis.py')
-#        try:
-#            execfile(Modellering +'LinearAnalysis.py')
-#        except:
-#            n=n+1
-        Mdb()
         try:
+            execfile(Modellering +'LinearAnalysis.py')
+        except:
+            n=n+1
+            nonLinearAnalysis=0
+        try:
+            Mdb()
             openMdb(pathName=RVEmodellpath)
             mod = mdb.models['Model-A']
         except:
-            print 'Cae cannot be opened'
-            del errors
-            #pass
+                print 'Cae cannot be opened'
+                del errors
+                # pass
     execfile(processering + 'LinearPostprocessing.py')
 
     if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation

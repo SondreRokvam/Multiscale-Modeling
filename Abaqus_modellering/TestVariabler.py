@@ -16,7 +16,7 @@ Runjobs =  1                            #   ON/OFF Start analyser or create .inp
 linearAnalysis = 1                      #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
 
-Increments = {'maxNum': 1000, 'initial': 1e-03, 'min': 1e-5, 'max': 1e-1}
+Increments = {'maxNum': 200, 'initial': 1e-02, 'min': 1e-6, 'max': 1e-1}
 
 
 """Simuleringsvariabler """

@@ -5,6 +5,7 @@ def getHomogenizedSigmas():
     instance = odbsa.rootAssembly.instances[instanceName]
     print 'Elementer: ',len(instance.elements)
     print 'Frames: ', len(odbsa.steps['Lasttoyinger'].frames)
+    print 'Time completion: ', odbsa.steps['Lasttoyinger'].frames[-1].frameValue
     Sigma_frame= []
     Volume_frame = []
     Time_frame=[]
@@ -27,4 +28,9 @@ def getHomogenizedSigmas():
     print 'Sigmas = ',len(Sigma_frame)
     return Sigma_frame, Volume_frame,Time_frame
 HomoSigs = getHomogenizedSigmas()
-print HomoSigs
+ss = open(Sigmapaths, "w")
+count =0
+for s in HomoSigs[0]:
+    ss.write('%7f\t%7f\t%7f\t%7f\t%7f\t%7f\t%7f\n' % (Time_frame[count],s[0], s[1], s[2], s[3], s[4], s[5]))
+    count = count + 1
+ss.close()

@@ -38,7 +38,7 @@ def run_Job(Jobb, modelName):
 
 #Globale Directories
 GitHub, workpath = 'C:/Multiscale-Modeling/', 'C:/Temp/'
-Tekstfiler, Modellering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/'
+Tekstfiler, Modellering,processering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/',GitHub+'Abaqus_prosessering/'
 
 #Globale Paths
 Jobsss = workpath + 'Abaqusjobs.bat'
@@ -47,10 +47,13 @@ Jobsss = workpath + 'Abaqusjobs.bat'
 execfile(Modellering+'TestVariabler.py')            # Sette Test variabler
 execfile(Modellering+'IterationParameters.py')      # Sette iterasjonsnummer
 
-
-if Interface and Createmodel:
+#INFO DUMP
+if Interface and Createmodel and not noFibertest:
     print('Aspect ratio for Interface elementsn= ' + str(round(meshsize / (rinterface * rmean), 2)) +
           '\t Interface element thickness = ' + str(float(ElementInterfaceT * rmean)))
+if not noFibertest and FiberSirkelResolution<20:
+    print 'For grov opplosning, avslutter..'
+    del error
 
 
 
@@ -63,7 +66,7 @@ if Interface and Createmodel:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[4]
+ParameterSweep=[1]
 
 nf = 50
 Vf = 0.6  #
@@ -106,12 +109,14 @@ while Q<n:
     import connectorBehavior
 
     """ Datalagring """
+    coordpath = Tekstfiler + 'RVEcoordinatsandRadiuses' +str(
+        int(ParameterSweep[ItraPara])) + '_' + str( Q) + '.txt'        # Skriver ned generert fiberPop for reference.
     Lagrestiffpath = Tekstfiler + 'Stiffness__NF-' + str(
-        int(nf)) + '.txt'  # Skrives ned statistikk til ett annet script
-    lagrestiffpath = Tekstfiler + 'StiffnessM.txt'  # Skrives ned statistikk til ett annet script
-    Envelope = Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn legges til i funksjonen
-    """Random variabler og iterasjonsnavn"""
+        int(nf)) + '.txt'                               # Skrives ned statistikk til ett annet script
+    lagrestiffpath = Tekstfiler + 'StiffnessM.txt'      # Lagrer ned Stiffnessmatrix
+    Envelope = Tekstfiler + 'envelope'                  # Parameteravhengig - Spesifikt navn i funksjonen
 
+    """Random variabler og iterasjonsnavn"""
     seed(Q)                                                         # Q er randomfunksjonensnokkelen
     wiggle = random() * rmean                                       # Omplasseringsgrenser for fiberomplassering
     RVEmodellpath = workpath + 'RVEmodel__Parameter-' + str(ParameterSweep[ItraPara]) + '__RandKey-' + str(Q)
@@ -128,48 +133,61 @@ while Q<n:
         CreateNewRVEModel()
         if Savemodel:
             mdb.saveAs(pathName=RVEmodellpath)
-    # Prov aa aapne tidlig
+    # Prov aa aapne tidligere modell
     if not Createmodel:
         try:
             openMdb(pathName=RVEmodellpath)
+            mod = mdb.models['Model-A']
         except:
             print 'Cae not found'
             pass
 
     """Simulering, linear stivhetsmatrise og nonlinear unidirectional strain and stress cases"""
-    if linearAnalysis:                                  # LinearAnalysis for stiffness and small deformation
-        """ Navn for lineare tester """
-        Enhetstoyinger = [''] * 6  # Enhetstoyinger for lineare retninger
-        for g in range(0, 6):  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
-            Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
-        #sweepcases = 1  # Stress sweeps cases. Decides sweep resolution
-        #sweepresolution = 2 * pi / sweepcases
-        #Sweeptoyinger = [''] * sweepcases  # Sweepcasesog n relative ABAQUS Jobb navn
-        #for g in range(0, sweepcases):
-        #    Sweeptoyinger[g] = ('Sweep_strain' + str(int(ParameterSweep[ItraPara])) + '_' + str(
-        #        int(g * 180 * sweepresolution / pi)) + '__' + str(int(Q)))
-        execfile(Modellering + 'LinearAnalysis.py')
-        """
-        try:
-            execfile(Modellering +'LinearAnalysis.py')
-        except:
-            pass
-            n=n+1
-        """
-    if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
+    # Navn til lineare tester
+    Enhetstoyinger = [''] * 6  # Enhetstoyinger for lineare retninger
+    for g in range(0, 6):  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
+        Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
 
-        strain = 1e-2#       STRAINS:  exx, eyy, ezz, exy, exz, eyz
-        #strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
-        #strains = {'CompressionYCompressionZ': [-strain/3, -strain/3, 0, 0, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
-        #cases = [['ShearExy', strains['ShearExy']] , ['TensionEyy',strains['TensionEyy']], ['TensionEzz',strains['TensionEzz']]]       # Shear + Compression
-        cases = [['TensionX_NothingElse', [strain, 0, 0, 0, 0, 0]]]
-        #cases = [['CompressionYCompressionZ', [0, -strain, -strain, 0, 0, 0]]]
-        #strains = {'ShearExy': [0, -strain/3, 0, strain, 0, 0], 'TensionEyy': [0, 0.1, 0, 0, 0, 0], 'TensionEzz': [0, 0, 0.1, 0, 0, 0]}
-        #cases = [['ShearCompression',(0, -strain, 0, 0,strain, 0)]]       # Shear + Compression
+    #Kjore Linear analyse
+    if linearAnalysis:  # LinearAnalysis for stiffness and small deformation
+        execfile(Modellering + 'LinearAnalysis.py')
+#        try:
+#            execfile(Modellering +'LinearAnalysis.py')
+#        except:
+#            n=n+1
+        Mdb()
+        try:
+            openMdb(pathName=RVEmodellpath)
+            mod = mdb.models['Model-A']
+        except:
+            print 'Cae cannot be opened'
+            del errors
+            #pass
+    execfile(processering + 'LinearPostprocessing.py')
+
+    if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
+        #Stresstest
+        Tester = [['Retning'+Retning[0]],
+                  ['Retning'+Retning[1]],
+                  ['Retning'+Retning[2]]]
+        strain = 1e-2  # Planlagt STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+        # Faktisk STRAINS:  ez,  ey,  ex,   Yzy, -Yzx, -Yyx
+        stresses = np.dot(Stiffmatrix, [0, 0, 1 / strain, 0, 0, 0])
+
+        if strain>0:
+            Type='tension'
+        else:
+            Type='compression'
+
+        #ez,ey,ex,Yzy,-Yzx,-Yyx                              sz,sy,sx,Tzy,Tzx,Tyx
+        strains = np.round(strain*np.dot(np.linalg.inv(Stiffmatrix),[ 0,0,stresses[2],0,0,0]),12)
+
+        cases = [[Tester[0][0]+'+NothingElse_'+Type, strains]]
 
         for Case in cases:
             Jobbnavn, Strain = Case
             execfile(Modellering + 'nonLinearAnalysis.py')
+
             """
             try:
                 execfile(Modellering +'nonLinearAnalysis.py')
@@ -182,6 +200,8 @@ while Q<n:
                     pass
                     n = n + 1
                     """
+
+        execfile(processering + 'nonLinearPostprocessing.py')
     print 'Reached end of random key Iteration'
     Q = Q + 1
     del section, regionToolset, dgm, part, material, assembly, step, interaction

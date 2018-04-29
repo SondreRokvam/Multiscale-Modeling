@@ -1,31 +1,35 @@
-def create_nonLinearstrainedlastcases(Strain, bob):
+def create_nonLinearstrainedlastcases(Strain, Jobbinfo):
+    #if linearAnalysis:
+        #del mdb.models['Model-A'].steps[stepName]
     a = mod.rootAssembly
+
+    #Sett opp steg
     mod.StaticStep(name=difstpNm, previous='Initial', nlgeom=ON)
     steg = mod.steps[difstpNm]
     steg.setValues(maxNumInc=Increments['maxNum'], initialInc=Increments['initial'] ,minInc=Increments['min'],
         maxInc=Increments['max'],convertSDI=CONVERT_SDI_OFF)
+    steg.Restart(frequency=5, numberIntervals=0, overlay=OFF, timeMarks=OFF)
+
+    # ON/OFF aktivere Demping
     if Dampening:
         steg.setValues(stabilizationMethod=DAMPING_FACTOR, stabilizationMagnitude=Stabl_Magn,
                                             adaptiveDampingRatio=Atapt_Damp_Ratio)
         # stabilizationMethod=DAMPING_FACTOR, stabilizationMagnitude=Stabl_Magn,
-    steg.Restart(frequency=10,
-        numberIntervals=0, overlay=OFF, timeMarks=OFF)
+
+    # Outputs
     mod.fieldOutputRequests['F-Output-1'].setValues(variables=('DAMAGEC', 'DAMAGET', 'LE','PE', 'PEEQ',
                                                                'RT', 'S', 'SDEG','STATUS', 'STATUSXFEM',
                                                                'U','EVOL'),frequency=1)
-
     mod.historyOutputRequests['H-Output-1'].setValues(variables=( 'ALLDMD', 'ALLIE', 'ALLSD'))
 
-    #Tracke reaksjoner
+    # Tracke reaksjoner
     a.SetByBoolean(name='RPS', sets=(a.sets['RPX'], a.sets['RPY'], a.sets['RPZ'],))
     regDef = mdb.models['Model-A'].rootAssembly.sets['RPS']
-    mod.HistoryOutputRequest(name='H-Output-2',
-                             createStepName='Lasttoyinger', variables=('RT', 'UT'),
-                             region=regDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
+    mod.HistoryOutputRequest(name='H-Output-2',createStepName='Lasttoyinger',
+                             variables=('RT', 'UT'),region=regDef,
+                             sectionPoints=DEFAULT, rebar=EXCLUDE)
 
-
-
-    print bob,': ', Strain,'       Increments : ',Increments
+    print '\nJob : ',Jobbinfo,'\nStrains : ',Strain,'\nIncrements : ',Increments
     print '\nnon Linear load analysis'
 
     # Lagring av output data base filer .odb
@@ -43,23 +47,25 @@ def create_nonLinearstrainedlastcases(Strain, bob):
                        amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
 
-    run_Job(bob, modelName)
+    run_Job(Jobbinfo, modelName)
 
-def getSum22_33():
+def getHomogenizedSigmas():
     path = workpath + Jobbnavn
-    odb = session.openOdb(path + '.odb')
-    instance = odb.rootAssembly.instances[instanceName]
+    global odbsa
+    odbsa = session.openOdb(path + '.odb')
+    instance = odbsa.rootAssembly.instances[instanceName]
     vol=0.0
     Sigs=[0.0]*6
     print len(instance.elements)
     for j in range(0, len(instance.elements)):
-        elvol = odb.steps[difstpNm].frames[-1].fieldOutputs['EVOL']
+        elvol = odbsa.steps[difstpNm].frames[-1].fieldOutputs['EVOL']
         vol=vol + elvol.values[j].data
-        S = odb.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=CENTROID)
+        S = odbsa.steps[difstpNm].frames[-1].fieldOutputs['S'].getSubset(position=CENTROID)
         for p in range(0, 6):
+            print S.values[j].data[p], elvol.values[j].data
             Sigs[p] = Sigs[p] + S.values[j].data[p] * elvol.values[j].data
         print j, Sigs, vol
-    odb.close()
+    odbsa.close()
     #print(tykkelse * (dL) ** 2), vol, Sigs
     Sag=[0.0]*6
     for k in range(0, 6):
@@ -67,6 +73,9 @@ def getSum22_33():
         Sigs[k] = Sigs[k] / vol  # Volume
     print Sigs,Sag
     return
+
+create_nonLinearstrainedlastcases(Strain, Jobbnavn)
+
 def getAverageStressStrain():
     """
     path = workpath + Jobbnavn
@@ -101,9 +110,9 @@ def getAverageStressStrain():
     ggg = open('C:/Users/Rockv/Desktop/Nytt tekstdokument.txt', "w")
     ggg.close()
     ggg = open('C:/Users/Rockv/Desktop/Nytt tekstdokument.txt', "a")
-    for frame in range(0, 100):
+    Vol = 0.0
+    for frame in range(0, len(odb.steps['Lasttoyinger'].frames)):
         Framy = odb.steps['Lasttoyinger'].frames[frame]
-        Vol=0.0
         tt=0
         while tt <len(Intface):
             Vol = Vol + float(Framy.fieldOutputs['EVOL'].values[tt].data)
@@ -120,6 +129,4 @@ def getAverageStressStrain():
     #   ggg.write(str(lens[0])+'\t' + str(lens[1])+'\n')
     ggg.close()
     odb.close()
-create_nonLinearstrainedlastcases(Strain, Jobbnavn)
-getSum22_33()
 #getAverageStressStrain()

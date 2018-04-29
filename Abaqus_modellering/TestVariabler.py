@@ -3,7 +3,7 @@ global RunningCleanup,Createmodel,Savemodel,numCPU
 
 RunningCleanup = 0
 Createmodel = 1
-Savemodel = 0
+Savemodel = 1
 numCPU = 1
 #numCPU = multiprocessing.cpu_count()
 
@@ -13,10 +13,10 @@ global Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 
 Runjobs =  1                            #   ON/OFF Start analyser or create .inp
 
-linearAnalysis = 0                     #   ON/OFF Linear analyse for stiffness
+linearAnalysis = 1                      #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
 
-Increments = {'maxNum': 20, 'initial': 1e-02, 'min': 1e-4, 'max': 1e-1}
+Increments = {'maxNum': 1000, 'initial': 1e-03, 'min': 1e-5, 'max': 1e-1}
 
 
 """Simuleringsvariabler """
@@ -26,16 +26,16 @@ Dampening = 1
 Stabl_Magn =2e-4
 Atapt_Damp_Ratio = 0.05
 
-Singlepin = 1                               #   Randbetingelse:    Laaser hjornenode mot forskyvning i 3 retninger
+Singlepin = 0                               #   Randbetingelse:    Laaser hjornenode mot forskyvning i 3 retninger
 tripplepin = 0                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
 
 MaterialDens  = 0                           #Material Density
 
 
-"""         Test variabler                                      """
+"""    RVEmodel variabler                                      """
 global noFibertest,Fibervariation,rmean,Rstdiv,Interface,rinterface,ElementInterfaceT,id, Retning
 
-noFibertest = 1                                     # ON/OFF Fiber i modellen.
+noFibertest = 0                                     # ON/OFF Fiber i modellen.
 Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
 
 rmean = 8.7096                              # Gjennomsnittradius pa fiber
@@ -52,7 +52,7 @@ Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
 """Meshsize"""
 global FiberSirkelResolution,meshsize,tykkelse,tol
 
-FiberSirkelResolution =  24                                 # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
+FiberSirkelResolution =  20                                # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
 
 tykkelse = meshsize    # RVE tykkelse

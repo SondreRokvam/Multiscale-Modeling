@@ -8,22 +8,32 @@ def getHomogenizedSigmas():
     print 'Time completion: ', odbsa.steps['Lasttoyinger'].frames[-1].frameValue
     Sigma_frame= []
     Volume_frame = []
-    Time_frame=[]
-    for fra in range(0,len(odbsa.steps['Lasttoyinger'].frames)):
-        Time_frame.append(odbsa.steps['Lasttoyinger'].frames[fra].frameValue)
-        vol = float(0.0)
-        for j in range(0, len(instance.elements)):
-            elvol = odbsa.steps[difstpNm].frames[fra].fieldOutputs['EVOL']
-            vol = vol + float(elvol.values[j].data)
-        Volume_frame.append(vol)
-        Sigs = [0.0] * 6
-        for j in range(0, len(instance.elements)):
-            elvol = odbsa.steps[difstpNm].frames[fra].fieldOutputs['EVOL']
-            datas= odbsa.steps['Lasttoyinger'].frames[fra].fieldOutputs['S'].values[j].data
-            for p in range(0,len(datas)):
-                Sigs[p] = Sigs[p] + float(datas[p]) * float(elvol.values[j].data)/float(vol)
-        Sigma_frame.append(Sigs)
+    Time_frame= []
+
+    Volume_frame = []
+    Time_frame.append(0.0)
+    #for fra in range(0,len(odbsa.steps['Lasttoyinger'].frames)):
+    fra=-1
+    Time_frame.append(odbsa.steps['Lasttoyinger'].frames[fra].frameValue)
+    vol = float(0.0)
+    elvol = odbsa.steps[difstpNm].frames[fra].fieldOutputs['EVOL']
+    for j in range(0, len(instance.elements)):
+        vol = vol + float(elvol.values[j].data)
+    Volume_frame.append(vol)
+    Sigs = [0.0] * 6
+    Sigma_frame.append(Sigs)
+    for j in range(0, len(instance.elements)):
+        datas= odbsa.steps['Lasttoyinger'].frames[fra].fieldOutputs['S'].values[j].data
+        for p in range(0,len(datas)):
+            print datas
+            # Apenbart at vi ikke kan summere ikke eksisterende verdier.
+            # Om element er cohesive saa unngaar vi aa legge de til
+            #
+            Sigs[p] = Sigs[p] + float(datas[p]) * float(elvol.values[j].data)
+        print Sigs
+    Sigma_frame.append(Sigs)
     odbsa.close()
+    #Flytte dele paa total volum hit
     print 'Volumes = ',len(Volume_frame), 'initial count:',Volume_frame[0],' calc:', tykkelse*dL*dL
     print 'Sigmas = ',len(Sigma_frame)
     return Sigma_frame, Volume_frame,Time_frame

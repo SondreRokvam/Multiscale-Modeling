@@ -11,7 +11,7 @@ numCPU = 1
 """Analyse variabler   """
 global Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 
-Runjobs =  1                            #   ON/OFF Start analyser or create .inp
+Runjobs =  0                            #   ON/OFF Start analyser or create .inp
 
 linearAnalysis = 1                      #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength

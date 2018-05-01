@@ -18,7 +18,6 @@ def CreateNewRVEModel():
         execfile(Modellering + 'RVE_InterfaceElementThickness.py')
     execfile(Modellering + 'RVE_Boundaryconditions.py') # Boundaryconditions mot rigid body movement
 
-
 def run_Job(Jobb, modelName):
     mdb.Job(name=Jobb, model=modelName, description='', type=ANALYSIS,
             atTime=None, memory=90,
@@ -66,7 +65,7 @@ if not noFibertest and FiberSirkelResolution<20:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[50]
+ParameterSweep=[12]
 
 nf = 50
 Vf = 0.6  #
@@ -172,9 +171,9 @@ while Q<n:
         Tester = [['Retning'+Retning[0]],
                   ['Retning'+Retning[1]],
                   ['Retning'+Retning[2]]]
-        strain = 1e-2  # Planlagt STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+        strain = 1  # Planlagt STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
         # Faktisk STRAINS:  ez,  ey,  ex,   Yzy, -Yzx, -Yyx
-        stresses = np.dot(Stiffmatrix, [0, 0, 1 / strain, 0, 0, 0])
+        stresses = np.dot(Stiffmatrix, [strain, 0, 0 , 0, 0, 0])
 
         if strain>0:
             Type='tension'
@@ -182,9 +181,9 @@ while Q<n:
             Type='compression'
 
         #ez,ey,ex,Yzy,-Yzx,-Yyx                              sz,sy,sx,Tzy,Tzx,Tyx
-        strains = np.round(strain*np.dot(np.linalg.inv(Stiffmatrix),[ 0,0,stresses[2],0,0,0]),12)
+        strains = np.dot(np.linalg.inv(Stiffmatrix),[ stresses[0],0,0,0,0,0])
 
-        cases = [[Tester[0][0]+'+NothingElse_'+Type, strains]]
+        cases = [[Tester[0][0]+'+NothingElse_'+Type+ str(ParameterSweep[ItraPara]) + '__RandKey-' + str(Q), strains]]
 
         for Case in cases:
             Jobbnavn, Strain = Case

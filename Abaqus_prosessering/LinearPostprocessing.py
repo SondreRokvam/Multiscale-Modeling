@@ -22,10 +22,7 @@ def get_stiffness():
     g = open(lagrestiffpath, "a")
     #g = open(lagrestiffpath, "a")
     print '\nStiffnessmatrix found\n'
-    if not noFibertest and not nf==1:
-        g.write(str(FaktiskVf) + '\t'+ str(int(Q)) + '\t')
-    else:
-        g.write(str(int(Q)) + '\t')
+    g.write(str(int(Q)) + '\t')
     for a in range(0, 6):
         g.write(str(float(stiffmatrix[0][a]))+'\t'+str(float(stiffmatrix[1][a]))+'\t'+str(float(stiffmatrix[2][a]))+'\t'+str(float(stiffmatrix[3][a]))+'\t'+str(float(stiffmatrix[4][a]))+'\t'+str(float(stiffmatrix[5][a])))
         if not a==5:

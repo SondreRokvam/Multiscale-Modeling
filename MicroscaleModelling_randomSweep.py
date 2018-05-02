@@ -65,7 +65,7 @@ if not noFibertest and FiberSirkelResolution<20:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[12]
+ParameterSweep=[1]
 
 nf = 50
 Vf = 0.6  #
@@ -110,9 +110,9 @@ while Q<n:
     """ Datalagring """
     coordpath = Tekstfiler + 'RVEcoordinatsandRadiuses' +str(
         int(ParameterSweep[ItraPara])) + '_' + str( Q) + '.txt'        # Skriver ned generert fiberPop for reference.
-    Lagrestiffpath = Tekstfiler + 'Stiffness__NF-' + str(
+    Lagrestiffpathprop = Tekstfiler + 'Stiffness__NF-' + str(
         int(nf)) + '.txt'                               # Skrives ned statistikk til ett annet script
-    lagrestiffpath = Tekstfiler + 'StiffnessM.txt'      # Lagrer ned Stiffnessmatrix
+    lagrestiffpathmod = Tekstfiler + 'StiffnessM.txt'      # Lagrer ned Stiffnessmatrix
     Envelope = Tekstfiler + 'envelope'                  # Parameteravhengig - Spesifikt navn i funksjonen
     Sigmapaths = Tekstfiler +'Sigmas'+str(
         int(ParameterSweep[ItraPara])) + '_' + str( Q) + '.txt'
@@ -147,8 +147,10 @@ while Q<n:
     # Navn til lineare tester
     Enhetstoyinger = [''] * 6  # Enhetstoyinger for lineare retninger
     for g in range(0, 6):  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
-        Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
-
+        if not noFibertest:
+            Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
+        else:
+            Enhetstoyinger[g] = [Retning[g] + 'noFiber']
     #Kjore Linear analyse
     if linearAnalysis:  # LinearAnalysis for stiffness and small deformation
         try:
@@ -164,26 +166,46 @@ while Q<n:
                 print 'Cae cannot be opened'
                 del errors
                 # pass
-    execfile(processering + 'LinearPostprocessing.py')
+        execfile(processering + 'LinearPostprocessing.py')
+    else:
+        f = open(lagrestiffpathmod, 'r')
+        SM = f.read()
+        rows = SM.split('\t\t')
+        Stiffmatrix = []
+        count = 0
+        for row in rows:
+            Col = []
+            Colll = row.split('\t')
+            for dip in range(0, len(Colll)):
+                if not (dip==0 and count==0):
+                    Col.append(float(Colll[dip]))
+            count =  1
+            Stiffmatrix.append(Col)
+        for a in range(0, 6):
+            print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
+            Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
+            Stiffmatrix[5][a])
 
     if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
-        #Stresstest
-        Tester = [['Retning'+Retning[0]],
-                  ['Retning'+Retning[1]],
-                  ['Retning'+Retning[2]]]
-        strain = 1  # Planlagt STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
-        # Faktisk STRAINS:  ez,  ey,  ex,   Yzy, -Yzx, -Yyx
-        stresses = np.dot(Stiffmatrix, [strain, 0, 0 , 0, 0, 0])
-
-        if strain>0:
+        #Storrelses ordenen paa strains
+        Magni = 1.1 * e-1
+        #Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+        Ret = 1
+        strain = Magni*id[Ret]
+        print '\n/nRef Strain ',strain
+        # Faktisk STRAINS:  ex,  ey,  ex,   Yzy, -Yzx, -Yyx
+        stresses = np.dot(Stiffmatrix, strain)
+        print 'Ref Stresses ', stresses
+        if strain[Ret]>0:
             Type='tension'
         else:
             Type='compression'
-
+        Stresses = stresses[Ret]*id[Ret]
+        print 'Applied Stresses ', Stresses
         #ez,ey,ex,Yzy,-Yzx,-Yyx                              sz,sy,sx,Tzy,Tzx,Tyx
-        strains = np.dot(np.linalg.inv(Stiffmatrix),[ stresses[0],0,0,0,0,0])
+        strains = np.dot(np.linalg.inv(Stiffmatrix),Stresses)
 
-        cases = [[Tester[0][0]+'+NothingElse_'+Type+ str(ParameterSweep[ItraPara]) + '__RandKey-' + str(Q), strains]]
+        cases = [[Retning[Ret]+Type+ str(ParameterSweep[ItraPara]) + '__Rand-' + str(Q), strains]]
 
         for Case in cases:
             Jobbnavn, Strain = Case
@@ -194,12 +216,7 @@ while Q<n:
                 execfile(Modellering +'nonLinearAnalysis.py')
             except:
                 pass
-                try:
-                    Increments['initial'] = Increments['initial']/10
-                    execfile(Modellering + 'nonLinearAnalysis.py')
-                except:
-                    pass
-                    n = n + 1
+                n = n + 1
                     """
 
         execfile(processering + 'nonLinearPostprocessing.py')

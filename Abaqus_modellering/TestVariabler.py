@@ -11,12 +11,12 @@ numCPU = 1
 """Analyse variabler   """
 global Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 
-Runjobs =  0                            #   ON/OFF Start analyser or create .inp
+Runjobs =  1                            #   ON/OFF Start analyser or create .inp
 
 linearAnalysis = 1                      #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
 
-Increments = {'maxNum': 200, 'initial': 1e-02, 'min': 1e-6, 'max': 1e-1}
+Increments = {'maxNum': 50, 'initial': 1e-02, 'min': 1e-7, 'max': 1e-1}
 
 
 """Simuleringsvariabler """
@@ -52,7 +52,7 @@ Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
 """Meshsize"""
 global FiberSirkelResolution,meshsize,tykkelse,tol
 
-FiberSirkelResolution =  20                                # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
+FiberSirkelResolution =  20                               # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
 
 tykkelse = meshsize    # RVE tykkelse

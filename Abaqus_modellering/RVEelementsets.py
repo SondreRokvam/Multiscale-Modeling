@@ -50,7 +50,7 @@ def RVEsets():
         del mod.parts[meshPartName].sets['IandF']
     else:  # Bare matrix.
         p.SetByBoolean(name='Matrix', sets=(p.sets['Alle'], p.sets['Fibers'],), operation=DIFFERENCE)
-    del mod.parts[meshPartName].sets['Alle']
+
 
 def COHstackDir():  # Slette og lage nye element i interface for cohesive elementstack direction i Interface
     p = mod.parts[meshPartName]

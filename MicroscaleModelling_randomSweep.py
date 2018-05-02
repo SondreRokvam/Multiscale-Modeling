@@ -65,7 +65,7 @@ if not noFibertest and FiberSirkelResolution<20:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[1]
+ParameterSweep=[4]
 
 nf = 50
 Vf = 0.6  #
@@ -188,11 +188,11 @@ while Q<n:
 
     if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
         #Storrelses ordenen paa strains
-        Magni = 1.1 * e-1
+        Magni = 2e-1
         #Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
         Ret = 1
         strain = Magni*id[Ret]
-        print '\n/nRef Strain ',strain
+        print '\n\nRef Strain ',strain
         # Faktisk STRAINS:  ex,  ey,  ex,   Yzy, -Yzx, -Yyx
         stresses = np.dot(Stiffmatrix, strain)
         print 'Ref Stresses ', stresses

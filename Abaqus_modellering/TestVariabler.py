@@ -11,12 +11,13 @@ numCPU = 1
 """Analyse variabler   """
 global Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 
-Runjobs =  1                            #   ON/OFF Start analyser or create .inp
+Runjobs =  1                           #   ON/OFF Start analyser or create .inp
 
-linearAnalysis = 1                      #   ON/OFF Linear analyse for stiffness
+linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
 nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
 
-Increments = {'maxNum': 50, 'initial': 1e-02, 'min': 1e-7, 'max': 1e-1}
+
+Increments = {'maxNum': 50, 'initial': 5e-3, 'min': 1e-7, 'max': 2e-1}
 
 
 """Simuleringsvariabler """

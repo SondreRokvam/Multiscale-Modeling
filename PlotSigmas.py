@@ -12,11 +12,14 @@ def readRelaxationData():
     fileName = Tekstfiler+'Sigmas1_0.txt'
     a = np.genfromtxt(fileName)
     a = np.transpose(a)  # In order to get time and E(t) in two columns
-    return a
+    b = float(a[0][0])
+    a = a[:,1:]
+    print(np.round(a))
+    return a,b
 
 def plotRelaxationData():
-    Stresses = readRelaxationData()
-    x =Stresses[0]*3.07742274
+    Stresses, stray = readRelaxationData()
+    x =Stresses[0]*stray
     plt.plot(x,Stresses[1], 'b-')
     plt.plot(x,Stresses[2], 'g-')
     plt.plot(x,Stresses[3], 'r-')

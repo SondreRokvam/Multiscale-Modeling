@@ -1,31 +1,23 @@
-def get_intElements():
-    label = []
-    for elem in odbsa.rootAssembly.instances['PART-1-MESH-1-1'].elementSets['INTERFACES'].elements:
-        label.append(elem.label)
-    return label
-
-def is_interface_elem(IntEls,testlab):
-    for lab in IntEls:
-        if lab == testlab:
-            return True
-    return False
 def getHomogenizedSigmas():
     path = workpath + Jobbnavn
-    global odbsa,Sigma_frame,Volume_frame,Time_frame
-    odbsa = session.openOdb(path + '.odb')
-    hj = len(odbsa.steps['Lasttoyinger'].frames[0].fieldOutputs['EVOL'].values)
+    global od,Sigma_frame,Volume_frame,Time_frame
+    od = session.openOdb(path + '.odb')
+    hj = len(od.steps['Lasttoyinger'].frames[0].fieldOutputs['EVOL'].values)
+    frj =len(od.steps['Lasttoyinger'].frames)
     print 'Elementer: ',hj
-    print 'Frames: ', len(odbsa.steps['Lasttoyinger'].frames)
-    print 'Time completion: ', odbsa.steps['Lasttoyinger'].frames[-1].frameValue
-    Sigma_frame= []
-    Time_frame= []
-    Volume_frame = []
-    IntElems = get_intElements()
+    print 'Frames: ', frj
+    print 'Time completion: ', od.steps['Lasttoyinger'].frames[-1].frameValue
+    print 'Strain completion: ', od.steps['Lasttoyinger'].frames[-1].frameValue*strains[Ret]
+    Sigs = np.zeros(6)
+    Sigma_frame= [Sigs]*frj
+    Time_frame= np.zeros(frj)
+    Volume_frame = np.zeros(frj)
+    DVolume_frame = np.zeros(frj)
     for fra in range(0,len(odbsa.steps['Lasttoyinger'].frames)):
-        Time_frame.append(odbsa.steps['Lasttoyinger'].frames[fra].frameValue)
+        Time_frame[fra]=odbsa.steps['Lasttoyinger'].frames[fra].frameValue
         vol = 0.0
         dodvolum=0.0
-        Sigs = [0.0] * 6
+        Sigs = np.zeros(6)
         for j in range(0, hj):
             eldat=float(odbsa.steps['Lasttoyinger'].frames[fra].fieldOutputs['EVOL'].values[j].data)
             datas= odbsa.steps['Lasttoyinger'].frames[fra].fieldOutputs['S'].getSubset(position=CENTROID).values[j].data
@@ -38,8 +30,9 @@ def getHomogenizedSigmas():
                 else:
                     vol = vol + eldat
                     Sigs[p] = Sigs[p] + float(datas[p]) * eldat
-        Sigma_frame.append(Sigs)
-        Volume_frame.append((vol, dodvolum))
+        Sigma_frame[fra]=Sigs
+        Volume_frame[fra]= vol
+        DVolume_frame[fra]= dodvolum
     odbsa.close()
     del IntElems
 
@@ -49,7 +42,7 @@ def getHomogenizedSigmas():
         for si in range(0,len(Sigma_frame[Sigfra])):
             Sigma_frame[Sigfra][si]=Sigma_frame[Sigfra][si]*(1/Volume_frame[Sigfra][0])#(tykkelse*dL*dL))#
         #print Sigma_frame[Sigfra],'\n\n'
-    print 'Volumes = ',len(Volume_frame), 'initial count:',Volume_frame[0],' calc:', tykkelse*dL*dL,' dodvolum:', dodvolum, 'Stopped at:', Time_frame*strains[Ret]
+    print 'Volumes = ',len(Volume_frame), 'initial count:',Volume_frame[0],' calc:', tykkelse*dL*dL,' dodvolum:', dodvolum
     print 'Sigmas = ',len(Sigma_frame)
     return Sigma_frame, Volume_frame,Time_frame
 

@@ -2,7 +2,7 @@
 global RunningCleanup,Createmodel,Savemodel,numCPU
 
 RunningCleanup = 0
-Createmodel = 1
+Createmodel = 0
 Savemodel = 1
 numCPU = 1
 #numCPU = multiprocessing.cpu_count()
@@ -14,10 +14,11 @@ global Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 Runjobs =  1                           #   ON/OFF Start analyser or create .inp
 
 linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
-nonLinearAnalysis = 1                   #   ON/OFF non-linear analyse for strength
+nonLinearAnalysis = 0                   #   ON/OFF non-linear analyse for strength
 
+nonLinearpostPross = 1
 
-Increments = {'maxNum': 50, 'initial': 5e-3, 'min': 1e-7, 'max': 2e-1}
+Increments = {'maxNum': 100, 'initial': 5e-3, 'min': 1e-6, 'max': 2e-1}
 
 
 """Simuleringsvariabler """

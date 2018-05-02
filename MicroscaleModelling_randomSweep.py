@@ -65,7 +65,7 @@ if not noFibertest and FiberSirkelResolution<20:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[4]
+ParameterSweep=[6]
 
 nf = 50
 Vf = 0.6  #
@@ -186,7 +186,7 @@ while Q<n:
             Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
             Stiffmatrix[5][a])
 
-    if nonLinearAnalysis:                            # nonLinearAnalysis for strength and large deformation
+    if nonLinearAnalysis or nonLinearpostPross:                            # nonLinearAnalysis for strength and large deformation
         #Storrelses ordenen paa strains
         Magni = 2e-1
         #Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
@@ -209,7 +209,8 @@ while Q<n:
 
         for Case in cases:
             Jobbnavn, Strain = Case
-            execfile(Modellering + 'nonLinearAnalysis.py')
+            if nonLinearAnalysis:
+                execfile(Modellering + 'nonLinearAnalysis.py')
 
             """
             try:
@@ -218,7 +219,7 @@ while Q<n:
                 pass
                 n = n + 1
                     """
-
+    if nonLinearpostPross:
         execfile(processering + 'nonLinearPostprocessing.py')
     print 'Reached end of random key Iteration'
     Q = Q + 1

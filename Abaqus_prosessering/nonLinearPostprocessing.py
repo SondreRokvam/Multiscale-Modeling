@@ -1,50 +1,49 @@
 def getHomogenizedSigmas():
     path = workpath + Jobbnavn
-    global od,Sigma_frame,Volume_frame,Time_frame
+    print path
+    global od
     od = session.openOdb(path + '.odb')
-    hj = len(od.steps['Lasttoyinger'].frames[0].fieldOutputs['EVOL'].values)
+    antallElems = len(od.steps['Lasttoyinger'].frames[0].fieldOutputs['EVOL'].values)
     frj =len(od.steps['Lasttoyinger'].frames)
-    print 'Elementer: ',hj
+    print 'Elementer: ', antallElems
     print 'Frames: ', frj
     print 'Time completion: ', od.steps['Lasttoyinger'].frames[-1].frameValue
     print 'Strain completion: ', od.steps['Lasttoyinger'].frames[-1].frameValue*strains[Ret]
-    Sigs = np.zeros(6)
-    Sigma_frame= [Sigs]*frj
+    Sigma_frame= np.zeros([frj, 6])
     Time_frame= np.zeros(frj)
     Volume_frame = np.zeros(frj)
     DVolume_frame = np.zeros(frj)
-    for fra in range(0,len(odbsa.steps['Lasttoyinger'].frames)):
-        Time_frame[fra]=odbsa.steps['Lasttoyinger'].frames[fra].frameValue
+
+    for fra in range(0,frj):
+        fras = od.steps['Lasttoyinger'].frames[fra]
+        Time_frame[fra]=od.steps['Lasttoyinger'].frames[fra].frameValue
         vol = 0.0
         dodvolum=0.0
-        Sigs = np.zeros(6)
-        for j in range(0, hj):
-            eldat=float(odbsa.steps['Lasttoyinger'].frames[fra].fieldOutputs['EVOL'].values[j].data)
-            datas= odbsa.steps['Lasttoyinger'].frames[fra].fieldOutputs['S'].getSubset(position=CENTROID).values[j].data
-            for p in range(0,len(datas)):
-                #if is_interface_elem(IntElems,odbsa.steps['Lasttoyinger'].frames[fra].fieldOutputs['S'].getSubset(position=CENTROID).values[j].elementLabel):
-                if datas[0] == 0 and datas[1] == 0 and datas[3] == 0 and not fra == 0:
-                    if (p==2 or p==4 or p==5) and eldat>0.0:
-                        Sigs[p] = Sigs[p] + float(datas[p]) * eldat
-                    dodvolum = dodvolum + eldat
-                else:
-                    vol = vol + eldat
-                    Sigs[p] = Sigs[p] + float(datas[p]) * eldat
-        Sigma_frame[fra]=Sigs
+        for j in range(0, antallElems):
+            eldat = float(fras.fieldOutputs['EVOL'].values[j].data)
+            vol = vol + eldat
+            datas = fras.fieldOutputs['S'].getSubset(position=CENTROID).values[j].data
+            if datas[0] == 0 and datas[1] == 0 and datas[3] == 0 and not fra == 0 and eldat > 0.0:
+                for p in [2,4,5]:
+                    Sigma_frame[fra][p] = Sigma_frame[fra][p] + float(datas[p]) * eldat
+                dodvolum = dodvolum + eldat
+            else:
+                for p in range(0,len(datas)):
+                    Sigma_frame[fra][p] = Sigma_frame[fra][p] + float(datas[p]) * eldat
         Volume_frame[fra]= vol
         DVolume_frame[fra]= dodvolum
-    odbsa.close()
-    del IntElems
-
-    #Dele paa total volum her
+    #od.close()
+    print 'Ferdig med aa hente data'
+    # Dele paa total volum her
     for Sigfra in range(0,len(Sigma_frame)):
-        #print Sigma_frame[Sigfra],Volume_frame[Sigfra]
+        # print Sigma_frame[Sigfra],Volume_frame[Sigfra]
         for si in range(0,len(Sigma_frame[Sigfra])):
-            Sigma_frame[Sigfra][si]=Sigma_frame[Sigfra][si]*(1/Volume_frame[Sigfra][0])#(tykkelse*dL*dL))#
-        #print Sigma_frame[Sigfra],'\n\n'
+            Sigma_frame[Sigfra][si]=Sigma_frame[Sigfra][si]*(1/Volume_frame[Sigfra])#(tykkelse*dL*dL))#
+        # print Sigma_frame[Sigfra],'\n\n'
     print 'Volumes = ',len(Volume_frame), 'initial count:',Volume_frame[0],' calc:', tykkelse*dL*dL,' dodvolum:', dodvolum
     print 'Sigmas = ',len(Sigma_frame)
     return Sigma_frame, Volume_frame,Time_frame
+
 
 global HomoSigs
 HomoSigs = getHomogenizedSigmas()
@@ -53,7 +52,7 @@ ss.write('%7f\t%7f\t%7f\t%7f\t%7f\t%7f\t%7f\n' % (strains[Ret],0,0,0,0,0,0))
 print HomoSigs[0][-1]
 count =0
 for s in HomoSigs[0]:
-    ss.write('%7f\t%7f\t%7f\t%7f\t%7f\t%7f\t%7f\n' % (Time_frame[count],s[0], s[1], s[2], s[3], s[4], s[5]))
+    ss.write('%7f\t%7f\t%7f\t%7f\t%7f\t%7f\t%7f\n' % (HomoSigs[2][count],s[0], s[1], s[2], s[3], s[4], s[5]))
     count = count + 1
 ss.close()
 print 'saved to: ' ,Sigmapaths

@@ -1,28 +1,31 @@
 """         Script variabler                                      """
 global RunningCleanup,Createmodel,Savemodel,numCPU
+global Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 
 RunningCleanup = 0
-Createmodel = 0
-Savemodel = 1
 numCPU = 1
 #numCPU = multiprocessing.cpu_count()
 
+analyse=0
 
-"""Analyse variabler   """
-global Runjobs,linearAnalysis,nonLinearAnalysis,Increments
-
-Runjobs =  1                           #   ON/OFF Start analyser or create .inp
-
-linearAnalysis = 0                      #   ON/OFF Linear analyse for stiffness
-nonLinearAnalysis = 0                   #   ON/OFF non-linear analyse for strength
-
-nonLinearpostPross = 1
-
-Increments = {'maxNum': 100, 'initial': 5e-3, 'min': 1e-6, 'max': 2e-1}
-
+if analyse:
+    Createmodel = 1
+    Savemodel = 1
+    Runjobs = 1
+    linearAnalysis = 1
+    nonLinearAnalysis = 1
+    nonLinearpostPross = 0
+else:
+    Createmodel = 0
+    Savemodel = 0
+    Runjobs = 0
+    linearAnalysis = 0
+    nonLinearAnalysis = 0
+    nonLinearpostPross = 1
+Increments = {'maxNum': 100, 'initial': 2e-2, 'min': 1e-6, 'max': 1e-1}
 
 """Simuleringsvariabler """
-global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin,MaterialDens
+global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin
 
 Dampening = 1
 Stabl_Magn =2e-4
@@ -31,7 +34,10 @@ Atapt_Damp_Ratio = 0.05
 Singlepin = 0                               #   Randbetingelse:    Laaser hjornenode mot forskyvning i 3 retninger
 tripplepin = 0                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
 
-MaterialDens  = 0                           #Material Density
+
+global MaterialDens, ConDmPlast
+ConDmPlast = 0
+MaterialDens  = 0                           #   Material Density
 
 
 """    RVEmodel variabler                                      """

@@ -17,9 +17,10 @@ JOBO.close()
 #Lese antall itersjoner
 Itra = open(Tekstfiler+'Iterasjoner.txt', "r")
 Content = Itra.read()
-Content.split('\n')
-number = len(Content)
+colsa =Content.split('\n')
+number = len(colsa)-1
 
+print(number)
 #Lage pythonscript som setter iterasjonsparameter lik antall iterasjoner == 0
 InterestingParameter = 'ItraPara'
 Itra = open(Modellering+'IterationParameters.py', "w")

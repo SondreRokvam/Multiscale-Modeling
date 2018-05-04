@@ -16,7 +16,7 @@ ResCon = {'E,v':(3.0,0.35), 'Den':1.2e-06,
 
 FibCon = {'E,v':(90,0.22), 'Den':2.55e-06}
 
-IntCon = {'Trac':(200.0, 200.0, 200.0), 'Den':1.2e-06,
+IntCon = {'Trac':(0.060, 0.060, 0.060), 'Den':1.2e-06,
           'QDI':(0.042, 0.063, 0.063),
           'qdiDEpower':1.2,   'qdiDE':(0.0028, 0.0078, 0.0078), }
 
@@ -49,6 +49,13 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
                 intF.QuadsDamageInitiation(table=(IntCon['QDI'],))
                 intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
                                                        power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
+    if not ConDmPlast:
+        del mdb.models['Model-A'].materials['interface'].quadsDamageInitiation
+        mdb.models['Model-A'].materials['interface'].Plastic(table=((0.060, 0.0), (0.061,
+        0.015)))
+        del mdb.models['Model-A'].materials['resin'].concreteDamagedPlasticity
+        mdb.models['Model-A'].materials['resin'].Plastic(table=((0.060, 0.0), (0.061,
+        0.015)))
 
 def SectionsAndOrientations():                                  # Create and assign sections to materials
     p = mdb.models['Model-A'].parts['Part-1-mesh-1']

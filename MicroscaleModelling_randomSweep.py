@@ -27,24 +27,42 @@ def run_Job(Jobb, modelName):
             scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCPU,
             numDomains=numCPU, numGPUs=1)
     if Runjobs:
-        mdb.jobs[Jobb].submit(consistencyChecking=OFF)
-        mdb.jobs[Jobb].waitForCompletion()
+        try:
+            mdb.jobs[Jobb].submit(consistencyChecking=OFF)
+            mdb.jobs[Jobb].waitForCompletion()
+        except:
+            pass
     else:
         mdb.jobs[Jobb].writeInput(consistencyChecking=OFF)
         qw = open(Jobsss, "a")
         qw.write('call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job=' + Jobb + ' interactive cpus=' + str(numCPU))
         qw.close()
 
+def Iterasjonfiks():
+    global Jobsss
+    Jobsss = workpath + 'Abaqusjobs.bat'
+    Itra = open(Tekstfiler + 'Iterasjoner.txt', "r")
+    Content = Itra.read()
+    cals = Content.split('\n')
+    number = len(cals) - 1
+    Itra.close()
+    InterestingParameter = 'ItraPara'
+    Itra = open(Modellering + 'IterationParameters.py', "w")
+    Itra.write('global ' + InterestingParameter + '\n' + InterestingParameter + ' = ' + str(int(number)))
+    Itra.close()
+
 #Globale Directories
 GitHub, workpath = 'C:/Multiscale-Modeling/', 'C:/Temp/'
 Tekstfiler, Modellering,processering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/',GitHub+'Abaqus_prosessering/'
 
-#Globale Paths
-Jobsss = workpath + 'Abaqusjobs.bat'
-
-# Sette variabler
+"""Start"""
+#Sette variabler
 execfile(Modellering+'TestVariabler.py')            # Sette Test variabler
+Iterasjonfiks()
 execfile(Modellering+'IterationParameters.py')      # Sette iterasjonsnummer
+
+
+print ItraPara      #Antall itersjoner saa langt
 
 #INFO DUMP
 if Interface and Createmodel and not noFibertest:
@@ -55,9 +73,6 @@ if not noFibertest and FiberSirkelResolution<20:
     del error
 
 
-
-        # Generelle instilliger
-
 """Iterasjonsprameter"""
 #Meshsize/ Fiberresolution, Sweepe fiberresolution
 #Interface element thickness, Sweepe nedover til crash, analysere data
@@ -65,7 +80,7 @@ if not noFibertest and FiberSirkelResolution<20:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[6]
+ParameterSweep=[40]
 
 nf = 50
 Vf = 0.6  #
@@ -106,28 +121,17 @@ while Q<n:
     import xyPlot
     import displayGroupOdbToolset as dgo
     import connectorBehavior
-
-    """ Datalagring """
-    coordpath = Tekstfiler + 'RVEcoordinatsandRadiuses' +str(
-        int(ParameterSweep[ItraPara])) + '_' + str( Q) + '.txt'        # Skriver ned generert fiberPop for reference.
-    Lagrestiffpathprop = Tekstfiler + 'Stiffness__NF-' + str(
-        int(nf)) + '.txt'                               # Skrives ned statistikk til ett annet script
-    lagrestiffpathmod = Tekstfiler + 'StiffnessM.txt'      # Lagrer ned Stiffnessmatrix
-    Envelope = Tekstfiler + 'envelope'                  # Parameteravhengig - Spesifikt navn i funksjonen
-    Sigmapaths = Tekstfiler +'Sigmas'+str(
-        int(ParameterSweep[ItraPara])) + '_' + str( Q) + '.txt'
-
-    """Random variabler og iterasjonsnavn"""
-    seed(Q)                                                         # Q er randomfunksjonensnokkelen
-    wiggle = random() * rmean                                       # Omplasseringsgrenser for fiberomplassering
-    RVEmodellpath = workpath + 'RVEmodel__Parameter-' + str(ParameterSweep[ItraPara]) + '__RandKey-' + str(Q)
+    #Datalagring
+    seed(Q)  # Q er randomfunksjonensnokkelen
+    execfile(Modellering + 'Set_text_dirs.py')
 
 
     """ Abaqus RVE model """
+
     Mdb()  # reset Abaqus
     model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
     mod = mdb.models[modelName]                                     # Lage snarvei
-    if Createmodel:
+    if Createmodel :
         xydata = None                       # Fiber kordinater og radiuser
         if not noFiber:
             execfile(Modellering+'GenerereFiberPopTilFil.py')            # create a random population
@@ -135,39 +139,33 @@ while Q<n:
         if Savemodel:
             mdb.saveAs(pathName=RVEmodellpath)
     # Prov aa aapne tidligere modell
-    if not Createmodel:
-        try:
-            openMdb(pathName=RVEmodellpath)
-            mod = mdb.models['Model-A']
-        except:
-            print 'Cae not found'
-            pass
 
-    """Simulering, linear stivhetsmatrise og nonlinear unidirectional strain and stress cases"""
-    # Navn til lineare tester
-    Enhetstoyinger = [''] * 6  # Enhetstoyinger for lineare retninger
-    for g in range(0, 6):  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
+
+    """Simuleringer"""
+
+        # Lineare tester
+    Enhetstoyinger = [''] * 6  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
+    for g in range(0, 6):
         if not noFibertest:
             Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
         else:
             Enhetstoyinger[g] = [Retning[g] + 'noFiber']
-    #Kjore Linear analyse
+
+        # Kjore Linear analyse
     if linearAnalysis:  # LinearAnalysis for stiffness and small deformation
+        if not Createmodel:
+            try:
+                openMdb(pathName=RVEmodellpath)
+                mod = mdb.models['Model-A']
+            except:
+                print 'Cae not found'
+                pass
         try:
             execfile(Modellering +'LinearAnalysis.py')
         except:
             n=n+1
-            nonLinearAnalysis=0
-        try:
-            Mdb()
-            openMdb(pathName=RVEmodellpath)
-            mod = mdb.models['Model-A']
-        except:
-                print 'Cae cannot be opened'
-                del errors
-                # pass
-        execfile(processering + 'LinearPostprocessing.py')
-    else:
+    execfile(processering + 'LinearPostprocessing.py')
+    """else:
         f = open(lagrestiffpathmod, 'r')
         SM = f.read()
         rows = SM.split('\t\t')
@@ -180,46 +178,43 @@ while Q<n:
                 if not (dip==0 and count==0):
                     Col.append(float(Colll[dip]))
             count =  1
-            Stiffmatrix.append(Col)
-        for a in range(0, 6):
-            print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
-            Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
-            Stiffmatrix[5][a])
+            Stiffmatrix.append(Col)"""
 
-    if nonLinearAnalysis or nonLinearpostPross:                            # nonLinearAnalysis for strength and large deformation
-        #Storrelses ordenen paa strains
-        Magni = 2e-1
-        #Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
-        Ret = 1
-        strain = Magni*id[Ret]
-        print '\n\nRef Strain ',strain
-        # Faktisk STRAINS:  ex,  ey,  ex,   Yzy, -Yzx, -Yyx
-        stresses = np.dot(Stiffmatrix, strain)
-        print 'Ref Stresses ', stresses
-        if strain[Ret]>0:
-            Type='tension'
-        else:
-            Type='compression'
-        Stresses = stresses[Ret]*id[Ret]
-        print 'Applied Stresses ', Stresses
-        #ez,ey,ex,Yzy,-Yzx,-Yyx                              sz,sy,sx,Tzy,Tzx,Tyx
-        strains = np.dot(np.linalg.inv(Stiffmatrix),Stresses)
+        # Non linear tester
+    Magni = 2e-2    # Skalarverdi til toyning
+    Ret = 1         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+    strain = Magni * id[Ret]
 
-        cases = [[Retning[Ret]+Type+ str(ParameterSweep[ItraPara]) + '__Rand-' + str(Q), strains]]
+    print '\n\nReferanse strain vektor ', strain
+    stresses = np.dot(Stiffmatrix, strain)# :  ex,  ey,  ex,  Yzy, -Yzx, -Yyx
+    print 'Faktisk STRAINSRef Stresses ', stresses
+    Stresses = stresses[Ret] * id[Ret]
+    print 'Applied Stresses ', Stresses
+    print Stresses, Stiffmatrix
+    strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
 
-        for Case in cases:
-            Jobbnavn, Strain = Case
-            if nonLinearAnalysis:
-                execfile(Modellering + 'nonLinearAnalysis.py')
+    Type = 'comp_'
+    if strains[Ret] > 0:
+        Type = 'tens_'
+    cases = [[Retning[Ret] + Type + str(ParameterSweep[ItraPara]) + '__Rand-' + str(Q), strains]]
 
-            """
+    for Case in cases:
+        Jobbnavn, Strain = Case
+        if nonLinearAnalysis:
+            if not Createmodel or linearAnalysis:
+                try:
+                    openMdb(pathName=RVEmodellpath)
+                    mod = mdb.models['Model-A']
+                except:
+                    print 'Cae not found'
+                    pass
             try:
                 execfile(Modellering +'nonLinearAnalysis.py')
             except:
-                pass
+                print
                 n = n + 1
-                    """
     if nonLinearpostPross:
+        print 'PostProcess'
         execfile(processering + 'nonLinearPostprocessing.py')
     print 'Reached end of random key Iteration'
     Q = Q + 1

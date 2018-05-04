@@ -9,12 +9,12 @@ Tekstfiler  = GitHub+'textfiles/'
 def readRelaxationData():
     # NOTE: you will probably need to change
     # the file path:
-    fileName = Tekstfiler+'Sigmas4_0.txt'
+    fileName = Tekstfiler+'Sigmas40_0.txt'
     a = np.genfromtxt(fileName)
     a = np.transpose(a)  # In order to get time and E(t) in two columns
     b = float(a[0][0])
     a = a[:,1:]
-    print(np.round(a))
+    print(float(b*a[0][-1]))
     return a,b
 
 def plotRelaxationData():

@@ -8,9 +8,9 @@ def adjust():
         r = rmean
         if Fibervariation:
             r = fiba[2]
-        Fod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r - tol)
-        Fnod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface) - tol)
-        Inod = nod.getByBoundingCylinder((-10, y, -x), (10, y, -x), r * (1 + rinterface) + rinterface)
+        Fod = nod.getByBoundingCylinder((x, y, -dL), (x, y, dL), r - tol)
+        Fnod = nod.getByBoundingCylinder((x, y, -dL), (x, y, dL), r * (1 + rinterface) - tol)
+        Inod = nod.getByBoundingCylinder((x, y, -dL), (x, y, dL), r * (1 + rinterface) + rinterface)
         a.Set(nodes=Fod, name='noFiber' + str(count) + 'nodes')
         a.Set(nodes=Fnod, name='Fiber' + str(count) + 'nodes')
         a.Set(nodes=Inod, name='FiberInterface' + str(count) + 'nodes')
@@ -26,8 +26,8 @@ def adjust():
             xns = node.coordinates[0]
             yns = node.coordinates[1]
             zns = node.coordinates[2]
-            FN = Fibnodes.getByBoundingCylinder((xns - tol, yns, zns), (xns + tol, yns, zns), 2 * r * rinterface)
-            IN = Intnodes.getByBoundingCylinder((xns - tol, yns, zns), (xns + tol, yns, zns), 2 * r * rinterface)
+            FN = Fibnodes.getByBoundingCylinder((xns, yns, zns - tol), (xns, yns, zns + tol), 2 * r * rinterface)
+            IN = Intnodes.getByBoundingCylinder((xns, yns, zns - tol), (xns, yns, zns + tol), 2 * r * rinterface)
             a.Set(nodes=IN, name='IN')
             a.Set(nodes=FN, name='FN')
             if len(FN) == 1 and len(IN) == 1:
@@ -38,21 +38,21 @@ def adjust():
                 RScaling = ElementInterfaceT / r
 
                 if abs(nyy) > dL / 2 - tol and abs(yns) > dL / 2 - tol:
-                    diff=(zns-nyz)/abs(zns-nyz)
-                    Iz=round(nyz + diff * ElementInterfaceT, 7)
+                    diff=(xns-nyx)/abs(xns-nyx)
+                    Ix=round(nyx + diff * ElementInterfaceT, 7)
                     Iy = nyy
-                elif abs(nyz) > dL / 2 - tol and abs(zns) > dL / 2 - tol:
+                elif abs(nyx) > dL / 2 - tol and abs(xns) > dL / 2 - tol:
                     diff=(yns-nyy)/abs(yns-nyy)
                     Iy=round(nyy + diff* ElementInterfaceT, 7)
-                    Iz = nyz
+                    Ix = nyx
                 else:
                     Iy = round(nyy + (nyy - y) * RScaling, 7)
-                    Iz = round(nyz + (nyz + x) * RScaling, 7)
+                    Ix = round(nyx + (nyx - x) * RScaling, 7)
                 if abs(Iy) > dL / 2:
                     Iy = (Iy / abs(Iy)) * dL / 2
-                if abs(Iz) > dL / 2:
-                    Iz = (Iz / abs(Iz)) * dL / 2
-                a.editNode(nodes=a.sets['IN'], coordinate1=nyx, coordinate2=Iy, coordinate3=Iz)
+                if abs(Ix) > dL / 2:
+                    Ix = (Ix / abs(Ix)) * dL / 2
+                a.editNode(nodes=a.sets['IN'], coordinate1=Ix, coordinate2=Iy, coordinate3=nyz)
                 a.editNode(nodes=a.sets['FN'], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
                 a.regenerate()
                 a.deleteSets(setNames=('noFiber' + str(count) + 'nodes', 'IN', 'FN', 'Fiber' + str(count) + 'nodes',

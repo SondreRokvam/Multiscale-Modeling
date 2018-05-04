@@ -3,10 +3,16 @@ def create_Linearunitstrainslastcases():
     a = mod.rootAssembly
     p = mod.parts[meshPartName]
     if Interface and not noFibertest:
-        del mod.materials['interface'].quadsDamageInitiation
+        if ConDmPlast:
+            del mod.materials['interface'].quadsDamageInitiation
+        else:
+            del mdb.models['Model-A'].materials['interface'].plastic
         CohEelem = mesh.ElemType(elemCode=COH3D8, elemLibrary=STANDARD, elemDeletion=OFF, viscosity=0.0001)
         p.setElementType(regions=p.sets['Interfaces'], elemTypes=(CohEelem,))
-    del mod.materials['resin'].concreteDamagedPlasticity
+    if ConDmPlast:
+        del mod.materials['resin'].concreteDamagedPlasticity
+    else:
+        del mod.materials['resin'].plastic
     #Create step Linear step
     mod.StaticStep(name=stepName, previous='Initial')
     #Request outputs

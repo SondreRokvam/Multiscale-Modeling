@@ -14,15 +14,15 @@ if analyse:
     Runjobs = 1
     linearAnalysis = 1
     nonLinearAnalysis = 1
-    nonLinearpostPross = 0
+    nonLinearpostPross = 1
 else:
     Createmodel = 0
     Savemodel = 0
     Runjobs = 0
     linearAnalysis = 0
     nonLinearAnalysis = 0
-    nonLinearpostPross = 1
-Increments = {'maxNum': 100, 'initial': 2e-2, 'min': 1e-6, 'max': 1e-1}
+    nonLinearpostPross = 0
+Increments = {'maxNum': 100, 'initial': 1e-3, 'min': 1e-6, 'max': 1e-1}
 
 """Simuleringsvariabler """
 global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin

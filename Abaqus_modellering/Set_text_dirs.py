@@ -9,7 +9,7 @@ coordpath = Tekstfiler + 'RVEcoordinatsandRadiuses' + str(
 Lagrestiffpathprop = Tekstfiler + 'Stiffness__NF-' + str( int(nf)) + '.txt'  # Skrives ned statistikk til ett annet script
 
 lagrestiffpathmod = Tekstfiler + 'StiffnessM' + str(int(ParameterSweep[ItraPara])) + '_' + str(
-                            Q) + '.txt'  # Lagrer ned Stiffnessmatrix
+                            Q) +'.npy'  # Lagrer ned Stiffnessmatrix
 
 Envelope = Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn i funksjonen
 

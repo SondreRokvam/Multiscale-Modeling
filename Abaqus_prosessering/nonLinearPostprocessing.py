@@ -23,10 +23,14 @@ def getHomogenizedSigmas():
             eldat = float(fras.fieldOutputs['EVOL'].values[j].data)
             vol = vol + eldat
             datas = fras.fieldOutputs['S'].getSubset(position=CENTROID).values[j].data
-            if datas[0] == 0 and datas[1] == 0 and datas[3] == 0 and not fra == 0 and eldat > 0.0:
-                for p in [2,4,5]:
-                    Sigma_frame[fra][p] = Sigma_frame[fra][p] + float(datas[p]) * eldat
-                dodvolum = dodvolum + eldat
+            if datas[0] == 0:
+                if datas[1] == 0:
+                    if datas[3] == 0:
+                        if not fra == 0:
+                            if eldat > 0.0:
+                                for p in [2,4,5]:   #Avhenging
+                                    Sigma_frame[fra][p] = Sigma_frame[fra][p] + float(datas[p]) * eldat
+                                dodvolum = dodvolum + eldat
             else:
                 for p in range(0,len(datas)):
                     Sigma_frame[fra][p] = Sigma_frame[fra][p] + float(datas[p]) * eldat
@@ -48,6 +52,7 @@ def getHomogenizedSigmas():
 global HomoSigs
 HomoSigs = getHomogenizedSigmas()
 ss = open(Sigmapaths, "w")
+ss.write('%7f\t%7f\t%7f\t%7f\t%7f\t%7f\t%7f\n' % (strains[Ret],0,0,0,0,0,0))
 ss.write('%7f\t%7f\t%7f\t%7f\t%7f\t%7f\t%7f\n' % (strains[Ret],0,0,0,0,0,0))
 print HomoSigs[0][-1]
 count =0

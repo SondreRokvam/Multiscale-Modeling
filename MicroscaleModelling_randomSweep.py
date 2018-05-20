@@ -4,7 +4,9 @@ import numpy as np
 import os
 from sets import Set
 import multiprocessing
-print'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n', 'Multiscale Modelling, Microscale  \n',
+import time
+start_time = time.time()
+print'\n\n>>>\tMultiscale Modelling, Microscale\n',
 def CreateNewRVEModel():
     # Creates RVE model and orphanmesh. Lage 2D RVE shell, meshe RVE, extrudere til 3D part, lage orphanmesh og sette cohesive elementtype paa Interface
     execfile(Modellering+'RVEsketching.py')             # Lage 2D RVE fra fiberpopulasjon data
@@ -17,7 +19,6 @@ def CreateNewRVEModel():
     if not noFiber and Interface:                       # Rearrange fiber interface nodes for controlled elementthickness and stable simulations
         execfile(Modellering + 'RVE_InterfaceElementThickness.py')
     execfile(Modellering + 'RVE_Boundaryconditions.py') # Boundaryconditions mot rigid body movement
-
 def run_Job(Jobb, modelName):
     mdb.Job(name=Jobb, model=modelName, description='', type=ANALYSIS,
             atTime=None, memory=90,
@@ -37,7 +38,6 @@ def run_Job(Jobb, modelName):
         qw = open(Jobsss, "a")
         qw.write('call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job=' + Jobb + ' interactive cpus=' + str(numCPU))
         qw.close()
-
 def Iterasjonfiks():
     global Jobsss
     Jobsss = workpath + 'Abaqusjobs.bat'
@@ -54,6 +54,8 @@ def Iterasjonfiks():
 #Globale Directories
 GitHub, workpath = 'C:/Multiscale-Modeling/', 'C:/Temp/'
 Tekstfiler, Modellering,processering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/',GitHub+'Abaqus_prosessering/'
+t=(time.time() - start_time)
+print('t ved start=', t)
 
 """Start"""
 #Sette variabler
@@ -82,11 +84,13 @@ if not noFibertest and FiberSirkelResolution<20:
 
 ParameterSweep=[40]
 
-nf = 50
+nf = 8
 Vf = 0.6  #
 nf= int(ParameterSweep[ItraPara])
 
 """Sette Iterasjonsavhengige variabler"""
+t=(time.time() - start_time)
+print('t for foerste iterasjon=', t)
 
 if nf == 0 or Vf == 0 or noFibertest:
     nf = 0
@@ -140,6 +144,9 @@ while Q<n:
             mdb.saveAs(pathName=RVEmodellpath)
     # Prov aa aapne tidligere modell
 
+    t = (time.time() - start_time)
+    print('t etter lagd modell=', t)
+
 
     """Simuleringer"""
 
@@ -164,21 +171,13 @@ while Q<n:
             execfile(Modellering +'LinearAnalysis.py')
         except:
             n=n+1
-    execfile(processering + 'LinearPostprocessing.py')
-    """else:
-        f = open(lagrestiffpathmod, 'r')
-        SM = f.read()
-        rows = SM.split('\t\t')
-        Stiffmatrix = []
-        count = 0
-        for row in rows:
-            Col = []
-            Colll = row.split('\t')
-            for dip in range(0, len(Colll)):
-                if not (dip==0 and count==0):
-                    Col.append(float(Colll[dip]))
-            count =  1
-            Stiffmatrix.append(Col)"""
+        execfile(processering + 'LinearPostprocessing.py')
+    else:
+        Stiffmatrix = np.load(lagrestiffpathmod)
+        for a in range(0, 6):
+            print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
+                Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
+                Stiffmatrix[5][a])
 
         # Non linear tester
     Magni = 2e-2    # Skalarverdi til toyning

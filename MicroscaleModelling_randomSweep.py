@@ -171,7 +171,11 @@ while Q<n:
             execfile(Modellering +'LinearAnalysis.py')
         except:
             n=n+1
+        t = (time.time() - start_time)
+        print('t etter lin analyser=', t)
         execfile(processering + 'LinearPostprocessing.py')
+        t = (time.time() - start_time)
+        print('t etter lin pross=', t)
     else:
         Stiffmatrix = np.load(lagrestiffpathmod)
         for a in range(0, 6):
@@ -213,7 +217,7 @@ while Q<n:
                 print
                 n = n + 1
     t = (time.time() - start_time)
-    print('t etter analyser=', t)
+    print('t etter nonlin analyser=', t)
     if nonLinearpostPross:
         print 'PostProcess'
         execfile(processering + 'nonLinearPostprocessing.py')

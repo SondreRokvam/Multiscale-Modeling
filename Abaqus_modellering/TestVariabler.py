@@ -4,9 +4,9 @@ global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Inc
 #numCPU = multiprocessing.cpu_count()
 numCPU = 1
 
-analyse=0
+analyse=1
 
-nonLinearpostPross = 1
+nonLinearpostPross = 0
 
 if analyse:
     Createmodel = 1
@@ -22,7 +22,7 @@ else:
     nonLinearAnalysis = 0
 
 
-Increments = {'maxNum': 10, 'initial': 1e-2, 'min': 1e-6, 'max': 1e-1}
+Increments = {'maxNum': 10, 'initial': 1e-4, 'min': 1e-6, 'max': 1e-1}
 
 
 

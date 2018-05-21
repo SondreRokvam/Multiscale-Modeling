@@ -2,8 +2,8 @@ def getHomogenizedSigmas():
     path = workpath + Jobbnavn
     global od
     od = session.openOdb(path + '.odb')
-
-
+    if 0 == len(od.steps['Lasttoyinger'].frames):
+        del IncrementError
     antallElems = len(od.rootAssembly.instances['PART-1-MESH-1-1'].elements)
     print     antallElems
     frj =len(od.steps['Lasttoyinger'].frames)
@@ -35,10 +35,10 @@ def getHomogenizedSigmas():
             # Utelukker cohesive volumes ugyldige verdier, OBS! Avhenging av orientation
             if eldat > 0.0:
                 SS[j] = datas
-                print SS[j], datas
-                print 'foooer', vol[j]
+                #print SS[j], datas
+                #print 'foooer', vol[j]
                 vol[j] = float(eldat)
-                print vol[j]
+                #print vol[j]
 
         #Deale med cohesives
         dataa = fras.fieldOutputs['S'].getSubset(position=CENTROID, region=od.rootAssembly.instances['PART-1-MESH-1-1'].elementSets['INTERFACES'])
@@ -62,8 +62,9 @@ def getHomogenizedSigmas():
 
 
     #od.close()
-    print 'Ferdig med aa hente data'
     t = (time.time() - start_time)
+    print 'Ferdig med aa hente data - ', t
+
     print '\n\n',tykkelse*dL*dL,Volume_frame
 
     print '\n\n',Sigma_frame

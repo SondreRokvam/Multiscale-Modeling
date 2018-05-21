@@ -15,7 +15,7 @@
     <SUITE FILE_PATH="coverage/Multiscale_Modeling$Cleanup.coverage" NAME="Cleanup Coverage Results" MODIFIED="1524939250166" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.75677085">
+    <splitter split-orientation="horizontal" split-proportion="0.5229167">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="109">
           <file leaf-file-name="StiffnessMatrixand Degredation.py" pinned="false" current-in-tab="false">
@@ -39,8 +39,8 @@
           <file leaf-file-name="nonLinearPostprocessing.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Abaqus_prosessering/nonLinearPostprocessing.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="425">
-                  <caret line="46" column="28" lean-forward="true" selection-start-line="46" selection-start-column="28" selection-end-line="46" selection-end-column="28" />
+                <state relative-caret-position="230">
+                  <caret line="28" column="8" selection-start-line="28" selection-start-column="8" selection-end-line="31" selection-end-column="32" />
                 </state>
               </provider>
             </entry>
@@ -48,8 +48,8 @@
           <file leaf-file-name="MicroscaleModelling_randomSweep.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="357">
-                  <caret line="67" column="25" selection-start-line="67" selection-start-column="25" selection-end-line="67" selection-end-column="25" />
+                <state relative-caret-position="740">
+                  <caret line="219" column="25" selection-start-line="219" selection-start-column="25" selection-end-line="219" selection-end-column="25" />
                   <folding>
                     <element signature="e#231#1444#0" />
                     <element signature="e#1479#2349#0" />
@@ -62,10 +62,7 @@
                     <element signature="e#3785#3835#0" />
                     <element signature="e#4316#4368#0" />
                     <element signature="e#4428#4487#0" />
-                    <element signature="e#4606#8583#0" />
-                    <element signature="e#5439#5728#0" />
                     <element signature="e#6005#6224#0" />
-                    <element signature="e#6310#6678#0" />
                     <element signature="e#6342#6517#0" />
                     <element signature="e#6363#6438#0" />
                     <element signature="e#6475#6517#0" />
@@ -78,7 +75,6 @@
                     <element signature="e#7858#7937#0" />
                     <element signature="e#7982#8028#0" />
                     <element signature="e#8144#8175#0" />
-                    <element signature="e#8280#8361#0" />
                   </folding>
                 </state>
               </provider>
@@ -88,11 +84,11 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-          <file leaf-file-name="LinearPostprocessing.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="LinearPostprocessing.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Abaqus_prosessering/LinearPostprocessing.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="374">
-                  <caret line="22" column="43" selection-start-line="22" selection-start-column="43" selection-end-line="22" selection-end-column="43" />
+                <state relative-caret-position="238">
+                  <caret line="14" column="43" lean-forward="true" selection-start-line="14" selection-start-column="43" selection-end-line="14" selection-end-column="43" />
                 </state>
               </provider>
             </entry>
@@ -109,7 +105,7 @@
           <file leaf-file-name="abaqusMacros.py" pinned="false" current-in-tab="false">
             <entry file="file://$USER_HOME$/abaqusMacros.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="969">
+                <state relative-caret-position="740">
                   <caret line="59" column="4" selection-start-line="59" selection-start-column="4" selection-end-line="59" selection-end-column="60" />
                   <folding>
                     <element signature="e#66#86#0" expanded="true" />
@@ -118,11 +114,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="TestVariabler.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="TestVariabler.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="374">
-                  <caret line="22" column="26" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
+                <state relative-caret-position="391">
+                  <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
                 </state>
               </provider>
             </entry>
@@ -210,8 +206,8 @@
         <option value="$PROJECT_DIR$/Abaqus_prosessering/LinearPostprocessing.py" />
         <option value="$PROJECT_DIR$/Abaqus_modellering/RVEelementsets.py" />
         <option value="$PROJECT_DIR$/Abaqus_prosessering/nonLinearPostprocessing.py" />
-        <option value="$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py" />
         <option value="$PROJECT_DIR$/MicroscaleModelling_randomSweep.py" />
+        <option value="$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py" />
       </list>
     </option>
   </component>
@@ -221,7 +217,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="220" />
     <option name="y" value="161" />
     <option name="width" value="1537" />
@@ -413,7 +409,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="13" />
+      <option name="time" value="14" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -434,10 +430,7 @@
             <element signature="e#3785#3835#0" />
             <element signature="e#4316#4368#0" />
             <element signature="e#4428#4487#0" />
-            <element signature="e#4606#8583#0" />
-            <element signature="e#5439#5728#0" />
             <element signature="e#6005#6224#0" />
-            <element signature="e#6310#6678#0" />
             <element signature="e#6342#6517#0" />
             <element signature="e#6363#6438#0" />
             <element signature="e#6475#6517#0" />
@@ -450,7 +443,6 @@
             <element signature="e#7858#7937#0" />
             <element signature="e#7982#8028#0" />
             <element signature="e#8144#8175#0" />
-            <element signature="e#8280#8361#0" />
           </folding>
         </state>
       </provider>
@@ -487,10 +479,7 @@
             <element signature="e#3785#3835#0" />
             <element signature="e#4316#4368#0" />
             <element signature="e#4428#4487#0" />
-            <element signature="e#4606#8583#0" />
-            <element signature="e#5439#5728#0" />
             <element signature="e#6005#6224#0" />
-            <element signature="e#6310#6678#0" />
             <element signature="e#6342#6517#0" />
             <element signature="e#6363#6438#0" />
             <element signature="e#6475#6517#0" />
@@ -503,7 +492,6 @@
             <element signature="e#7858#7937#0" />
             <element signature="e#7982#8028#0" />
             <element signature="e#8144#8175#0" />
-            <element signature="e#8280#8361#0" />
           </folding>
         </state>
       </provider>
@@ -523,10 +511,7 @@
             <element signature="e#3785#3835#0" />
             <element signature="e#4316#4368#0" />
             <element signature="e#4428#4487#0" />
-            <element signature="e#4606#8583#0" />
-            <element signature="e#5439#5728#0" />
             <element signature="e#6005#6224#0" />
-            <element signature="e#6310#6678#0" />
             <element signature="e#6342#6517#0" />
             <element signature="e#6363#6438#0" />
             <element signature="e#6475#6517#0" />
@@ -539,7 +524,6 @@
             <element signature="e#7858#7937#0" />
             <element signature="e#7982#8028#0" />
             <element signature="e#8144#8175#0" />
-            <element signature="e#8280#8361#0" />
           </folding>
         </state>
       </provider>
@@ -657,20 +641,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Abaqus_modellering/RVEelementsets.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="434">
+          <caret line="50" column="80" selection-start-line="50" selection-start-column="80" selection-end-line="50" selection-end-column="80" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$USER_HOME$/abaqusMacros.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="969">
+        <state relative-caret-position="740">
           <caret line="59" column="4" selection-start-line="59" selection-start-column="4" selection-end-line="59" selection-end-column="60" />
           <folding>
             <element signature="e#66#86#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Abaqus_prosessering/LinearPostprocessing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" column="43" selection-start-line="22" selection-start-column="43" selection-end-line="22" selection-end-column="43" />
         </state>
       </provider>
     </entry>
@@ -681,24 +665,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Abaqus_modellering/RVEelementsets.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="434">
-          <caret line="50" column="80" selection-start-line="50" selection-start-column="80" selection-end-line="50" selection-end-column="80" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" column="26" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="67" column="25" selection-start-line="67" selection-start-column="25" selection-end-line="67" selection-end-column="25" />
+        <state relative-caret-position="740">
+          <caret line="219" column="25" selection-start-line="219" selection-start-column="25" selection-end-line="219" selection-end-column="25" />
           <folding>
             <element signature="e#231#1444#0" />
             <element signature="e#1479#2349#0" />
@@ -711,10 +681,7 @@
             <element signature="e#3785#3835#0" />
             <element signature="e#4316#4368#0" />
             <element signature="e#4428#4487#0" />
-            <element signature="e#4606#8583#0" />
-            <element signature="e#5439#5728#0" />
             <element signature="e#6005#6224#0" />
-            <element signature="e#6310#6678#0" />
             <element signature="e#6342#6517#0" />
             <element signature="e#6363#6438#0" />
             <element signature="e#6475#6517#0" />
@@ -727,15 +694,28 @@
             <element signature="e#7858#7937#0" />
             <element signature="e#7982#8028#0" />
             <element signature="e#8144#8175#0" />
-            <element signature="e#8280#8361#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Abaqus_prosessering/LinearPostprocessing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" column="43" lean-forward="true" selection-start-line="14" selection-start-column="43" selection-end-line="14" selection-end-column="43" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Abaqus_prosessering/nonLinearPostprocessing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="46" column="28" lean-forward="true" selection-start-line="46" selection-start-column="28" selection-end-line="46" selection-end-column="28" />
+        <state relative-caret-position="230">
+          <caret line="28" column="8" selection-start-line="28" selection-start-column="8" selection-end-line="31" selection-end-column="32" />
         </state>
       </provider>
     </entry>

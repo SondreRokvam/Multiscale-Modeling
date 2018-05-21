@@ -9,7 +9,7 @@ Tekstfiler  = GitHub+'textfiles/'
 def readRelaxationData():
     # NOTE: you will probably need to change
     # the file path:
-    fileName = Tekstfiler+'Sigmas5_0.txt'
+    fileName = Tekstfiler+'Sigmas4_0.txt'
     a = np.genfromtxt(fileName)
     a = np.transpose(a)  # In order to get time and E(t) in two columns
     b = float(a[0][0])
@@ -26,7 +26,18 @@ def plotRelaxationData():
     plt.plot(x,Stresses[4], 'b--')
     plt.plot(x,Stresses[5], 'g--')
     plt.plot(x,Stresses[6], 'r--')
+    change =100.0
+    ymin, ymax = plt.ylim()
+    xmin, xmax = plt.xlim()
+    print (ymin, ymax, xmin, xmax)
+    plt.ylim((ymin/change), (ymax/change))
+    ymin, ymax = plt.ylim()
+    xmin, xmax = plt.xlim()
+    print (ymin, ymax, xmin, xmax)
     plt.tight_layout()
+    ymin, ymax = plt.ylim()
+    xmin, xmax = plt.xlim()
+    print (ymin, ymax, xmin, xmax)
     plt.show()
 
 

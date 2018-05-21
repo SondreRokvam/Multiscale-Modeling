@@ -1,28 +1,32 @@
 """         Script variabler                                      """
-global RunningCleanup,Createmodel,Savemodel,numCPU
-global Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 
-RunningCleanup = 0
-numCPU = 1
+global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 #numCPU = multiprocessing.cpu_count()
+numCPU = 1
 
 analyse=0
 
+nonLinearpostPross = 1
+
 if analyse:
     Createmodel = 1
-    Savemodel = 1
+    Savemodel = 0
     Runjobs = 1
     linearAnalysis = 1
     nonLinearAnalysis = 1
-    nonLinearpostPross = 1
 else:
     Createmodel = 0
     Savemodel = 0
     Runjobs = 0
     linearAnalysis = 0
     nonLinearAnalysis = 0
-    nonLinearpostPross = 0
-Increments = {'maxNum': 100, 'initial': 1e-3, 'min': 1e-6, 'max': 1e-1}
+
+
+Increments = {'maxNum': 10, 'initial': 1e-2, 'min': 1e-6, 'max': 1e-1}
+
+
+
+
 
 """Simuleringsvariabler """
 global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin
@@ -34,10 +38,13 @@ Atapt_Damp_Ratio = 0.05
 Singlepin = 0                               #   Randbetingelse:    Laaser hjornenode mot forskyvning i 3 retninger
 tripplepin = 0                              #   Randbetingelse:    Laaser to noder mot forskyvning. En sentrert kantnode i 2 retninger og midtnode i 1 retning
 
-
 global MaterialDens, ConDmPlast
 ConDmPlast = 0
 MaterialDens  = 0                           #   Material Density
+
+
+
+
 
 
 """    RVEmodel variabler                                      """
@@ -57,6 +64,9 @@ id   =   np.identity(6)          # Identity matrix. Good for normalised load cas
 Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
 
 
+
+
+
 """Meshsize"""
 global FiberSirkelResolution,meshsize,tykkelse,tol
 
@@ -65,6 +75,9 @@ meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resol
 
 tykkelse = meshsize    # RVE tykkelse
 tol = rinterface * 0.4  # Modelleringstoleranse - Mindre en minste modelleringsvariabel (rInterface)
+
+
+
 
 
 """RVE populasjon"""
@@ -78,6 +91,9 @@ ytredodgrense = r + gtol  # Dodzone avstand, ytre grense fra kanter/hjorner
 indredodgrense = r - gtol  # Dodzone avstand, indre grense fra kanter/hjorner
 
 iterasjonsgrense = 10000  # iterasjonsgrense i Fiberutplassering loop
+
+
+
 
 
 """ ABAQUS modelleringsnavn    """

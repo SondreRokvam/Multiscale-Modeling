@@ -48,6 +48,7 @@ def RVEsets():
             temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
             p.Set(name=('FiberInt' + str(i)), elements=temp)
         del mod.parts[meshPartName].sets['IandF']
+        p.SetByBoolean(name='M_and_F', sets=(p.sets['Alle'], p.sets['Interfaces'],), operation=DIFFERENCE)
     else:  # Bare matrix.
         p.SetByBoolean(name='Matrix', sets=(p.sets['Alle'], p.sets['Fibers'],), operation=DIFFERENCE)
 

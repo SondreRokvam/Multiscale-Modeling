@@ -51,29 +51,29 @@ def Iterasjonfiks():
     Itra.write('global ' + InterestingParameter + '\n' + InterestingParameter + ' = ' + str(int(number)))
     Itra.close()
 
-#Globale Directories
-GitHub, workpath = 'C:/Multiscale-Modeling/', 'C:/Temp/'
-Tekstfiler, Modellering,processering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/',GitHub+'Abaqus_prosessering/'
-t=(time.time() - start_time)
-print('t ved start=', t)
-
-"""Start"""
-#Sette variabler
-execfile(Modellering+'TestVariabler.py')            # Sette Test variabler
-Iterasjonfiks()
-execfile(Modellering+'IterationParameters.py')      # Sette iterasjonsnummer
+"""Intierings"""
+if True:
+    #Globale Directories
+    GitHub, workpath = 'C:/Multiscale-Modeling/', 'C:/Temp/'
+    Tekstfiler, Modellering,processering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/',GitHub+'Abaqus_prosessering/'
 
 
-print ItraPara      #Antall itersjoner saa langt
+    """Start"""
+    #Sette variabler
+    execfile(Modellering+'TestVariabler.py')            # Sette Test variabler
+    Iterasjonfiks()
+    execfile(Modellering+'IterationParameters.py')      # Sette iterasjonsnummer
 
-#INFO DUMP
-if Interface and Createmodel and not noFibertest:
-    print('Aspect ratio for Interface elementsn= ' + str(round(meshsize / (rinterface * rmean), 2)) +
-          '\t Interface element thickness = ' + str(float(ElementInterfaceT * rmean)))
-if not noFibertest and FiberSirkelResolution<20:
-    print 'For grov opplosning, avslutter..'
-    del error
 
+    print 'Iterasjon : ',ItraPara      #Antall itersjoner saa langt
+
+    #INFO DUMP
+    if Interface and Createmodel and not noFibertest:
+        print('Aspect ratio for Interface elementsn= ' + str(round(meshsize / (rinterface * rmean), 2)) +
+              '\t Interface element thickness = ' + str(float(ElementInterfaceT * rmean)))
+    if not noFibertest and FiberSirkelResolution<20:
+        print 'For grov opplosning, avslutter..'
+        del error
 
 """Iterasjonsprameter"""
 #Meshsize/ Fiberresolution, Sweepe fiberresolution
@@ -82,7 +82,7 @@ if not noFibertest and FiberSirkelResolution<20:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[40]
+ParameterSweep=[4]
 
 nf = 8
 Vf = 0.6  #
@@ -90,7 +90,7 @@ nf= int(ParameterSweep[ItraPara])
 
 """Sette Iterasjonsavhengige variabler"""
 t=(time.time() - start_time)
-print('t for foerste iterasjon=', t)
+print('t ved start=', t)
 
 if nf == 0 or Vf == 0 or noFibertest:
     nf = 0
@@ -212,6 +212,8 @@ while Q<n:
             except:
                 print
                 n = n + 1
+    t = (time.time() - start_time)
+    print('t etter analyser=', t)
     if nonLinearpostPross:
         print 'PostProcess'
         execfile(processering + 'nonLinearPostprocessing.py')

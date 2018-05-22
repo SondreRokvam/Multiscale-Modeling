@@ -57,10 +57,10 @@ def FrameFinder(StressSigs):
         for sa in range(0,len(StressSigs[0])):
             if not sa==Ret:
                 if not Sing[sa]:
-                    if abs(StressSigs[kj][sa]) > 1e-2:
+                    if abs(StressSigs[kj][sa]) > 1e-1:
                         Sing[sa]=1
                 else:
-                    if abs(StressSigs[kj][sa]) > 1e-2:
+                    if abs(StressSigs[kj][sa]) > 1e-1:
                         return kj-1,sa,StressSigs[kj-1]
                     else:
                         Sing[sa]=0
@@ -95,7 +95,7 @@ if True:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[20]
+ParameterSweep=[3]
 
 nf = 8
 Vf = 0.6  #
@@ -197,6 +197,7 @@ while Q<n:
         print('t etter lin pross=', t)
     else:
         Stiffmatrix = np.load(lagrestiffpathmod)
+        print '\nStiffnessmatrix:'
         for a in range(0, 6):
             print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
                 Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
@@ -207,14 +208,15 @@ while Q<n:
     Ret = 1         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
     strain = Magni * id[Ret]
 
-    print '\n\nReferanse strain vektor ', strain
+    print '\n\nReferanse Strain Vector ', strain
     stresses = np.dot(Stiffmatrix, strain)# :  ex,  ey,  ex,  Yzy, -Yzx, -Yyx
     print '\nStresses from RefSTRAINS', stresses
     Stresses = stresses[Ret] * id[Ret]
-    print '\nApplied Stresses ', Stresses
+    print '\nReferanse Stress Vector', Stresses
     #print Stresses, Stiffmatrix
     strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
 
+    print '\nApplied Strain Vector', strains
     Type = 'comp_'
     if strains[Ret] > 0:
         Type = 'tens_'
@@ -247,8 +249,9 @@ while Q<n:
     print('t ved ferdig postprosess=', t)
     if Savemodel:
         mdb.saveAs(pathName=RVEmodellpath)
-
-    for asad in range(0,10):
+    #"""
+    for asad in range(0,0):
+        print 'fix: - ',asad
         StressSigs = np.load(Tekstfiler+'Sisss.npy')
         for a in range(0,6):
             if not a == Ret:
@@ -257,17 +260,17 @@ while Q<n:
         Fram = FrameFinder(StressSigs)
         print 'Frame:',Fram[0],'   Stress:',Fram[1],'\n',Fram[2]
         print Fram
-
         mod.setValues(restartJob=Jobbnavn, restartStep=difstpNm,
-            restartIncrement=Fram[0], endRestartStep=OFF)
+                      restartIncrement=Fram[0], endRestartStep=OFF)
+        Jobbnavn = Jobbnavn+'L'
 
         strains2= strains
 
         if Fram[2][Fram[1]]>=0:
-            strains2[Fram[1]]=strains2[Fram[1]]-0.05*strains[Fram[1]]
+            strains2[Fram[1]]= 0.0#strains2[Fram[1]]+0.5*strains[Fram[1]]
         else:
-            strains2[Fram[1]] = strains2[Fram[1]] + 0.05 * strains[Fram[1]]
-
+            strains2[Fram[1]] = 0.01#strains2[Fram[1]] - 0.5 * strains[Fram[1]]
+        print '\nApplied Strain Vector', strains2
         a = mod.rootAssembly
         exx, eyy, ezz, exy, exz, eyz = strains2
         mod.DisplacementBC(name='BCX', createStepName=difstpNm,
@@ -281,11 +284,11 @@ while Q<n:
         mod.DisplacementBC(name='BCZ', createStepName=difstpNm,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-        mdb.Job(name='Loop', model='Model-A',  type=RESTART, userSubroutine='',
+        mdb.Job(name=Jobbnavn, model='Model-A',  type=RESTART, userSubroutine='',
                 scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
                 numGPUs=0)
-        mdb.jobs['Loop'].submit(consistencyChecking=OFF)
-        mdb.jobs['Loop'].waitForCompletion()
+        mdb.jobs[Jobbnavn].submit(consistencyChecking=OFF)
+        mdb.jobs[Jobbnavn].waitForCompletion()
         if nonLinearpostPross:
             print '\nPostProcess'
             execfile(processering + 'nonLinearPostprocessing.py')
@@ -295,7 +298,7 @@ while Q<n:
     print 'Reached end of random key Iteration'
     t = (time.time() - start_time)
     print('t ved ferdig', t)
-
+    #"""
     Q = Q + 1
     del section, regionToolset, dgm, part, material, assembly, step, interaction
     del load, mesh, job, sketch, visualization, xyPlot, dgo, connectorBehavior

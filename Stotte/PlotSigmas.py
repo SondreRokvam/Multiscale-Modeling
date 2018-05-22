@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 #Globale Directories
 GitHub= 'C:/Multiscale-Modeling/'
 Tekstfiler  = GitHub+'textfiles/'
-change =100.0
+change =10.0
 
 def readSSData():
     # NOTE: you will probably need to change
     # the file path:
-    fileName = Tekstfiler+'Sigmas7_0.txt'
+    fileName = Tekstfiler+'Sigmas3_0.txt'
     a = np.genfromtxt(fileName)
     a = np.transpose(a)  # In order to get time and E(t) in two columns
     b = float(a[0][0])
@@ -34,7 +34,7 @@ def plotStressStrainData():
     print (ymin, ymax, xmin, xmax)
 
     plt.xlim((xmin), (xmax))
-    plt.ylim((ymin/(100)), (ymax / change))
+    plt.ylim((ymin/change), (ymax / change))
 
     ymin, ymax = plt.ylim()
     xmin, xmax = plt.xlim()

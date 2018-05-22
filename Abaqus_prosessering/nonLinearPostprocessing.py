@@ -98,8 +98,10 @@ else:
     for sds in range(0,len(ass[0])):
         ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (ass[0][sds],ass[1][sds],ass[2][sds],ass[3][sds],ass[4][sds],ass[5][sds],ass[6][sds]))
     count = 0
+    ss.close()
+    ss = open(Sigmapaths, "a")
     for s in HomoSigs[0]:
-        ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count],s[0], s[1], s[2], s[3], s[4], s[5]))
+        ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count]+ass[0][-1],s[0], s[1], s[2], s[3], s[4], s[5]))
         count = count + 1
     ss.close()
 

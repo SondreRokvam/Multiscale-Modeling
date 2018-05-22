@@ -50,16 +50,21 @@ def Iterasjonfiks():
     Itra = open(Modellering + 'IterationParameters.py', "w")
     Itra.write('global ' + InterestingParameter + '\n' + InterestingParameter + ' = ' + str(int(number)))
     Itra.close()
-def FrameFinder(StressSigs):
+def FrameFinder():
+    StressSigs = np.genfromtxt(Sigmapaths)
+    StressSigs = StressSigs[1:, 1:]
+    for a in range(0, 6):
+        if not a == Ret:
+            StressSigs[1:, a] = np.multiply(StressSigs[1:, a], 1 / StressSigs[1:, Ret])
     Sing = [0]*6
     for kj in range(0,len(StressSigs)):
         for sa in range(0,len(StressSigs[0])):
             if not sa==Ret:
                 if not Sing[sa]:
-                    if abs(StressSigs[kj][sa]) > 1e-1:
+                    if abs(StressSigs[kj][sa]) > 5e-2:
                         Sing[sa]=1
                 else:
-                    if abs(StressSigs[kj][sa]) > 1e-1:
+                    if abs(StressSigs[kj][sa]) > 5e-2:
                         return kj-2,sa,StressSigs[kj-2]
                     else:
                         Sing[sa]=0
@@ -249,58 +254,39 @@ while Q<n:
         print('t ved ferdig postprosess=', t)
         if Savemodel:
             mdb.saveAs(pathName=RVEmodellpath)
+
+
+    Reset=1
+    Jobbnav = Jobbnavn
+    prev=0
     strains2 = strains.tolist()
-
-    for asad in range(0,3):
-        print 'fix:  ',asad
-        StressSigs = np.genfromtxt(Sigmapaths)
-        StressSigs = StressSigs[1:,1:]
-        for a in range(0,6):
-            if not a == Ret:
-                StressSigs[1:,a] = np.multiply(StressSigs[1:,a],1/StressSigs[1:,Ret])
-
-        if not Reset:
-            Fprev=0
-        else:
-            Fprev = Fram[0]
-        Reset = 1
-
-        Fram = FrameFinder(StressSigs)
+    for asad in range(0,2):
+        print '\nfix:  ',asad
+        Fram = FrameFinder()
         print 'Frame:', Fram[0], '   Stress:', Fram[1], '\n', Fram[2]
         StressSigs = np.genfromtxt(Sigmapaths)
         StressSigs = StressSigs[1:, 1:]
         print StressSigs[Fram[0], :]
 
-        stepps= (Fram[0]-Fprev)
-        if not stepps<=1:
-            modelName = modelName+'Cop'
-            mdb.Model(name=modelName, objectToCopy=mdb.models['Model-A'])
-            mod = mdb.models[modelName]
-            mod.setValues(restartJob=Jobbnavn, restartStep=difstpNm,
-                          restartIncrement= stepps-1, endRestartStep=OFF)
+        mdb.models['Model-A'].Stress(name='FraNonLinear', distributionType=FROM_FILE,
+                                     fileName=(workpath + Jobbnavn+'.odb'), step=-1, increment=Fram[0]-1-prev)
 
-            Jobbnavn = Jobbnavn+'L'
-            print '\n'+Jobbnavn
-            ass = np.transpose(np.genfromtxt(Sigmapaths))
-            ass = ass[:,1:Fram[0]+2]
-        else:
-            workpath = 'C:/temp/'
-            filelist = [f for f in os.listdir(workpath) if f.startswith(Jobbnavn)]  # if not f.endswith('.inp')]
-            for f in filelist:
-                try:
-                    os.remove(os.path.join(workpath, f))
-                except:
-                    pass
-
+        Jobbnavn = Jobbnav+str(asad)
+        prev = Fram[0]+1
+        print '\n' + Jobbnavn
+        ass = np.transpose(np.genfromtxt(Sigmapaths))
+        ass = ass[:, 1:Fram[0] + 1]
         print strains2[Fram[1]], Fram[1]
+
         if Fram[2][Fram[1]]>=0:
-            strains2[Fram[1]]= -strains2[Fram[1]] #+ 0.5*strains[Fram[1]]
+            strains2[Fram[1]]= strains2[Fram[1]] - strains[Fram[1]]/(asad+1)
         else:
-            strains2[Fram[1]] = -strains2[Fram[1]] #- 0.5*strains[Fram[1]]
+            strains2[Fram[1]] = strains2[Fram[1]] + strains[Fram[1]]/(asad+1)
         print strains2[Fram[1]]
         print '\nInitial Strain Vector', strains
         print '\nUpdated Strain Vector', strains2
         a = mod.rootAssembly
+
         exx, eyy, ezz, exy, exz, eyz = strains2
         mod.DisplacementBC(name='BCX', createStepName=difstpNm,
                            region=a.sets['RPX'], u1=exx, u2=exy, u3=exz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
@@ -313,18 +299,26 @@ while Q<n:
         mod.DisplacementBC(name='BCZ', createStepName=difstpNm,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-        mdb.Job(name=Jobbnavn, model=modelName, type=RESTART, userSubroutine='',
-                scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
-                numGPUs=0)
-        mdb.jobs[Jobbnavn].submit(consistencyChecking=OFF)
-        mdb.jobs[Jobbnavn].waitForCompletion()
+        mdb.Job(name=Jobbnavn, model=modelName, description='', type=ANALYSIS,
+                atTime=None, memory=90,
+                memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+                explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
+                modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
+                scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCPU,
+                numDomains=numCPU, numGPUs=1)
+        #mdb.Job(name=Jobbnavn, model=modelName, type=RESTART, userSubroutine='',
+         #       scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
+         #       numGPUs=0)
+        try:
+            mdb.jobs[Jobbnavn].submit(consistencyChecking=OFF)
+            mdb.jobs[Jobbnavn].waitForCompletion()
+        except:
+            pass
 
-        if nonLinearpostPross:
-            print '\nPostProcess'
-            execfile(processering + 'nonLinearPostprocessing.py')
-        #del kjhk
+        print '\nPostProcess'
+        execfile(processering + 'nonLinearPostprocessing.py')
         t = (time.time() - start_time)
-        print('t ved ferdig postprosess=', t)
+        print('t for Restart iterasjon=', t)
 
     print 'Reached end of random key Iteration'
     t = (time.time() - start_time)

@@ -51,6 +51,19 @@ def Iterasjonfiks():
     Itra.write('global ' + InterestingParameter + '\n' + InterestingParameter + ' = ' + str(int(number)))
     Itra.close()
 
+def FrameFinder(StressSigs):
+    Sing = [0]*6
+    for kj in range(0,len(StressSigs)):
+        for sa in range(0,len(StressSigs[0])):
+            if not sa==Ret:
+                if not Sing[sa]:
+                    if abs(StressSigs[kj][sa]) > 1e-2:
+                        Sing[sa]=1
+                else:
+                    if abs(StressSigs[kj][sa]) > 1e-2:
+                        return kj-1,sa,StressSigs[kj-1]
+                    else:
+                        Sing[sa]=0
 """Intierings"""
 if True:
     #Globale Directories
@@ -82,7 +95,7 @@ if True:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[4]
+ParameterSweep=[20]
 
 nf = 8
 Vf = 0.6  #
@@ -143,6 +156,11 @@ while Q<n:
         if Savemodel:
             mdb.saveAs(pathName=RVEmodellpath)
     # Prov aa aapne tidligere modell
+    if openModel:
+        print 'mmmdddddbbbb'
+        Mdb()
+        openMdb(pathName=RVEmodellpath)
+        mod = mdb.models[modelName]
 
     t = (time.time() - start_time)
     print('t etter lagd modell=', t)
@@ -173,6 +191,7 @@ while Q<n:
             n=n+1
         t = (time.time() - start_time)
         print('t etter lin analyser=', t)
+    if LinearpostPross:
         execfile(processering + 'LinearPostprocessing.py')
         t = (time.time() - start_time)
         print('t etter lin pross=', t)
@@ -190,15 +209,16 @@ while Q<n:
 
     print '\n\nReferanse strain vektor ', strain
     stresses = np.dot(Stiffmatrix, strain)# :  ex,  ey,  ex,  Yzy, -Yzx, -Yyx
-    print 'Faktisk STRAINSRef Stresses ', stresses
+    print '\nStresses from RefSTRAINS', stresses
     Stresses = stresses[Ret] * id[Ret]
-    print 'Applied Stresses ', Stresses
-    print Stresses, Stiffmatrix
+    print '\nApplied Stresses ', Stresses
+    #print Stresses, Stiffmatrix
     strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
 
     Type = 'comp_'
     if strains[Ret] > 0:
         Type = 'tens_'
+
     cases = [[Retning[Ret] + Type + str(ParameterSweep[ItraPara]) + '__Rand-' + str(Q), strains]]
 
     for Case in cases:
@@ -218,10 +238,64 @@ while Q<n:
                 n = n + 1
     t = (time.time() - start_time)
     print('t etter nonlin analyser=', t)
+
+
     if nonLinearpostPross:
-        print 'PostProcess'
+        print '\nPostProcess'
         execfile(processering + 'nonLinearPostprocessing.py')
+    t = (time.time() - start_time)
+    print('t ved ferdig postprosess=', t)
+    if Savemodel:
+        mdb.saveAs(pathName=RVEmodellpath)
+
+    for asad in range(0,10):
+        StressSigs = np.load(Tekstfiler+'Sisss.npy')
+        for a in range(0,6):
+            if not a == Ret:
+                StressSigs[1:,a] = np.multiply(StressSigs[1:,a],1/StressSigs[1:,Ret])
+        #print StressSigs
+        Fram = FrameFinder(StressSigs)
+        print 'Frame:',Fram[0],'   Stress:',Fram[1],'\n',Fram[2]
+        print Fram
+
+        mod.setValues(restartJob=Jobbnavn, restartStep=difstpNm,
+            restartIncrement=Fram[0], endRestartStep=OFF)
+
+        strains2= strains
+
+        if Fram[2][Fram[1]]>=0:
+            strains2[Fram[1]]=strains2[Fram[1]]-0.05*strains[Fram[1]]
+        else:
+            strains2[Fram[1]] = strains2[Fram[1]] + 0.05 * strains[Fram[1]]
+
+        a = mod.rootAssembly
+        exx, eyy, ezz, exy, exz, eyz = strains2
+        mod.DisplacementBC(name='BCX', createStepName=difstpNm,
+                           region=a.sets['RPX'], u1=exx, u2=exy, u3=exz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                           amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+
+        mod.DisplacementBC(name='BCY', createStepName=difstpNm,
+                           region=a.sets['RPY'], u1=exy, u2=eyy, u3=eyz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                           amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+
+        mod.DisplacementBC(name='BCZ', createStepName=difstpNm,
+                           region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                           amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+        mdb.Job(name='Loop', model='Model-A',  type=RESTART, userSubroutine='',
+                scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
+                numGPUs=0)
+        mdb.jobs['Loop'].submit(consistencyChecking=OFF)
+        mdb.jobs['Loop'].waitForCompletion()
+        if nonLinearpostPross:
+            print '\nPostProcess'
+            execfile(processering + 'nonLinearPostprocessing.py')
+        t = (time.time() - start_time)
+        print('t ved ferdig postprosess=', t)
+
     print 'Reached end of random key Iteration'
+    t = (time.time() - start_time)
+    print('t ved ferdig', t)
+
     Q = Q + 1
     del section, regionToolset, dgm, part, material, assembly, step, interaction
     del load, mesh, job, sketch, visualization, xyPlot, dgo, connectorBehavior

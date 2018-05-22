@@ -5,13 +5,48 @@ def get_stiffness():
     for i in range(0,6):
         path = workpath + Enhetstoyinger[i][0]
         odb = session.openOdb(path+'.odb')
-        instance = odb.rootAssembly.instances[instanceName]
-        for j in range(0,len(instance.elements)):
-            v = odb.steps[stepName].frames[-1].fieldOutputs['S'].getSubset(position=CENTROID).values[j]
-            elvol = odb.steps[stepName].frames[-1].fieldOutputs['EVOL'].values[j]
+
+        fras = odb.steps[stepName].frames[-1]
+        inst = odb.rootAssembly.instances['PART-1-MESH-1-1']
+        antallElems = len(odb.rootAssembly.instances['PART-1-MESH-1-1'].elements)
+
+        vol = np.zeros(antallElems)
+        dodvolum = np.zeros(antallElems)
+        SS = np.zeros([antallElems, 6])
+
+        dataa = fras.fieldOutputs['S'].getSubset(position=CENTROID, region=inst.elementSets[
+                                                     'M_AND_F'])
+
+        dat1 = len(inst.elementSets['M_AND_F'].elements)
+        for j in range(0, dat1):
+            eldat = float(fras.fieldOutputs['EVOL'].getSubset(
+                region=inst.elementSets['M_AND_F']).values[j].data)
+            datas = dataa.values[j].data
+            # Utelukker cohesive volumes ugyldige verdier, OBS! Avhenging av orientation
+            if eldat > 0.0:
+                SS[j] = datas
+                vol[j] = float(eldat)
+        dataa = fras.fieldOutputs['S'].getSubset(position=CENTROID,
+                                                 region=inst.elementSets[
+                                                     'INTERFACES'])
+        dat2 = len(inst.elementSets['INTERFACES'].elements)
+        for j in range(dat1, dat1 + dat2):
+            eldat = float(fras.fieldOutputs['EVOL'].getSubset(
+                region=inst.elementSets['INTERFACES']).values[
+                              j - dat1].data)
+            datas = dataa.values[j - dat1].data
+            # Utelukker cohesive volumes ugyldige verdier, OBS! Avhenging av orientation
+            if eldat > 0.0:
+                SS[j][2] = float(datas[2])  # Avhenging av orientation
+                SS[j][4] = float(datas[4])
+                SS[j][5] = float(datas[5])
+                dodvolum[j] = float(eldat)
+                vol[j] = float(eldat)
+
             for p in range(0,6):
-                stiffmatrix[i][p] = stiffmatrix[i][p]+(v.data[p]*elvol.data)/(tykkelse*(dL)**2)
+                stiffmatrix[i][p] = (float(np.sum(vol * SS[:, p]))/(tykkelse*(dL)**2))
         odb.close()
+
     np.save(lagrestiffpathmod, stiffmatrix)
     print '\nStiffnessmatrix found\n'
     g = open(Lagrestiffpathprop, "a")

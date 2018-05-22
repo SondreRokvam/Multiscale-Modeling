@@ -132,7 +132,7 @@ if not nf == 0:
     if Interface:
         COHstackDir()  # Endrer stackdirection paa elementer i Interface
         RVEsets()
-        CohEelem = mesh.ElemType(elemCode=COH3D8, elemLibrary=STANDARD, elemDeletion=ON, viscosity=0.0001)
+        CohEelem = mesh.ElemType(elemCode=COH3D8, elemLibrary=STANDARD, elemDeletion=ON)#, viscosity=0.0001)
         p.setElementType(regions=p.sets['Interfaces'], elemTypes=(CohEelem,))
 else:                   # Om ingen fiber, bare matrix set
     p = mod.parts[meshPartName]

@@ -15,66 +15,27 @@
     <SUITE FILE_PATH="coverage/Multiscale_Modeling$Cleanup.coverage" NAME="Cleanup Coverage Results" MODIFIED="1524939250166" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5229167">
+    <splitter split-orientation="horizontal" split-proportion="0.4765625">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="109">
           <file leaf-file-name="StiffnessMatrixand Degredation.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/StiffnessMatrixand Degredation.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="51">
-                  <caret line="3" column="68" selection-start-line="3" selection-start-column="68" selection-end-line="3" selection-end-column="68" />
+                  <caret line="3" column="70" lean-forward="true" selection-start-line="2" selection-end-line="3" selection-end-column="70" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="RVEelementsets.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/Abaqus_modellering/RVEelementsets.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="434">
-                  <caret line="50" column="80" selection-start-line="50" selection-start-column="80" selection-end-line="50" selection-end-column="80" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="nonLinearPostprocessing.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/Abaqus_prosessering/nonLinearPostprocessing.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="230">
-                  <caret line="28" column="8" selection-start-line="28" selection-start-column="8" selection-end-line="31" selection-end-column="32" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="MicroscaleModelling_randomSweep.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="MicroscaleModelling_randomSweep.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="740">
-                  <caret line="219" column="25" selection-start-line="219" selection-start-column="25" selection-end-line="219" selection-end-column="25" />
+                <state relative-caret-position="539">
+                  <caret line="293" column="4" selection-start-line="293" selection-start-column="4" selection-end-line="293" selection-end-column="4" />
                   <folding>
                     <element signature="e#231#1444#0" />
-                    <element signature="e#1479#2349#0" />
-                    <element signature="e#1965#2108#0" />
-                    <element signature="e#1982#2075#0" />
                     <element signature="e#2127#2349#0" />
                     <element signature="e#2375#2805#0" />
-                    <element signature="e#3394#3582#0" />
-                    <element signature="e#3644#3702#0" />
-                    <element signature="e#3785#3835#0" />
-                    <element signature="e#4316#4368#0" />
-                    <element signature="e#4428#4487#0" />
-                    <element signature="e#6005#6224#0" />
-                    <element signature="e#6342#6517#0" />
-                    <element signature="e#6363#6438#0" />
-                    <element signature="e#6475#6517#0" />
-                    <element signature="e#6697#7005#0" />
-                    <element signature="e#6780#6976#0" />
-                    <element signature="e#6847#6975#0" />
-                    <element signature="e#7713#8175#0" />
-                    <element signature="e#7779#8175#0" />
-                    <element signature="e#7833#8028#0" />
-                    <element signature="e#7858#7937#0" />
-                    <element signature="e#7982#8028#0" />
-                    <element signature="e#8144#8175#0" />
                   </folding>
                 </state>
               </provider>
@@ -84,20 +45,20 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-          <file leaf-file-name="LinearPostprocessing.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/Abaqus_prosessering/LinearPostprocessing.py">
+          <file leaf-file-name="TestVariabler.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="238">
-                  <caret line="14" column="43" lean-forward="true" selection-start-line="14" selection-start-column="43" selection-end-line="14" selection-end-column="43" />
+                <state relative-caret-position="425">
+                  <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="Set_text_dirs.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/Abaqus_modellering/Set_text_dirs.py">
+          <file leaf-file-name="nonLinearAnalysis.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Abaqus_modellering/nonLinearAnalysis.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="187">
-                  <caret line="11" column="38" selection-start-line="11" selection-start-column="38" selection-end-line="11" selection-end-column="38" />
+                <state relative-caret-position="272">
+                  <caret line="16" column="40" selection-start-line="16" selection-start-column="40" selection-end-line="16" selection-end-column="40" />
                 </state>
               </provider>
             </entry>
@@ -105,8 +66,8 @@
           <file leaf-file-name="abaqusMacros.py" pinned="false" current-in-tab="false">
             <entry file="file://$USER_HOME$/abaqusMacros.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="740">
-                  <caret line="59" column="4" selection-start-line="59" selection-start-column="4" selection-end-line="59" selection-end-column="60" />
+                <state relative-caret-position="638">
+                  <caret line="130" column="4" selection-start-line="130" selection-start-column="4" selection-end-line="136" selection-end-column="18" />
                   <folding>
                     <element signature="e#66#86#0" expanded="true" />
                   </folding>
@@ -114,11 +75,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="TestVariabler.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py">
+          <file leaf-file-name="nonLinearPostprocessing.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Abaqus_prosessering/nonLinearPostprocessing.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="391">
-                  <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+                <state relative-caret-position="17">
+                  <caret line="1" column="4" selection-start-line="1" selection-start-column="4" selection-end-line="3" selection-end-column="40" />
                 </state>
               </provider>
             </entry>
@@ -160,6 +121,11 @@
       <find>z</find>
       <find>Stiffmatrix</find>
       <find>Running</find>
+      <find>od</find>
+      <find>odb.rootAssembly.instances['PART-1-MESH-1-1']</find>
+      <find>ste</find>
+      <find>teks</find>
+      <find>Homo</find>
     </findStrings>
     <replaceStrings>
       <replace>elemNOdes</replace>
@@ -169,6 +135,8 @@
       <replace>tykkelse</replace>
       <replace>Jobbinfo</replace>
       <replace>Stiffmatrix</replace>
+      <replace>odb</replace>
+      <replace>inst</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -196,16 +164,16 @@
         <option value="$PROJECT_DIR$/Prepare_test.py" />
         <option value="$PROJECT_DIR$/LinearPostprocessing.py" />
         <option value="$PROJECT_DIR$/Abaqus_modellering/Sweep file.py" />
-        <option value="$PROJECT_DIR$/Abaqus_modellering/nonLinearAnalysis.py" />
         <option value="$PROJECT_DIR$/Abaqus_modellering/RVE_Assembly_RP_CE.py" />
-        <option value="$USER_HOME$/abaqusMacros.py" />
         <option value="$PROJECT_DIR$/Abaqus_modellering/RVE_InterfaceElementThickness.py" />
         <option value="$PROJECT_DIR$/Abaqus_modellering/LinearAnalysis.py" />
         <option value="$PROJECT_DIR$/Abaqus_modellering/RVEproperties.py" />
-        <option value="$PROJECT_DIR$/Abaqus_modellering/Set_text_dirs.py" />
-        <option value="$PROJECT_DIR$/Abaqus_prosessering/LinearPostprocessing.py" />
         <option value="$PROJECT_DIR$/Abaqus_modellering/RVEelementsets.py" />
+        <option value="$PROJECT_DIR$/Abaqus_prosessering/LinearPostprocessing.py" />
+        <option value="$PROJECT_DIR$/Abaqus_modellering/Set_text_dirs.py" />
         <option value="$PROJECT_DIR$/Abaqus_prosessering/nonLinearPostprocessing.py" />
+        <option value="$PROJECT_DIR$/Abaqus_modellering/nonLinearAnalysis.py" />
+        <option value="$USER_HOME$/abaqusMacros.py" />
         <option value="$PROJECT_DIR$/MicroscaleModelling_randomSweep.py" />
         <option value="$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py" />
       </list>
@@ -334,10 +302,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="7" />
-      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" weight="0.32837406" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" weight="0.3287483" />
       <window_info anchor="bottom" id="Database Changes" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="12" />
       <window_info anchor="bottom" id="Python Console" order="9" weight="0.32914287" />
@@ -349,51 +316,37 @@
       <window_info anchor="right" id="SciView" order="4" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Debug" order="4" weight="0.4" />
       <window_info anchor="bottom" id="Debug" order="4" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
-      <window_info content_ui="combo" id="Project" order="0" weight="0.17239584" />
-      <window_info anchor="right" id="SciView" order="4" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="TODO" order="7" />
-      <window_info anchor="bottom" id="Version Control" order="12" />
-      <window_info anchor="bottom" id="Run" order="3" weight="0.21320495" />
-      <window_info anchor="bottom" id="Database Changes" order="0" show_stripe_button="false" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="bottom" id="Message" order="1" />
-      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" weight="0.3287483" />
       <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Find" order="2" weight="0.32906976" />
-      <window_info anchor="bottom" id="Terminal" order="10" weight="0.32914287" />
-      <window_info anchor="bottom" id="Python Console" order="9" weight="0.32914287" />
     </layout>
     <layout-to-restore>
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info content_ui="combo" id="Project" order="0" weight="0.17277487" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="7" />
-      <window_info anchor="bottom" id="Version Control" order="12" />
       <window_info active="true" anchor="bottom" id="Run" order="3" visible="true" weight="0.21320495" />
-      <window_info anchor="bottom" id="Find" order="2" weight="0.32906976" />
-      <window_info anchor="bottom" id="Python Console" order="9" weight="0.32914287" />
+      <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Debug" order="4" weight="0.4" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="bottom" id="Terminal" order="10" weight="0.32914287" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="0" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
+      <window_info anchor="bottom" id="Version Control" order="12" />
       <window_info anchor="right" id="SciView" order="4" />
-      <window_info anchor="bottom" id="Message" order="1" />
-      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Find" order="2" weight="0.32906976" />
+      <window_info anchor="bottom" id="Python Console" order="9" weight="0.32914287" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -409,7 +362,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="14" />
+      <option name="time" value="15" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -420,29 +373,8 @@
         <state>
           <folding>
             <element signature="e#231#1444#0" />
-            <element signature="e#1479#2349#0" />
-            <element signature="e#1965#2108#0" />
-            <element signature="e#1982#2075#0" />
             <element signature="e#2127#2349#0" />
             <element signature="e#2375#2805#0" />
-            <element signature="e#3394#3582#0" />
-            <element signature="e#3644#3702#0" />
-            <element signature="e#3785#3835#0" />
-            <element signature="e#4316#4368#0" />
-            <element signature="e#4428#4487#0" />
-            <element signature="e#6005#6224#0" />
-            <element signature="e#6342#6517#0" />
-            <element signature="e#6363#6438#0" />
-            <element signature="e#6475#6517#0" />
-            <element signature="e#6697#7005#0" />
-            <element signature="e#6780#6976#0" />
-            <element signature="e#6847#6975#0" />
-            <element signature="e#7713#8175#0" />
-            <element signature="e#7779#8175#0" />
-            <element signature="e#7833#8028#0" />
-            <element signature="e#7858#7937#0" />
-            <element signature="e#7982#8028#0" />
-            <element signature="e#8144#8175#0" />
           </folding>
         </state>
       </provider>
@@ -455,13 +387,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="12" column="17" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Test.py" />
     <entry file="file://$PROJECT_DIR$/Abaqus_steg/LinearAnalysis.py" />
     <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -469,29 +395,8 @@
           <caret line="256" column="52" lean-forward="true" selection-start-line="256" selection-start-column="52" selection-end-line="256" selection-end-column="52" />
           <folding>
             <element signature="e#231#1444#0" />
-            <element signature="e#1479#2349#0" />
-            <element signature="e#1965#2108#0" />
-            <element signature="e#1982#2075#0" />
             <element signature="e#2127#2349#0" />
             <element signature="e#2375#2805#0" />
-            <element signature="e#3394#3582#0" />
-            <element signature="e#3644#3702#0" />
-            <element signature="e#3785#3835#0" />
-            <element signature="e#4316#4368#0" />
-            <element signature="e#4428#4487#0" />
-            <element signature="e#6005#6224#0" />
-            <element signature="e#6342#6517#0" />
-            <element signature="e#6363#6438#0" />
-            <element signature="e#6475#6517#0" />
-            <element signature="e#6697#7005#0" />
-            <element signature="e#6780#6976#0" />
-            <element signature="e#6847#6975#0" />
-            <element signature="e#7713#8175#0" />
-            <element signature="e#7779#8175#0" />
-            <element signature="e#7833#8028#0" />
-            <element signature="e#7858#7937#0" />
-            <element signature="e#7982#8028#0" />
-            <element signature="e#8144#8175#0" />
           </folding>
         </state>
       </provider>
@@ -501,29 +406,8 @@
         <state>
           <folding>
             <element signature="e#231#1444#0" />
-            <element signature="e#1479#2349#0" />
-            <element signature="e#1965#2108#0" />
-            <element signature="e#1982#2075#0" />
             <element signature="e#2127#2349#0" />
             <element signature="e#2375#2805#0" />
-            <element signature="e#3394#3582#0" />
-            <element signature="e#3644#3702#0" />
-            <element signature="e#3785#3835#0" />
-            <element signature="e#4316#4368#0" />
-            <element signature="e#4428#4487#0" />
-            <element signature="e#6005#6224#0" />
-            <element signature="e#6342#6517#0" />
-            <element signature="e#6363#6438#0" />
-            <element signature="e#6475#6517#0" />
-            <element signature="e#6697#7005#0" />
-            <element signature="e#6780#6976#0" />
-            <element signature="e#6847#6975#0" />
-            <element signature="e#7713#8175#0" />
-            <element signature="e#7779#8175#0" />
-            <element signature="e#7833#8028#0" />
-            <element signature="e#7858#7937#0" />
-            <element signature="e#7982#8028#0" />
-            <element signature="e#8144#8175#0" />
           </folding>
         </state>
       </provider>
@@ -535,13 +419,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="12" column="17" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Test.py" />
     <entry file="file://$PROJECT_DIR$/FiberRadiuserFraAbedin.txt" />
     <entry file="file://$PROJECT_DIR$/GenerereFiberPopTilFil.py" />
     <entry file="file://$PROJECT_DIR$/Illustrate_Multiscale.py" />
@@ -627,95 +505,74 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Abaqus_modellering/nonLinearAnalysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="4" selection-start-line="1" selection-start-column="4" selection-end-line="2" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Abaqus_modellering/Set_text_dirs.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="38" selection-start-line="11" selection-start-column="38" selection-end-line="11" selection-end-column="38" />
+        <state relative-caret-position="204">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Abaqus_modellering/RVEelementsets.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="434">
-          <caret line="50" column="80" selection-start-line="50" selection-start-column="80" selection-end-line="50" selection-end-column="80" />
+        <state relative-caret-position="845">
+          <caret line="134" column="24" lean-forward="true" selection-start-line="134" selection-start-column="24" selection-end-line="134" selection-end-column="32" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/abaqusMacros.py">
+    <entry file="file://$PROJECT_DIR$/Abaqus_prosessering/LinearPostprocessing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="740">
-          <caret line="59" column="4" selection-start-line="59" selection-start-column="4" selection-end-line="59" selection-end-column="60" />
-          <folding>
-            <element signature="e#66#86#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="731">
+          <caret line="49" column="4" lean-forward="true" selection-start-line="49" selection-start-column="4" selection-end-line="49" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Abaqus_prosessering/nonLinearPostprocessing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="4" selection-start-line="1" selection-start-column="4" selection-end-line="3" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Abaqus_modellering/nonLinearAnalysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="40" selection-start-line="16" selection-start-column="40" selection-end-line="16" selection-end-column="40" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/StiffnessMatrixand Degredation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
-          <caret line="3" column="68" selection-start-line="3" selection-start-column="68" selection-end-line="3" selection-end-column="68" />
+          <caret line="3" column="70" lean-forward="true" selection-start-line="2" selection-end-line="3" selection-end-column="70" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/abaqusMacros.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="638">
+          <caret line="130" column="4" selection-start-line="130" selection-start-column="4" selection-end-line="136" selection-end-column="18" />
+          <folding>
+            <element signature="e#66#86#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MicroscaleModelling_randomSweep.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="740">
-          <caret line="219" column="25" selection-start-line="219" selection-start-column="25" selection-end-line="219" selection-end-column="25" />
+        <state relative-caret-position="539">
+          <caret line="293" column="4" selection-start-line="293" selection-start-column="4" selection-end-line="293" selection-end-column="4" />
           <folding>
             <element signature="e#231#1444#0" />
-            <element signature="e#1479#2349#0" />
-            <element signature="e#1965#2108#0" />
-            <element signature="e#1982#2075#0" />
             <element signature="e#2127#2349#0" />
             <element signature="e#2375#2805#0" />
-            <element signature="e#3394#3582#0" />
-            <element signature="e#3644#3702#0" />
-            <element signature="e#3785#3835#0" />
-            <element signature="e#4316#4368#0" />
-            <element signature="e#4428#4487#0" />
-            <element signature="e#6005#6224#0" />
-            <element signature="e#6342#6517#0" />
-            <element signature="e#6363#6438#0" />
-            <element signature="e#6475#6517#0" />
-            <element signature="e#6697#7005#0" />
-            <element signature="e#6780#6976#0" />
-            <element signature="e#6847#6975#0" />
-            <element signature="e#7713#8175#0" />
-            <element signature="e#7779#8175#0" />
-            <element signature="e#7833#8028#0" />
-            <element signature="e#7858#7937#0" />
-            <element signature="e#7982#8028#0" />
-            <element signature="e#8144#8175#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Abaqus_modellering/TestVariabler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Abaqus_prosessering/LinearPostprocessing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="43" lean-forward="true" selection-start-line="14" selection-start-column="43" selection-end-line="14" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Abaqus_prosessering/nonLinearPostprocessing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="28" column="8" selection-start-line="28" selection-start-column="8" selection-end-line="31" selection-end-column="32" />
+        <state relative-caret-position="425">
+          <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
         </state>
       </provider>
     </entry>

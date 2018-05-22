@@ -16,7 +16,6 @@ Envelope = Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn i funks
 Sigmapaths = Tekstfiler + 'Sigmas' + str(  int(ParameterSweep[ItraPara])) + '_' + str(Q) + '.txt'
 
 
-
 global wiggle, RVEmodellpath
 
 wiggle = random() * rmean  # Omplasseringsgrenser for fiberomplassering

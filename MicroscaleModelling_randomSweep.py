@@ -50,7 +50,6 @@ def Iterasjonfiks():
     Itra = open(Modellering + 'IterationParameters.py', "w")
     Itra.write('global ' + InterestingParameter + '\n' + InterestingParameter + ' = ' + str(int(number)))
     Itra.close()
-
 def FrameFinder(StressSigs):
     Sing = [0]*6
     for kj in range(0,len(StressSigs)):
@@ -64,6 +63,8 @@ def FrameFinder(StressSigs):
                         return kj-2,sa,StressSigs[kj-2]
                     else:
                         Sing[sa]=0
+
+
 """Intierings"""
 if True:
     #Globale Directories
@@ -95,7 +96,7 @@ if True:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[3]
+ParameterSweep=[4]
 
 nf = 8
 Vf = 0.6  #
@@ -142,91 +143,42 @@ while Q<n:
     seed(Q)  # Q er randomfunksjonensnokkelen
     execfile(Modellering + 'Set_text_dirs.py')
 
+    if True:
+        """ Abaqus RVE model """
 
-    """ Abaqus RVE model """
+        Mdb()  # reset Abaqus
+        model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
+        mod = mdb.models[modelName]                                     # Lage snarvei
+        if Createmodel :
+            xydata = None                       # Fiber kordinater og radiuser
+            if not noFiber:
+                execfile(Modellering+'GenerereFiberPopTilFil.py')            # create a random population
+            CreateNewRVEModel()
+            if Savemodel:
+                mdb.saveAs(pathName=RVEmodellpath)
+        # Prov aa aapne tidligere modell
+        if openModel:
+            Mdb()
+            openMdb(pathName=RVEmodellpath)
+            mod = mdb.models[modelName]
 
-    Mdb()  # reset Abaqus
-    model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
-    mod = mdb.models[modelName]                                     # Lage snarvei
-    if Createmodel :
-        xydata = None                       # Fiber kordinater og radiuser
-        if not noFiber:
-            execfile(Modellering+'GenerereFiberPopTilFil.py')            # create a random population
-        CreateNewRVEModel()
-        if Savemodel:
-            mdb.saveAs(pathName=RVEmodellpath)
-    # Prov aa aapne tidligere modell
-    if openModel:
-        print 'mmmdddddbbbb'
-        Mdb()
-        openMdb(pathName=RVEmodellpath)
-        mod = mdb.models[modelName]
-
-    t = (time.time() - start_time)
-    print('t etter lagd modell=', t)
-
-
-    """Simuleringer"""
-
-        # Lineare tester
-    Enhetstoyinger = [''] * 6  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
-    for g in range(0, 6):
-        if not noFibertest:
-            Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
-        else:
-            Enhetstoyinger[g] = [Retning[g] + 'noFiber']
-
-        # Kjore Linear analyse
-    if linearAnalysis:  # LinearAnalysis for stiffness and small deformation
-        if not Createmodel:
-            try:
-                openMdb(pathName=RVEmodellpath)
-                mod = mdb.models['Model-A']
-            except:
-                print 'Cae not found'
-                pass
-        try:
-            execfile(Modellering +'LinearAnalysis.py')
-        except:
-            n=n+1
         t = (time.time() - start_time)
-        print('t etter lin analyser=', t)
-    if LinearpostPross:
-        execfile(processering + 'LinearPostprocessing.py')
-        t = (time.time() - start_time)
-        print('t etter lin pross=', t)
-    else:
-        Stiffmatrix = np.load(lagrestiffpathmod)
-        print '\nStiffnessmatrix:'
-        for a in range(0, 6):
-            print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
-                Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
-                Stiffmatrix[5][a])
+        print('t etter lagd modell=', t)
 
-        # Non linear tester
-    Magni = 2e-2    # Skalarverdi til toyning
-    Ret = 1         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
-    strain = Magni * id[Ret]
 
-    print '\n\nReferanse Strain Vector ', strain
-    stresses = np.dot(Stiffmatrix, strain)# :  ex,  ey,  ex,  Yzy, -Yzx, -Yyx
-    print '\nStresses from RefSTRAINS', stresses
-    Stresses = stresses[Ret] * id[Ret]
-    print '\nReferanse Stress Vector', Stresses
-    #print Stresses, Stiffmatrix
-    strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
+        """Simuleringer"""
 
-    print '\nApplied Strain Vector', strains
-    Type = 'comp_'
-    if strains[Ret] > 0:
-        Type = 'tens_'
+            # Lineare tester
+        Enhetstoyinger = [''] * 6  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
+        for g in range(0, 6):
+            if not noFibertest:
+                Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
+            else:
+                Enhetstoyinger[g] = [Retning[g] + 'noFiber']
 
-    cases = [[Retning[Ret] + Type + str(ParameterSweep[ItraPara]) + '__Rand-' + str(Q), strains]]
-
-    for Case in cases:
-        Jobbnavn, Strain = Case
-        if nonLinearAnalysis:
-            if not Createmodel or linearAnalysis:
+            # Kjore Linear analyse
+        if linearAnalysis:  # LinearAnalysis for stiffness and small deformation
+            if not Createmodel:
                 try:
                     openMdb(pathName=RVEmodellpath)
                     mod = mdb.models['Model-A']
@@ -234,59 +186,120 @@ while Q<n:
                     print 'Cae not found'
                     pass
             try:
-                execfile(Modellering +'nonLinearAnalysis.py')
+                execfile(Modellering +'LinearAnalysis.py')
             except:
-                print
-                n = n + 1
-    t = (time.time() - start_time)
-    print('t etter nonlin analyser=', t)
+                n=n+1
+            t = (time.time() - start_time)
+            print('t etter lin analyser=', t)
+        if LinearpostPross:
+            execfile(processering + 'LinearPostprocessing.py')
+            t = (time.time() - start_time)
+            print('t etter lin pross=', t)
+        else:
+            Stiffmatrix = np.load(lagrestiffpathmod)
+            print '\nStiffnessmatrix:'
+            for a in range(0, 6):
+                print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
+                    Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
+                    Stiffmatrix[5][a])
 
-    Reset = 0
-    if nonLinearpostPross:
-        print '\nPostProcess'
-        execfile(processering + 'nonLinearPostprocessing.py')
-    t = (time.time() - start_time)
-    print('t ved ferdig postprosess=', t)
-    if Savemodel:
-        mdb.saveAs(pathName=RVEmodellpath)
+            # Non linear tester
+        Magni = 2e-2    # Skalarverdi til toyning
+        Ret = 1         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+        strain = Magni * id[Ret]
 
-    #"""
+        print '\n\nReferanse Strain Vector ', strain
+        stresses = np.dot(Stiffmatrix, strain)# :  ex,  ey,  ex,  Yzy, -Yzx, -Yyx
+        print '\nStresses from RefSTRAINS', stresses
+        Stresses = stresses[Ret] * id[Ret]
+        print '\nReferanse Stress Vector', Stresses
+        #print Stresses, Stiffmatrix
+        strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
+
+        print '\nApplied Strain Vector', strains
+        Type = 'comp_'
+        if strains[Ret] > 0:
+            Type = 'tens_'
+
+        cases = [[Retning[Ret] + Type + str(ParameterSweep[ItraPara]) + '__Rand-' + str(Q), strains]]
+
+        for Case in cases:
+            Jobbnavn, Strain = Case
+            if nonLinearAnalysis:
+                if not Createmodel or linearAnalysis:
+                    try:
+                        openMdb(pathName=RVEmodellpath)
+                        mod = mdb.models['Model-A']
+                    except:
+                        print 'Cae not found'
+                        pass
+                try:
+                    execfile(Modellering +'nonLinearAnalysis.py')
+                except:
+                    print
+                    n = n + 1
+        t = (time.time() - start_time)
+        print('t etter nonlin analyser=', t)
+
+        Reset = 0
+        if nonLinearpostPross:
+            print '\nPostProcess'
+            execfile(processering + 'nonLinearPostprocessing.py')
+        t = (time.time() - start_time)
+        print('t ved ferdig postprosess=', t)
+        if Savemodel:
+            mdb.saveAs(pathName=RVEmodellpath)
+    strains2 = strains.tolist()
+
     for asad in range(0,3):
         print 'fix:  ',asad
-        if not Reset:
-            StressSigs = np.load(Tekstfiler+'Sisss.npy')
-        else:
-            StressSigs = np.genfromtxt(Sigmapaths)
-            StressSigs = StressSigs[1:,1:]
-            print StressSigs
-
+        StressSigs = np.genfromtxt(Sigmapaths)
+        StressSigs = StressSigs[1:,1:]
         for a in range(0,6):
             if not a == Ret:
                 StressSigs[1:,a] = np.multiply(StressSigs[1:,a],1/StressSigs[1:,Ret])
 
-        Fram = FrameFinder(StressSigs)
-        print 'Frame:',Fram[0],'   Stress:',Fram[1],'\n',Fram[2]
-        print StressSigs[Fram[0],:]
-
-        Reset = 1
-        modelName = modelName+'Cop'
-        mdb.Model(name=modelName, objectToCopy=mdb.models['Model-A'])
-        mod = mdb.models[modelName]
-        mod.setValues(restartJob=Jobbnavn, restartStep=difstpNm,
-                      restartIncrement=Fram[0], endRestartStep=OFF)
-        Jobbnavn = Jobbnavn+'L'
-        print Jobbnavn
-        ass = np.transpose(np.genfromtxt(Sigmapaths))
-        ass = ass[:,1:Fram[0]+1]
-        print len(ass)
-        print len(ass[0])
-        print ass[:, -1]
-        strains2= strains
-        if Fram[2][Fram[1]]>=0:
-            strains2[Fram[1]]= strains2[Fram[1]] - 0.5*strains[Fram[1]]
+        if not Reset:
+            Fprev=0
         else:
-            strains2[Fram[1]] = strains2[Fram[1]] + 0.5*strains[Fram[1]]
-        print '\nApplied Strain Vector', strains2
+            Fprev = Fram[0]
+        Reset = 1
+
+        Fram = FrameFinder(StressSigs)
+        print 'Frame:', Fram[0], '   Stress:', Fram[1], '\n', Fram[2]
+        StressSigs = np.genfromtxt(Sigmapaths)
+        StressSigs = StressSigs[1:, 1:]
+        print StressSigs[Fram[0], :]
+
+        stepps= (Fram[0]-Fprev)
+        if not stepps<=1:
+            modelName = modelName+'Cop'
+            mdb.Model(name=modelName, objectToCopy=mdb.models['Model-A'])
+            mod = mdb.models[modelName]
+            mod.setValues(restartJob=Jobbnavn, restartStep=difstpNm,
+                          restartIncrement= stepps-1, endRestartStep=OFF)
+
+            Jobbnavn = Jobbnavn+'L'
+            print '\n'+Jobbnavn
+            ass = np.transpose(np.genfromtxt(Sigmapaths))
+            ass = ass[:,1:Fram[0]+2]
+        else:
+            workpath = 'C:/temp/'
+            filelist = [f for f in os.listdir(workpath) if f.startswith(Jobbnavn)]  # if not f.endswith('.inp')]
+            for f in filelist:
+                try:
+                    os.remove(os.path.join(workpath, f))
+                except:
+                    pass
+
+        print strains2[Fram[1]], Fram[1]
+        if Fram[2][Fram[1]]>=0:
+            strains2[Fram[1]]= -strains2[Fram[1]] #+ 0.5*strains[Fram[1]]
+        else:
+            strains2[Fram[1]] = -strains2[Fram[1]] #- 0.5*strains[Fram[1]]
+        print strains2[Fram[1]]
+        print '\nInitial Strain Vector', strains
+        print '\nUpdated Strain Vector', strains2
         a = mod.rootAssembly
         exx, eyy, ezz, exy, exz, eyz = strains2
         mod.DisplacementBC(name='BCX', createStepName=difstpNm,
@@ -300,14 +313,16 @@ while Q<n:
         mod.DisplacementBC(name='BCZ', createStepName=difstpNm,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-        mdb.Job(name=Jobbnavn, model=modelName,  type=RESTART, userSubroutine='',
+        mdb.Job(name=Jobbnavn, model=modelName, type=RESTART, userSubroutine='',
                 scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
                 numGPUs=0)
         mdb.jobs[Jobbnavn].submit(consistencyChecking=OFF)
         mdb.jobs[Jobbnavn].waitForCompletion()
+
         if nonLinearpostPross:
             print '\nPostProcess'
             execfile(processering + 'nonLinearPostprocessing.py')
+        #del kjhk
         t = (time.time() - start_time)
         print('t ved ferdig postprosess=', t)
 

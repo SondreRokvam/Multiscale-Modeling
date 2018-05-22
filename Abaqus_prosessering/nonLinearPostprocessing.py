@@ -1,5 +1,6 @@
 def getHomogenizedSigmas():
     path = workpath + Jobbnavn
+    print path
     odb = session.openOdb(path + '.odb')
     inst = odb.rootAssembly.instances['PART-1-MESH-1-1']
     if 0 == len(odb.steps['Lasttoyinger'].frames):

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 #Globale Directories
 GitHub= 'C:/Multiscale-Modeling/'
 Tekstfiler  = GitHub+'textfiles/'
-change =10.0
+change =1.0
 
 def readSSData():
     # NOTE: you will probably need to change

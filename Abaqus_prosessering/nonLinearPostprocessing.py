@@ -1,6 +1,5 @@
 def getHomogenizedSigmas():
     path = workpath + Jobbnavn
-    global odb
     odb = session.openOdb(path + '.odb')
     inst = odb.rootAssembly.instances['PART-1-MESH-1-1']
     if 0 == len(odb.steps['Lasttoyinger'].frames):
@@ -80,13 +79,27 @@ def getHomogenizedSigmas():
 
 HomoSigs = getHomogenizedSigmas()
 np.save(Tekstfiler+'Sisss', HomoSigs[0])
-ss = open(Sigmapaths, "w")
-ss.write('%7f\t%7f\t%7f\t%7f\t%7f\t%7f\t%7f\n' % (strains[Ret],0,0,0,0,0,0))
-#print HomoSigs[0][-1]
-count =0
-for s in HomoSigs[0]:
-    ss.write('%7f\t%7f\t%7f\t%7f\t%7f\t%7f\t%7f\n' % (HomoSigs[2][count],s[0], s[1], s[2], s[3], s[4], s[5]))
-    count = count + 1
-ss.close()
-print 'saved to: ' ,Sigmapaths
+if not Reset:
+    ss = open(Sigmapaths, "w")
+    ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (strains[Ret],0,0,0,0,0,0))
+    #print HomoSigs[0][-1]
+    count =0
+    for s in HomoSigs[0]:
+        ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count],s[0], s[1], s[2], s[3], s[4], s[5]))
+        count = count + 1
+    ss.close()
+    print 'saved to: ' ,Sigmapaths
+else:
+    ss = open(Sigmapaths, "w")
+    ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (strains[Ret], 0, 0, 0, 0, 0, 0))
+    ss.close()
+    ss = open(Sigmapaths, "a")
+    for sds in range(0,len(ass[0])):
+        ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (ass[0][sds],ass[1][sds],ass[2][sds],ass[3][sds],ass[4][sds],ass[5][sds],ass[6][sds]))
+    count = 0
+    for s in HomoSigs[0]:
+        ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count],s[0], s[1], s[2], s[3], s[4], s[5]))
+        count = count + 1
+    ss.close()
+
 

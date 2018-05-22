@@ -8,7 +8,7 @@ def create_nonLinearstrainedlastcases(Strain, Jobbinfo):
     steg = mod.steps[difstpNm]
     steg.setValues(maxNumInc=Increments['maxNum'], initialInc=Increments['initial'] ,minInc=Increments['min'],
         maxInc=Increments['max'],convertSDI=CONVERT_SDI_OFF)
-    steg.Restart(frequency=1, numberIntervals=0, overlay=ON, timeMarks=OFF)
+    steg.Restart(frequency=1, numberIntervals=0, overlay=OFF, timeMarks=OFF)
 
     # ON/OFF aktivere Demping
     if Dampening:

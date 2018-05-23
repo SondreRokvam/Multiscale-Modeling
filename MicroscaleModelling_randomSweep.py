@@ -257,9 +257,9 @@ while Q<n:
 
 
     Reset=1
+    ko = 0
     Jobbnav = Jobbnavn
     prev=0
-    strains2 = strains.tolist()
     for asad in range(0,10):
         print '\nfix:  ',asad
         Fram = FrameFinder()
@@ -268,8 +268,15 @@ while Q<n:
         StressSigs = StressSigs[1:, 1:]
         print StressSigs[Fram[0], :]
 
-        mdb.models['Model-A'].Stress(name='FraNonLinear', distributionType=FROM_FILE,
+        print(Fram[0] - prev)
+        if not(Fram[0] - prev) <=  0:
+            mdb.models['Model-A'].Stress(name='FraNonLinear', distributionType=FROM_FILE,
                                      fileName=(workpath + Jobbnavn+'.odb'), step=-1, increment=Fram[0]-prev)
+            ko=0
+        else:
+            ko=ko+1
+            mdb.models['Model-A'].Stress(name='FraNonLinear', distributionType=FROM_FILE,
+                    fileName=(workpath + Jobbnav+str(asad-ko)+'.odb'), step=-1, increment=0)
 
         Jobbnavn = Jobbnav+str(asad)
         prev = Fram[0]+1
@@ -319,6 +326,7 @@ while Q<n:
         execfile(processering + 'nonLinearPostprocessing.py')
         t = (time.time() - start_time)
         print('t for Restart iterasjon=', t)
+    strains2 = strains.tolist()
 
     print 'Reached end of random key Iteration'
     t = (time.time() - start_time)

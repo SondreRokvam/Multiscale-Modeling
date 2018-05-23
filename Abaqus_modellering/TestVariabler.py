@@ -4,7 +4,7 @@ global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Inc
 #numCPU = multiprocessing.cpu_count()
 numCPU = 1
 
-analyse = 0
+analyse = 1
 if analyse:
     Createmodel = 1
     Savemodel = 1
@@ -23,7 +23,7 @@ else:
     LinearpostPross = 0
     nonLinearpostPross = 1
     openModel = 1
-Increments = {'maxNum': 25, 'initial': 2e-3, 'min': 1e-6, 'max': 1e-1}
+Increments = {'maxNum': 100, 'initial': 2e-3, 'min': 1e-6, 'max': 1e-1}
 
 """Simuleringsvariabler """
 global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin

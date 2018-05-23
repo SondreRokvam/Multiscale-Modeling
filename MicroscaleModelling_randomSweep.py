@@ -101,7 +101,7 @@ if True:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[4]
+ParameterSweep=[5]
 
 nf = 8
 Vf = 0.6  #
@@ -260,7 +260,7 @@ while Q<n:
     Jobbnav = Jobbnavn
     prev=0
     strains2 = strains.tolist()
-    for asad in range(0,2):
+    for asad in range(0,10):
         print '\nfix:  ',asad
         Fram = FrameFinder()
         print 'Frame:', Fram[0], '   Stress:', Fram[1], '\n', Fram[2]
@@ -269,7 +269,7 @@ while Q<n:
         print StressSigs[Fram[0], :]
 
         mdb.models['Model-A'].Stress(name='FraNonLinear', distributionType=FROM_FILE,
-                                     fileName=(workpath + Jobbnavn+'.odb'), step=-1, increment=Fram[0]-1-prev)
+                                     fileName=(workpath + Jobbnavn+'.odb'), step=-1, increment=Fram[0]-prev)
 
         Jobbnavn = Jobbnav+str(asad)
         prev = Fram[0]+1

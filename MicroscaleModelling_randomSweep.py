@@ -270,20 +270,18 @@ while Q<n:
 
         print(Fram[0] - prev)
         if not(Fram[0] - prev) <=  0:
-            mdb.models['Model-A'].Stress(name='FraNonLinear', distributionType=FROM_FILE,
-                                     fileName=(workpath + Jobbnavn+'.odb'), step=-1, increment=Fram[0]-prev)
-            ko=0
-        else:
-            ko=ko+1
-            mdb.models['Model-A'].Stress(name='FraNonLinear', distributionType=FROM_FILE,
-                    fileName=(workpath + Jobbnav+str(asad-ko)+'.odb'), step=-1, increment=0)
+            instances = (mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'],)
+            mdb.models['Model-A'].InitialState(updateReferenceConfiguration=OFF,
+                                               fileName=workpath + Jobbnavn, endStep=LAST_STEP, endIncrement=Fram[0]-prev,
+                                               name='StrainField-1', createStepName='Initial',
+                                               instances=instances)
 
-        Jobbnavn = Jobbnav+str(asad)
-        prev = Fram[0]+1
-        print '\n' + Jobbnavn
-        ass = np.transpose(np.genfromtxt(Sigmapaths))
-        ass = ass[:, 1:Fram[0] + 1]
-        print strains2[Fram[1]], Fram[1]
+            Jobbnavn = Jobbnav+str(asad)
+            prev = Fram[0]+1
+            print '\n' + Jobbnavn
+            ass = np.transpose(np.genfromtxt(Sigmapaths))
+            ass = ass[:, 1:Fram[0] + 1]
+            print strains2[Fram[1]], Fram[1]
 
         if Fram[2][Fram[1]]>=0:
             strains2[Fram[1]]= strains2[Fram[1]] - strains[Fram[1]]/(asad+1)

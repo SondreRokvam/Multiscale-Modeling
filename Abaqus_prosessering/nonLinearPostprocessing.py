@@ -7,8 +7,8 @@ def getHomogenizedSigmas():
         del IncrementError
     antallElems = len(inst.elements)
     frj =len(odb.steps['Lasttoyinger'].frames)
-    print 'Elementer: ', antallElems,'\nFrames: ', frj
-    print 'Time completion: ', odb.steps['Lasttoyinger'].frames[-1].frameValue,'\nStrain completion: ', odb.steps['Lasttoyinger'].frames[-1].frameValue*strains[Ret]
+    print 'Elementer: ', antallElems,'\tFrames: ', frj
+    print 'Time completion: ', odb.steps['Lasttoyinger'].frames[-1].frameValue,'\tStrain completion: ', odb.steps['Lasttoyinger'].frames[-1].frameValue*strains[Ret]
 
     Sigma_frame= np.zeros([frj, 6])
     Time_frame= np.zeros(frj)
@@ -80,6 +80,7 @@ def getHomogenizedSigmas():
 
 HomoSigs = getHomogenizedSigmas()
 np.save(Tekstfiler+'Sisss', HomoSigs[0])
+
 if not Reset:
     ss = open(Sigmapaths, "w")
     ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (strains[Ret],0,0,0,0,0,0))
@@ -99,10 +100,11 @@ else:
         ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (ass[0][sds],ass[1][sds],ass[2][sds],ass[3][sds],ass[4][sds],ass[5][sds],ass[6][sds]))
     count = 0
     ss.close()
-    ss = open(Sigmapaths, "a")
-    for s in HomoSigs[0]:
-        ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count]+ass[0][-1],s[0], s[1], s[2], s[3], s[4], s[5]))
-        count = count + 1
-    ss.close()
+    if not asad == (reps - 1):
+        ss = open(Sigmapaths, "a")
+        for s in HomoSigs[0]:
+            ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count]+ass[0][-1],s[0], s[1], s[2], s[3], s[4], s[5]))
+            count = count + 1
+        ss.close()
 
 

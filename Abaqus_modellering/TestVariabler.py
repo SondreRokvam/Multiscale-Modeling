@@ -4,7 +4,7 @@ global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Inc
 #numCPU = multiprocessing.cpu_count()
 numCPU = 1
 
-analyse = 1
+analyse = 0
 if analyse:
     Createmodel = 1
     Savemodel = 1

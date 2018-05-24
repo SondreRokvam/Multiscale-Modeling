@@ -92,6 +92,7 @@ if not Reset:
     ss.close()
     print 'saved to: ' ,Sigmapaths
 else:
+    #del yeah
     ss = open(Sigmapaths, "w")
     ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (strains[Ret], 0, 0, 0, 0, 0, 0))
     ss.close()
@@ -103,7 +104,8 @@ else:
     if not asad == (reps - 1):
         ss = open(Sigmapaths, "a")
         for s in HomoSigs[0]:
-            ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count]+ass[0][-1],s[0], s[1], s[2], s[3], s[4], s[5]))
+            if not HomoSigs[2][count]==0:
+                ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count]+ass[0][-1],s[0], s[1], s[2], s[3], s[4], s[5]))
             count = count + 1
         ss.close()
 

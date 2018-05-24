@@ -61,10 +61,10 @@ def FrameFinder():
         for sa in range(0,len(StressSigs[0])):
             if not sa==Ret:
                 if not Sing[sa]:
-                    if abs(StressSigs[kj][sa]) > 5e-2:
+                    if abs(StressSigs[kj][sa]) > 10e-2:
                         Sing[sa]=1
                 else:
-                    if abs(StressSigs[kj][sa]) > 5e-2:
+                    if abs(StressSigs[kj][sa]) > 10e-2:
                         return kj-2,sa,StressSigs[kj-2]
                     else:
                         Sing[sa]=0
@@ -221,7 +221,7 @@ while Q<n:
         #print Stresses, Stiffmatrix
         strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
 
-        print '\nApplied Strain Vector', strains
+        print '\nInitial Strain Vector', strains
         Type = 'comp_'
         if strains[Ret] > 0:
             Type = 'tens_'
@@ -255,26 +255,36 @@ while Q<n:
         if Savemodel:
             mdb.saveAs(pathName=RVEmodellpath)
 
+    Fram = FrameFinder()
+    print 'Frame:', Fram[0], '   Stress:', Fram[1], '\n', Fram[2]
+    ass = np.transpose(np.genfromtxt(Sigmapaths))
+    ass = ass[:, 1:Fram[0] + 1]
+    print ass
 
+    strains2 = strains.tolist()
     Reset=1
     ko = 0
     Jobbnav = Jobbnavn
     prev=0
-    for asad in range(0,10):
+    reps = 10
+    for asad in range(0,reps):
         print '\nfix:  ',asad
         Fram = FrameFinder()
         print 'Frame:', Fram[0], '   Stress:', Fram[1], '\n', Fram[2]
         StressSigs = np.genfromtxt(Sigmapaths)
         StressSigs = StressSigs[1:, 1:]
         print StressSigs[Fram[0], :]
-
+        Jobbnavn = Jobbnav + str(asad)
+        prev = Fram[0]
         print(Fram[0] - prev)
         if not(Fram[0] - prev) <=  0:
             instances = (mdb.models['Model-A'].rootAssembly.instances['PART-1-MESH-1-1'],)
-            mdb.models['Model-A'].InitialState(updateReferenceConfiguration=OFF,
+            mod.InitialState(updateReferenceConfiguration=ON,
                                                fileName=workpath + Jobbnavn, endStep=LAST_STEP, endIncrement=Fram[0]-prev,
                                                name='StrainField-1', createStepName='Initial',
                                                instances=instances)
+            mod.Stress(name='StressField-1', distributionType=FROM_FILE,
+                       fileName=workpath + Jobbnavn+'.odb',step=-1, increment=Fram[0]-prev)
 
             Jobbnavn = Jobbnav+str(asad)
             prev = Fram[0]+1
@@ -283,12 +293,12 @@ while Q<n:
             ass = ass[:, 1:Fram[0] + 1]
             print strains2[Fram[1]], Fram[1]
 
+        print '\nPrevious Strain Vector', strains2
         if Fram[2][Fram[1]]>=0:
             strains2[Fram[1]]= strains2[Fram[1]] - strains[Fram[1]]/(asad+1)
         else:
             strains2[Fram[1]] = strains2[Fram[1]] + strains[Fram[1]]/(asad+1)
         print strains2[Fram[1]]
-        print '\nInitial Strain Vector', strains
         print '\nUpdated Strain Vector', strains2
         a = mod.rootAssembly
 
@@ -311,9 +321,6 @@ while Q<n:
                 modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
                 scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCPU,
                 numDomains=numCPU, numGPUs=1)
-        #mdb.Job(name=Jobbnavn, model=modelName, type=RESTART, userSubroutine='',
-         #       scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
-         #       numGPUs=0)
         try:
             mdb.jobs[Jobbnavn].submit(consistencyChecking=OFF)
             mdb.jobs[Jobbnavn].waitForCompletion()

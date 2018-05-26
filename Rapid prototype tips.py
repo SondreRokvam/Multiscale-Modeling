@@ -1,0 +1,1 @@
+execfile('C:/Users/Sondre/Documents/GitHub/Multiscale-Modeling/MicroscaleModelling_randomSweep.py')

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #Globale Directories
-GitHub= 'C:/Multiscale-Modeling/'
+GitHub= 'C:/Users/Sondre/Documents/GitHub/Multiscale-Modeling/'
 Tekstfiler  = GitHub+'textfiles/'
 change =1.0
 

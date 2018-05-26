@@ -73,7 +73,7 @@ def FrameFinder():
 """Intierings"""
 if True:
     #Globale Directories
-    GitHub, workpath = 'C:/Multiscale-Modeling/', 'C:/Temp/'
+    GitHub, workpath = 'C:/Users/Sondre/Documents/GitHub/Multiscale-Modeling/', 'C:/Temp/'
     Tekstfiler, Modellering,processering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/',GitHub+'Abaqus_prosessering/'
 
 

@@ -23,7 +23,7 @@ else:
     LinearpostPross = 0
     nonLinearpostPross = 1
     openModel = 1
-Increments = {'maxNum': 25, 'initial': 2e-3, 'min': 1e-6, 'max': 1e-1}
+Increments = {'maxNum': 30, 'initial': 2e-3, 'min': 1e-6, 'max': 1e-1}
 
 """Simuleringsvariabler """
 global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin
@@ -54,7 +54,7 @@ rmean = 8.7096                              # Gjennomsnittradius pa fiber
 Rstdiv = 0.6374                             # OStandard avvik fra gjennomsnittsradius
 
 Interface = 1                                   # ON/OFF CohesiveInterface
-rinterface = 0.0001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
+rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
 ElementInterfaceT = 0                  # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
 id   =   np.identity(6)          # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'

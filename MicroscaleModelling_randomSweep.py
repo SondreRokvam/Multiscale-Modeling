@@ -61,13 +61,14 @@ def FrameFinder():
         for sa in range(0,len(StressSigs[0])):
             if not sa==Ret:
                 if not Sing[sa]:
-                    if abs(StressSigs[kj][sa]) > 5e-2:
+                    if abs(StressSigs[kj][sa]) > 10e-2:
                         Sing[sa]=1
                 else:
-                    if abs(StressSigs[kj][sa]) > 5e-2:
+                    if abs(StressSigs[kj][sa]) > 10e-2:
                         return kj-2,sa,StressSigs[kj-2]
                     else:
                         Sing[sa]=0
+    return len(StressSigs)-1, False, StressSigs[len(StressSigs)-1]
 
 
 """Intierings"""
@@ -101,7 +102,7 @@ if True:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[4]
+ParameterSweep=[5]
 
 nf = 8
 Vf = 0.6  #
@@ -221,7 +222,7 @@ while Q<n:
         #print Stresses, Stiffmatrix
         strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
 
-        print '\nApplied Strain Vector', strains
+        print '\nInitial Strain Vector', strains
         Type = 'comp_'
         if strains[Ret] > 0:
             Type = 'tens_'
@@ -243,50 +244,82 @@ while Q<n:
                 except:
                     print
                     n = n + 1
-        t = (time.time() - start_time)
-        print('t etter nonlin analyser=', t)
+                t = (time.time() - start_time)
+                print('t etter nonlin analyser=', t)
+                if Savemodel:
+                    mdb.saveAs(pathName=RVEmodellpath)
 
-        Reset = 0
-        if nonLinearpostPross:
-            print '\nPostProcess'
-            execfile(processering + 'nonLinearPostprocessing.py')
+    Reset = 0       #For aa logge initielle strain stress
+    stegy=difstpNm
+    if nonLinearpostPross:
+        print '\nPostProcess'
+        execfile(processering + 'nonLinearPostprocessing.py')
         t = (time.time() - start_time)
         print('t ved ferdig postprosess=', t)
-        if Savemodel:
-            mdb.saveAs(pathName=RVEmodellpath)
 
 
+
+    strains2 = strains.tolist()
     Reset=1
     Jobbnav = Jobbnavn
-    prev=0
-    strains2 = strains.tolist()
-    for asad in range(0,2):
+    prev=0      #for aa vite hvor langt bak vi hoppet forrige gang
+    Framecount =0
+    reps = 6
+
+    for asad in range(0,reps):
         print '\nfix:  ',asad
         Fram = FrameFinder()
-        print 'Frame:', Fram[0], '   Stress:', Fram[1], '\n', Fram[2]
+        print Fram
         StressSigs = np.genfromtxt(Sigmapaths)
         StressSigs = StressSigs[1:, 1:]
         print StressSigs[Fram[0], :]
+        print 'diff = ',(Fram[0] - prev)
 
-        mdb.models['Model-A'].Stress(name='FraNonLinear', distributionType=FROM_FILE,
-                                     fileName=(workpath + Jobbnavn+'.odb'), step=-1, increment=Fram[0]-1-prev)
+        appe = 0
+        if not (Fram[0] - prev)<=0:
+            Framecount = Framecount+(Fram[0]- prev)
+            if asad==0:
+                prevname= difstpNm
+            else:
+                prevname = 'rep'+str(asad-1)
+            ass = np.transpose(np.genfromtxt(Sigmapaths))
+            ass = ass[:, 1:Framecount + 1]
+            print 'plotpunkter   ', len(ass[0])
+            print ass[0][-1]
+            stegy ='rep'+str(asad)
+            mod.StaticStep(name='rep'+str(asad), previous=prevname, nlgeom=ON, stabilizationMagnitude=0.0002, stabilizationMethod=DAMPING_FACTOR,
+                           continueDampingFactors=False, adaptiveDampingRatio=0.05)
+            steg = mod.steps['rep'+str(asad)]
+            steg.setValues(maxNumInc=Increments['maxNum'], initialInc=ass[0][-1]-ass[0][-2],
+                           minInc=Increments['min'],
+                           maxInc=Increments['max'], convertSDI=CONVERT_SDI_OFF)
+            steg.Restart(frequency=1, numberIntervals=0, overlay=OFF, timeMarks=OFF)
+            mod.setValues(restartJob=Jobbnavn,
+                          restartStep=prevname, restartIncrement=Fram[0])
 
-        Jobbnavn = Jobbnav+str(asad)
-        prev = Fram[0]+1
+            Jobbnavn = Jobbnav + str(asad)
+            mdb.Job(name=Jobbnavn, model=modelName, description='', type=RESTART,
+                    atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
+                    memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+                    explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
+                    modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
+                    scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
+                    numGPUs=0)
+            appe= 1
+            prev = Fram[0]
+
+
+
         print '\n' + Jobbnavn
-        ass = np.transpose(np.genfromtxt(Sigmapaths))
-        ass = ass[:, 1:Fram[0] + 1]
-        print strains2[Fram[1]], Fram[1]
 
-        if Fram[2][Fram[1]]>=0:
-            strains2[Fram[1]]= strains2[Fram[1]] - strains[Fram[1]]/(asad+1)
-        else:
-            strains2[Fram[1]] = strains2[Fram[1]] + strains[Fram[1]]/(asad+1)
-        print strains2[Fram[1]]
-        print '\nInitial Strain Vector', strains
+        print '\nPrevious Strain Vector', strains2
+        if Fram[1]==False:
+            if Fram[2][Fram[1]]>=0:
+                strains2[Fram[1]]= strains2[Fram[1]] + strains[Fram[1]]/4
+            else:
+                strains2[Fram[1]] = strains2[Fram[1]] - strains[Fram[1]]/4
         print '\nUpdated Strain Vector', strains2
         a = mod.rootAssembly
-
         exx, eyy, ezz, exy, exz, eyz = strains2
         mod.DisplacementBC(name='BCX', createStepName=difstpNm,
                            region=a.sets['RPX'], u1=exx, u2=exy, u3=exz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
@@ -299,16 +332,8 @@ while Q<n:
         mod.DisplacementBC(name='BCZ', createStepName=difstpNm,
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-        mdb.Job(name=Jobbnavn, model=modelName, description='', type=ANALYSIS,
-                atTime=None, memory=90,
-                memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-                explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
-                modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-                scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCPU,
-                numDomains=numCPU, numGPUs=1)
-        #mdb.Job(name=Jobbnavn, model=modelName, type=RESTART, userSubroutine='',
-         #       scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
-         #       numGPUs=0)
+
+
         try:
             mdb.jobs[Jobbnavn].submit(consistencyChecking=OFF)
             mdb.jobs[Jobbnavn].waitForCompletion()
@@ -319,6 +344,7 @@ while Q<n:
         execfile(processering + 'nonLinearPostprocessing.py')
         t = (time.time() - start_time)
         print('t for Restart iterasjon=', t)
+    strains2 = strains.tolist()
 
     print 'Reached end of random key Iteration'
     t = (time.time() - start_time)

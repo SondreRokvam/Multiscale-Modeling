@@ -3,12 +3,12 @@ def getHomogenizedSigmas():
     print path
     odb = session.openOdb(path + '.odb')
     inst = odb.rootAssembly.instances['PART-1-MESH-1-1']
-    if 0 == len(odb.steps['Lasttoyinger'].frames):
+    if 0 == len(odb.steps[stegy].frames):
         del IncrementError
     antallElems = len(inst.elements)
-    frj =len(odb.steps['Lasttoyinger'].frames)
-    print 'Elementer: ', antallElems,'\nFrames: ', frj
-    print 'Time completion: ', odb.steps['Lasttoyinger'].frames[-1].frameValue,'\nStrain completion: ', odb.steps['Lasttoyinger'].frames[-1].frameValue*strains[Ret]
+    frj =len(odb.steps[stegy].frames)
+    print 'Elementer: ', antallElems,'\tFrames: ', frj
+    print 'Time completion: ', odb.steps[stegy].frames[-1].frameValue,'\tStrain completion: ', odb.steps[stegy].frames[-1].frameValue*strains[Ret]
 
     Sigma_frame= np.zeros([frj, 6])
     Time_frame= np.zeros(frj)
@@ -20,7 +20,7 @@ def getHomogenizedSigmas():
     print('t ved start post pross=', t)
 
     for fra in range(0,frj):
-        fras = odb.steps['Lasttoyinger'].frames[fra]
+        fras = odb.steps[stegy].frames[fra]
         Time_frame[fra]=fras.frameValue
         vol = np.zeros(antallElems)
         dodvolum = np.zeros(antallElems)
@@ -73,13 +73,14 @@ def getHomogenizedSigmas():
         for si in range(0, 6):
             Sigma_frame[Sigfra][si] = np.multiply(Sigma_frame[Sigfra][si],1/Volume_frame[Sigfra])#(tykkelse*dL*dL)
 
-    t = (time.time() - start_time)
-    print('t ferdig aa dele paa volum=', t)
+    #t = (time.time() - start_time)
+    #print('t ferdig aa dele paa volum=', t)
     ## print 'Sigmas = ',len(Sigma_frame)
     return Sigma_frame, Volume_frame,Time_frame
 
 HomoSigs = getHomogenizedSigmas()
 np.save(Tekstfiler+'Sisss', HomoSigs[0])
+
 if not Reset:
     ss = open(Sigmapaths, "w")
     ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (strains[Ret],0,0,0,0,0,0))
@@ -91,6 +92,7 @@ if not Reset:
     ss.close()
     print 'saved to: ' ,Sigmapaths
 else:
+    #del yeah
     ss = open(Sigmapaths, "w")
     ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (strains[Ret], 0, 0, 0, 0, 0, 0))
     ss.close()
@@ -99,10 +101,14 @@ else:
         ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (ass[0][sds],ass[1][sds],ass[2][sds],ass[3][sds],ass[4][sds],ass[5][sds],ass[6][sds]))
     count = 0
     ss.close()
-    ss = open(Sigmapaths, "a")
-    for s in HomoSigs[0]:
-        ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count]+ass[0][-1],s[0], s[1], s[2], s[3], s[4], s[5]))
-        count = count + 1
-    ss.close()
-
+    if not asad == (reps - 1):
+        if appe:
+            ss = open(Sigmapaths, "a")
+            count = 0
+            for s in HomoSigs[0]:
+                if not HomoSigs[2][count]==0:
+                    ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count]+ass[0][-1],s[0], s[1], s[2], s[3], s[4], s[5]))
+                count = count + 1
+            ss.close()
+    print 'saved to: ', Sigmapaths
 

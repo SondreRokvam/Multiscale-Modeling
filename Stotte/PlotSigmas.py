@@ -24,9 +24,9 @@ def plotStressStrainData():
     plt.plot(x,Stresses[1], 'bo--')
     plt.plot(x,Stresses[2], 'yo--')
     plt.plot(x,Stresses[3], 'ro--')
-    plt.plot(x,Stresses[4], 'bo--')
-    plt.plot(x,Stresses[5], 'go--')
-    plt.plot(x,Stresses[6], 'ro--')
+    plt.plot(x,Stresses[4], 'bx--')
+    plt.plot(x,Stresses[5], 'gx--')
+    plt.plot(x,Stresses[6], 'rx--')
 
     ymin, ymax = plt.ylim()
     xmin, xmax = plt.xlim()

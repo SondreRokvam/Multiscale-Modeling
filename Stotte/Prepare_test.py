@@ -2,23 +2,31 @@
 
 #Siden scriptet maa restarte abaqus saa mellomlagres informasjon om iterasjoner i en ekstern fil
 #Denne filen resetter iterasjonstelleren og skriver et nullstilt iterasjonsscript.
+
 #Globale Directories
-GitHub, workpath = 'C:/Users/Sondre/Documents/GitHub/Multiscale-Modeling/', 'C:/Temp/'
-Tekstfiler, Modellering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/'
+GitHub = 'C:/MultiScaleMethod/Github/Multiscale-Modeling/'
+workpath = 'C:/Temp/'
+
+Tekstfiler = 'C:/MultiScaleMethod/Github/textfiles/'
+Modellering = GitHub+'Abaqus_modellering/'
+
 
 #Nullsette iterasjoner marker
 Itra = open(Tekstfiler+'Iterasjoner.txt', "w")
 Itra.close()
 
+
 #Nullsette jobber
 JOBO = open(workpath + 'Abaqusjobs.bat', "w")
 JOBO.close()
+
 
 #Lese antall itersjoner
 Itra = open(Tekstfiler+'Iterasjoner.txt', "r")
 Content = Itra.read()
 colsa =Content.split('\n')
 number = len(colsa)-1
+
 
 print(number)
 #Lage pythonscript som setter iterasjonsparameter lik antall iterasjoner == 0

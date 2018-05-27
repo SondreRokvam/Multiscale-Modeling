@@ -70,9 +70,9 @@ def FrameFinder():
                         Sing[sa]=0
     return len(StressSigs)-1, False, StressSigs[len(StressSigs)-1]
 
-    #Globale Directories
-    GitHub, workpath = 'C:/MultiScaleMethod/Github/Multiscale-Modeling/', 'C:/Temp/'
-    Tekstfiler, Modellering,processering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/',GitHub+'Abaqus_prosessering/'
+#Globale Directories
+GitHub, workpath = 'C:/MultiScaleMethod/Github/Multiscale-Modeling/', 'C:/Temp/'
+Tekstfiler, Modellering,processering = GitHub+'textfiles/', GitHub+'Abaqus_modellering/',GitHub+'Abaqus_prosessering/'
 
 """Intierings"""
 if True:

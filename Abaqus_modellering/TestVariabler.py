@@ -25,6 +25,9 @@ else:
     openModel = 1
 Increments = {'maxNum': 30, 'initial': 2e-3, 'min': 1e-6, 'max': 1e-1}
 
+
+
+
 """Simuleringsvariabler """
 global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin
 

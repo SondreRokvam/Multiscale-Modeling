@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #Globale Directories
-GitHub= 'C:/Users/Sondre/Documents/GitHub/Multiscale-Modeling/'
-Tekstfiler  = GitHub+'textfiles/'
-change =1.0
+Tekstfiler  = 'C:/MultiScaleMethod/Github/textfiles/'
+
+zoom =1.0
 
 def readSSData():
     # NOTE: you will probably need to change
@@ -34,7 +34,7 @@ def plotStressStrainData():
     print (ymin, ymax, xmin, xmax)
 
     plt.xlim((xmin), (xmax))
-    plt.ylim((ymin/change), (ymax / change))
+    plt.ylim((ymin/zoom), (ymax / zoom))
 
     ymin, ymax = plt.ylim()
     xmin, xmax = plt.xlim()

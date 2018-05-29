@@ -51,24 +51,33 @@ def Iterasjonfiks():
     Itra.write('global ' + InterestingParameter + '\n' + InterestingParameter + ' = ' + str(int(number)))
     Itra.close()
 def FrameFinder():
-    StressSigs = np.genfromtxt(Sigmapaths)
-    StressSigs = StressSigs[1:, 1:]
+    print Sigmapaths
+    StressSi = np.genfromtxt(Sigmapaths)
+    StressSi = StressSi[1:, 1:]
     for a in range(0, 6):
         if not a == Ret:
-            StressSigs[1:, a] = np.multiply(StressSigs[1:, a], 1 / StressSigs[1:, Ret])
+            StressSi[1:, a] = np.multiply(StressSi[1:, a], 1 / StressSi[1:, Ret])
     Sing = [0]*6
-    for kj in range(0,len(StressSigs)):
-        for sa in range(0,len(StressSigs[0])):
+    Dob = [0]*6
+    StressFlags = [0]*6
+    for kj in range(0,len(StressSi)):
+        for sa in range(0,len(StressSi[0])):
             if not sa==Ret:
-                if not Sing[sa]:
-                    if abs(StressSigs[kj][sa]) > 10e-2:
-                        Sing[sa]=1
-                else:
-                    if abs(StressSigs[kj][sa]) > 10e-2:
-                        return kj-2,sa,StressSigs[kj-2]
+                if not Dob[sa]:
+                    if not Sing[sa]:
+                        if abs(StressSi[kj][sa]) > 5e-2:
+                            Sing[sa]=1
                     else:
-                        Sing[sa]=0
-    return len(StressSigs)-1, False, StressSigs[len(StressSigs)-1]
+                        if abs(StressSi[kj][sa]) > 5e-2:     #   Feilmargin
+                            Dob[sa] = 1
+                        else:
+                            Sing[sa]=0
+                else:
+                    StressFlags[sa] = 1
+        for sa in range(0, len(StressSi[0])):
+            if StressFlags[sa]:
+                return kj - 2, StressFlags, StressSi[kj - 2]
+    return len(StressSi)-1, StressFlags, StressSi[len(StressSi)-1]
 
 #Globale Directories
 GitHub, workpath = 'C:/MultiScaleMethod/Github/Multiscale-Modeling/', 'C:/Temp/'
@@ -82,6 +91,11 @@ if True:
     Iterasjonfiks()
     execfile(Modellering+'IterationParameters.py')      # Sette iterasjonsnummer
 
+    # Open for big scale iterations
+    if Iterations:
+        Itra = open(Tekstfiler+'Iterasjoner.txt', "a")
+        Itra.write('\n')
+        Itra.close()
 
     print 'Iterasjon : ',ItraPara      #Antall itersjoner saa langt
 
@@ -100,7 +114,7 @@ if True:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[5]
+ParameterSweep=[9]
 
 nf = 8
 Vf = 0.6  #
@@ -255,47 +269,58 @@ while Q<n:
         t = (time.time() - start_time)
         print('t ved ferdig postprosess=', t)
 
-
-
     strains2 = strains.tolist()
     Reset=1
     Jobbnav = Jobbnavn
     prev=0      #for aa vite hvor langt bak vi hoppet forrige gang
-    Framecount =0
-    reps = 6
+    reps = 50
+    adjusts=0
+    Frames = np.zeros(reps+1)
+    while adjusts<reps:
+        Fram = FrameFinder()  # Returns frame before divergion
+        if not adjusts==0:
+            if Fram[0]<prevfram[0]:
+                Fram= prevfram
+        print '\nfix:  ',adjusts
 
-    for asad in range(0,reps):
-        print '\nfix:  ',asad
-        Fram = FrameFinder()
         print Fram
         StressSigs = np.genfromtxt(Sigmapaths)
-        StressSigs = StressSigs[1:, 1:]
-        print StressSigs[Fram[0], :]
-        print 'diff = ',(Fram[0] - prev)
+        StressSigs = StressSigs[:Fram[0]]
+
+        print StressSigs[-1, :]
+        print 'plotpunkter   ', len(StressSigs)-1
 
         appe = 0
-        if not (Fram[0] - prev)<=0:
-            Framecount = Framecount+(Fram[0]- prev)
-            if asad==0:
+        diff = Fram[0] - prev
+
+        if not diff<=0:
+            Frames[adjusts+1]= Fram[0]
+            appe= 1
+
+            prev = Fram[0]
+
+            if adjusts==0:
                 prevname= difstpNm
             else:
-                prevname = 'rep'+str(asad-1)
-            ass = np.transpose(np.genfromtxt(Sigmapaths))
-            ass = ass[:, 1:Framecount + 1]
-            print 'plotpunkter   ', len(ass[0])
-            print ass[0][-1]
-            stegy ='rep'+str(asad)
-            mod.StaticStep(name='rep'+str(asad), previous=prevname, nlgeom=ON, stabilizationMagnitude=0.0002, stabilizationMethod=DAMPING_FACTOR,
+                prevname = 'rep'+str(adjusts-1)
+            addedF = int(Frames[adjusts+1]) - int(Frames[adjusts])
+            stegy ='rep'+str(adjusts)
+
+
+            mod.StaticStep(name='rep'+str(adjusts), previous=prevname, nlgeom=ON, stabilizationMagnitude=0.0002, stabilizationMethod=DAMPING_FACTOR,
                            continueDampingFactors=False, adaptiveDampingRatio=0.05)
-            steg = mod.steps['rep'+str(asad)]
-            steg.setValues(maxNumInc=Increments['maxNum'], initialInc=ass[0][-1]-ass[0][-2],
+
+
+            steg = mod.steps['rep'+str(adjusts)]
+            lastTimediff = (StressSigs[-1][0]-StressSigs[-2][0])/2
+            steg.setValues(maxNumInc=Increments['maxNum'], initialInc=lastTimediff,
                            minInc=Increments['min'],
                            maxInc=Increments['max'], convertSDI=CONVERT_SDI_OFF)
             steg.Restart(frequency=1, numberIntervals=0, overlay=OFF, timeMarks=OFF)
             mod.setValues(restartJob=Jobbnavn,
-                          restartStep=prevname, restartIncrement=Fram[0])
+                          restartStep=prevname, restartIncrement=addedF)
 
-            Jobbnavn = Jobbnav + str(asad)
+            Jobbnavn = Jobbnav + str(adjusts)
             mdb.Job(name=Jobbnavn, model=modelName, description='', type=RESTART,
                     atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
                     memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
@@ -303,20 +328,20 @@ while Q<n:
                     modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
                     scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
                     numGPUs=0)
-            appe= 1
-            prev = Fram[0]
 
 
-
-        print '\n' + Jobbnavn
 
         print '\nPrevious Strain Vector', strains2
-        if Fram[1]==False:
-            if Fram[2][Fram[1]]>=0:
-                strains2[Fram[1]]= strains2[Fram[1]] + strains[Fram[1]]/4
-            else:
-                strains2[Fram[1]] = strains2[Fram[1]] - strains[Fram[1]]/4
-        print '\nUpdated Strain Vector', strains2
+        print 'Change : ', Fram[1]
+        for ssss in range(0,len(strains)):
+            if Fram[1][ssss]:
+                if StressSigs[-1][ssss+1]>=0:
+                    strains2[ssss] = strains2[ssss] + (adjusts+1)*strains[ssss]
+                else:
+                    strains2[ssss] = strains2[ssss] - (adjusts+1)*strains[ssss]
+
+        print 'Updated Strain Vector', strains2, '\n\n' + Jobbnavn
+
         a = mod.rootAssembly
         exx, eyy, ezz, exy, exz, eyz = strains2
         mod.DisplacementBC(name='BCX', createStepName=difstpNm,
@@ -331,7 +356,6 @@ while Q<n:
                            region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                            amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-
         try:
             mdb.jobs[Jobbnavn].submit(consistencyChecking=OFF)
             mdb.jobs[Jobbnavn].waitForCompletion()
@@ -342,20 +366,21 @@ while Q<n:
         execfile(processering + 'nonLinearPostprocessing.py')
         t = (time.time() - start_time)
         print('t for Restart iterasjon=', t)
-    strains2 = strains.tolist()
 
-    print 'Reached end of random key Iteration'
+        if appe:
+            adjusts =adjusts+1
+            print'count - ', adjusts
+            prevfram = Fram
+
+
+
+
     t = (time.time() - start_time)
-    print('t ved ferdig', t)
-    #"""
+    print('Reached end of random key Iteration\tt ved ferdig', t)
+
+
+
     Q = Q + 1
     del section, regionToolset, dgm, part, material, assembly, step, interaction
     del load, mesh, job, sketch, visualization, xyPlot, dgo, connectorBehavior
 
-#Open for big scale iterations
-
-"""
-Itra = open(Tekstfiler+'Iterasjoner.txt', "a")
-Itra.write('\n')
-Itra.close()
-"""

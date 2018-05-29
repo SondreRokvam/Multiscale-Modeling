@@ -1,12 +1,6 @@
 """Filen er laget for aa bli kjort av microscale scriptet"""
 # Lage materialer, material sections og assigne materialer til sections for Matrix, Fiber og Interface
 """Material Constants for Resin, Fiber and Interfaze/Bond/Sizing"""
-ResCon2 = {'E,v':(3,0.35), 'Den':1.2e-06,
-          'CDP':(0.1, 0.1, 1.16, 0.89, 0.0001),
-          'cdpCCH':((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)),
-          'cdpCTS':(0.6, 0.09),
-          'cdpCTD':((0.0, 0.0), (0.9, 1.487)),
-          'cdpCCD':((0.0, 0.0), (0.0, 0.32), (0.9, 0.55))}
 ResCon = {'E,v':(3.0,0.35), 'Den':1.2e-06,
           'CDP':(0.1, 0.1, 1.16, 0.89, 0.0001),
           'cdpCCH':((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)),

@@ -51,6 +51,7 @@ def Iterasjonfiks():
     Itra.write('global ' + InterestingParameter + '\n' + InterestingParameter + ' = ' + str(int(number)))
     Itra.close()
 def FrameFinder():
+    limit = 0.05
     print Sigmapaths
     StressSi = np.genfromtxt(Sigmapaths)
     StressSi = StressSi[1:, 1:]
@@ -59,25 +60,36 @@ def FrameFinder():
             StressSi[1:, a] = np.multiply(StressSi[1:, a], 1 / StressSi[1:, Ret])
     Sing = [0]*6
     Dob = [0]*6
+    Trecharm = [0]*6
     StressFlags = [0]*6
     for kj in range(0,len(StressSi)):
         for sa in range(0,len(StressSi[0])):
             if not sa==Ret:
-                if not Dob[sa]:
-                    if not Sing[sa]:
-                        if abs(StressSi[kj][sa]) > 5e-2:
-                            Sing[sa]=1
-                    else:
-                        if abs(StressSi[kj][sa]) > 5e-2:     #   Feilmargin
-                            Dob[sa] = 1
+                if not Trecharm[sa]:
+                    if not Dob[sa]:
+                        if not Sing[sa]:
+                            if abs(StressSi[kj][sa]) > limit:
+                                Sing[sa]=1
                         else:
-                            Sing[sa]=0
+                            if abs(StressSi[kj][sa]) > limit:     #   Feilmargin
+                                Dob[sa] = 1
+                            else:
+                                Sing[sa]=0
+                    else:
+                        if abs(StressSi[kj][sa]) > limit:  # Feilmargin
+                            Trecharm[sa] = 1
+                        else:
+                            Sing[sa] = 0
+                            Dob[sa] = 0
                 else:
                     StressFlags[sa] = 1
         for sa in range(0, len(StressSi[0])):
             if StressFlags[sa]:
-                return kj - 3, StressFlags, StressSi[kj - 3]
+                return kj - 4, StressFlags, StressSi[kj - 4]
+    #del Ididtifying_diverging_frame_did_notwork
+    print 'No divergence found'
     return len(StressSi)-1, StressFlags, StressSi[len(StressSi)-1]
+
 
 #Globale Directories
 GitHub, workpath = 'C:/MultiScaleMethod/Github/Multiscale-Modeling/', 'C:/Temp/'
@@ -88,16 +100,7 @@ if True:
     """Start"""
     #Sette variabler
     execfile(Modellering+'TestVariabler.py')            # Sette Test variabler
-    Iterasjonfiks()
-    execfile(Modellering+'IterationParameters.py')      # Sette iterasjonsnummer
 
-    # Open for big scale iterations
-    if Iterations:
-        Itra = open(Tekstfiler+'Iterasjoner.txt', "a")
-        Itra.write('\n')
-        Itra.close()
-
-    print 'Iterasjon : ',ItraPara      #Antall itersjoner saa langt
 
     #INFO DUMP
     if Interface and Createmodel and not noFibertest:
@@ -107,18 +110,32 @@ if True:
         print 'For grov opplosning, avslutter..'
         del error
 
+
 """Iterasjonsprameter"""
+execfile(Modellering + 'IterationParameters.py')  # Sette iterasjonsnummer
+
+# Open for big scale iterations
+if Iterations:
+    Itra = open(Tekstfiler + 'Iterasjoner.txt', "a")
+    Itra.write('\n')
+    Itra.close()
+
+
 #Meshsize/ Fiberresolution, Sweepe fiberresolution
 #Interface element thickness, Sweepe nedover til crash, analysere data
 #RVE size from nf       # Trenger minimum RVE convergence test
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
-
-ParameterSweep=[8]
-
+# Top level variables
 nf = 8
-Vf = 0.6  #
-nf= int(ParameterSweep[ItraPara])
+Vf = 0.6
+ParameterSweep=[50]
+nf = ParameterSweep[ItraPara]
+Iterasjonfiks()
+
+print 'Iterasjon : ',ItraPara      #    Antall itersjoner saa langt
+
+#nf= int(ParameterSweep[ItraPara])
 
 """Sette Iterasjonsavhengige variabler"""
 t=(time.time() - start_time)
@@ -161,42 +178,90 @@ while Q<n:
     seed(Q)  # Q er randomfunksjonensnokkelen
     execfile(Modellering + 'Set_text_dirs.py')
 
-    if True:
-        """ Abaqus RVE model """
 
-        Mdb()  # reset Abaqus
-        model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
-        mod = mdb.models[modelName]                                     # Lage snarvei
-        if Createmodel :
-            xydata = None                       # Fiber kordinater og radiuser
-            if not noFiber:
-                execfile(Modellering+'GenerereFiberPopTilFil.py')            # create a random population
-            CreateNewRVEModel()
-            if Savemodel:
-                mdb.saveAs(pathName=RVEmodellpath)
-        # Prov aa aapne tidligere modell
-        if openModel:
-            Mdb()
-            openMdb(pathName=RVEmodellpath)
-            mod = mdb.models[modelName]
+    """ Abaqus RVE model """
 
+    Mdb()  # reset Abaqus
+    model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
+    mod = mdb.models[modelName]                                     # Lage snarvei
+    if Createmodel :
+        xydata = None                       # Fiber kordinater og radiuser
+        if not noFiber:
+            execfile(Modellering+'GenerereFiberPopTilFil.py')            # create a random population
+        CreateNewRVEModel()
+        if Savemodel:
+            mdb.saveAs(pathName=RVEmodellpath)
+    # Prov aa aapne tidligere modell
+    if openModel:
+        Mdb()
+        openMdb(pathName=RVEmodellpath)
+        mod = mdb.models[modelName]
+
+    t = (time.time() - start_time)
+    print('t etter lagd modell=', t)
+
+
+    """Simuleringer"""
+
+        # Lineare tester
+    Enhetstoyinger = [''] * 6  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
+    for g in range(0, 6):
+        if not noFibertest:
+            Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
+        else:
+            Enhetstoyinger[g] = [Retning[g] + 'noFiber']
+
+        # Kjore Linear analyse
+    if linearAnalysis:  # LinearAnalysis for stiffness and small deformation
+        if not Createmodel:
+            try:
+                openMdb(pathName=RVEmodellpath)
+                mod = mdb.models['Model-A']
+            except:
+                print 'Cae not found'
+                pass
+        try:
+            execfile(Modellering +'LinearAnalysis.py')
+        except:
+            n=n+1
         t = (time.time() - start_time)
-        print('t etter lagd modell=', t)
+        print('t etter lin analyser=', t)
+    if LinearpostPross:
+        execfile(processering + 'LinearPostprocessing.py')
+        t = (time.time() - start_time)
+        print('t etter lin pross=', t)
+    else:
+        Stiffmatrix = np.load(lagrestiffpathmod)
+        print '\nStiffnessmatrix:'
+        for a in range(0, 6):
+            print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
+                Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
+                Stiffmatrix[5][a])
 
+        # Non linear tester
+    Magni = 2e-2    # Skalarverdi til toyning
+    Ret = 4         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+    strain = Magni * id[Ret]
 
-        """Simuleringer"""
+    print '\n\nReferanse Strain Vector ', strain
+    stresses = np.dot(Stiffmatrix, strain)# :  ex,  ey,  ex,  Yzy, -Yzx, -Yyx
+    print '\nStresses from RefSTRAINS', stresses
+    Stresses = stresses[Ret] * id[Ret]
+    print '\nReferanse Stress Vector', Stresses
+    #print Stresses, Stiffmatrix
+    strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
 
-            # Lineare tester
-        Enhetstoyinger = [''] * 6  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
-        for g in range(0, 6):
-            if not noFibertest:
-                Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
-            else:
-                Enhetstoyinger[g] = [Retning[g] + 'noFiber']
+    print '\nInitial Strain Vector', strains
+    Type = 'comp_'
+    if strains[Ret] > 0:
+        Type = 'tens_'
 
-            # Kjore Linear analyse
-        if linearAnalysis:  # LinearAnalysis for stiffness and small deformation
-            if not Createmodel:
+    cases = [[Retning[Ret] + Type + str(ParameterSweep[ItraPara]) + '__Rand-' + str(Q), strains]]
+
+    for Case in cases:
+        Jobbnavn, Strain = Case
+        if nonLinearAnalysis:
+            if not Createmodel or linearAnalysis:
                 try:
                     openMdb(pathName=RVEmodellpath)
                     mod = mdb.models['Model-A']
@@ -204,62 +269,14 @@ while Q<n:
                     print 'Cae not found'
                     pass
             try:
-                execfile(Modellering +'LinearAnalysis.py')
+                execfile(Modellering +'nonLinearAnalysis.py')
             except:
-                n=n+1
+                print
+                n = n + 1
             t = (time.time() - start_time)
-            print('t etter lin analyser=', t)
-        if LinearpostPross:
-            execfile(processering + 'LinearPostprocessing.py')
-            t = (time.time() - start_time)
-            print('t etter lin pross=', t)
-        else:
-            Stiffmatrix = np.load(lagrestiffpathmod)
-            print '\nStiffnessmatrix:'
-            for a in range(0, 6):
-                print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
-                    Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
-                    Stiffmatrix[5][a])
-
-            # Non linear tester
-        Magni = 2e-2    # Skalarverdi til toyning
-        Ret = 1         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
-        strain = Magni * id[Ret]
-
-        print '\n\nReferanse Strain Vector ', strain
-        stresses = np.dot(Stiffmatrix, strain)# :  ex,  ey,  ex,  Yzy, -Yzx, -Yyx
-        print '\nStresses from RefSTRAINS', stresses
-        Stresses = stresses[Ret] * id[Ret]
-        print '\nReferanse Stress Vector', Stresses
-        #print Stresses, Stiffmatrix
-        strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
-
-        print '\nInitial Strain Vector', strains
-        Type = 'comp_'
-        if strains[Ret] > 0:
-            Type = 'tens_'
-
-        cases = [[Retning[Ret] + Type + str(ParameterSweep[ItraPara]) + '__Rand-' + str(Q), strains]]
-
-        for Case in cases:
-            Jobbnavn, Strain = Case
-            if nonLinearAnalysis:
-                if not Createmodel or linearAnalysis:
-                    try:
-                        openMdb(pathName=RVEmodellpath)
-                        mod = mdb.models['Model-A']
-                    except:
-                        print 'Cae not found'
-                        pass
-                try:
-                    execfile(Modellering +'nonLinearAnalysis.py')
-                except:
-                    print
-                    n = n + 1
-                t = (time.time() - start_time)
-                print('t etter nonlin analyser=', t)
-                if Savemodel:
-                    mdb.saveAs(pathName=RVEmodellpath)
+            print('t etter nonlin analyser=', t)
+            if Savemodel:
+                mdb.saveAs(pathName=RVEmodellpath)
 
     Reset = 0       #For aa logge initielle strain stress
     stegy=difstpNm
@@ -294,29 +311,42 @@ while Q<n:
         diff = Fram[0] - prev
 
         if not diff<=0:
-            Frames[adjusts+1]= Fram[0]
-            appe= 1
+            Frames[adjusts + 1] = Fram[0]
+            appe = 1
 
             prev = Fram[0]
 
-            if adjusts==0:
-                prevname= difstpNm
+            if adjusts == 0:
+                prevname = difstpNm
             else:
-                prevname = 'rep'+str(adjusts-1)
-            addedF = int(Frames[adjusts+1]) - int(Frames[adjusts])
-            stegy ='rep'+str(adjusts)
+                prevname = 'rep' + str(adjusts - 1)
 
+            if diff == 3:
+                a=2
+            if diff==2:
+                a=1
+            if diff==0:
+                a=0
+            if not diff <= 3:
+                a=3
+            addedF = int(Frames[adjusts + 1]) - int(Frames[adjusts]) - a  # minus ## for prevantiv
 
-            mod.StaticStep(name='rep'+str(adjusts), previous=prevname, nlgeom=ON, stabilizationMagnitude=0.0002, stabilizationMethod=DAMPING_FACTOR,
+            stegy = 'rep' + str(adjusts)
+
+            print 'diff', diff,  'addF', addedF
+            print prevname
+            mod.StaticStep(name='rep' + str(adjusts), previous=prevname, nlgeom=ON, stabilizationMagnitude=0.0002,
+                           stabilizationMethod=DAMPING_FACTOR,
                            continueDampingFactors=False, adaptiveDampingRatio=0.05)
+            IniTid = (StressSigs[-1, 0] - StressSigs[-2, 0]) * 0.9
 
+            steg = mod.steps['rep' + str(adjusts)]
 
-            steg = mod.steps['rep'+str(adjusts)]
+            steg.setValues(maxNumInc=Increments['maxNum'], initialInc=IniTid,
+                           minInc=Increments['min'], maxInc=Increments['max'], convertSDI=CONVERT_SDI_OFF)
 
-            steg.setValues(maxNumInc=Increments['maxNum'], initialInc=Increments['initial'],
-                           minInc=Increments['min'],
-                           maxInc=Increments['max'], convertSDI=CONVERT_SDI_OFF)
             steg.Restart(frequency=1, numberIntervals=0, overlay=OFF, timeMarks=OFF)
+
             mod.setValues(restartJob=Jobbnavn,
                           restartStep=prevname, restartIncrement=addedF)
 
@@ -330,16 +360,16 @@ while Q<n:
                     numGPUs=0)
 
 
-
         print '\nPrevious Strain Vector', strains2
         print 'Change : ', Fram[1]
         for ssss in range(0,len(strains)):
             if Fram[1][ssss]:
+                adjfactor = strains2[ssss]/2
+                print 'Adjust by : ', adjfactor
                 if StressSigs[-1][ssss+1]>=0:
-                    strains2[ssss] = strains2[ssss] + (adjusts+1)*strains[ssss]/10
+                    strains2[ssss] = strains2[ssss] + adjfactor
                 else:
-                    strains2[ssss] = strains2[ssss] - (adjusts+1)*strains[ssss]/10
-
+                    strains2[ssss] = strains2[ssss] - adjfactor
         print 'Updated Strain Vector', strains2, '\n\n' + Jobbnavn
 
         a = mod.rootAssembly
@@ -369,18 +399,15 @@ while Q<n:
 
         if appe:
             adjusts =adjusts+1
-            print'count - ', adjusts
+            print 'count: ', adjusts
             prevfram = Fram
-
-
 
 
     t = (time.time() - start_time)
     print('Reached end of random key Iteration\tt ved ferdig', t)
-
-
-
-    Q = Q + 1
+    ss = open('C:/Users/Sondre/Desktop/Ferdig'+str(ParameterSweep[ItraPara])+'.txt', "w")
+    ss.close()
+    Q = Q + 1000
     del section, regionToolset, dgm, part, material, assembly, step, interaction
     del load, mesh, job, sketch, visualization, xyPlot, dgo, connectorBehavior
 

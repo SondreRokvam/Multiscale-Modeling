@@ -4,26 +4,33 @@ global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Inc
 #numCPU = multiprocessing.cpu_count()
 numCPU = 1
 
-analyse =0
+analyse =1
+FoundStiff = 0
 if analyse:
     Createmodel = 1
     Savemodel = 1
     Runjobs = 1
-    linearAnalysis = 1
+    if not FoundStiff:
+        linearAnalysis = 1
+        LinearpostPross = 1
+    else:
+        linearAnalysis = 0
+        LinearpostPross = 0
     nonLinearAnalysis = 1
-    LinearpostPross = 1
     nonLinearpostPross =1
     openModel = 0
 else:
     Createmodel = 0
-    Savemodel = 0
-    Runjobs = 0
+    Savemodel = 1
+    Runjobs = 1
     linearAnalysis = 0
-    nonLinearAnalysis = 0
     LinearpostPross = 0
     nonLinearpostPross = 1
     openModel = 1
-Increments = {'maxNum': 50, 'initial': 2e-3, 'min': 1e-6, 'max': 10e-2}
+
+    nonLinearAnalysis = 1 # Finne standard
+
+Increments = {'maxNum': 60, 'initial': 1e-2, 'min': 1e-4, 'max': 0.05}
 
 Iterations = 0
 
@@ -70,7 +77,7 @@ Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
 """Meshsize"""
 global FiberSirkelResolution,meshsize,tykkelse,tol
 
-FiberSirkelResolution =  20                               # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
+FiberSirkelResolution =  150                               # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
 
 tykkelse = meshsize    # RVE tykkelse

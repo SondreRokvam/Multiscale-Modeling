@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 #Globale Directories
 Tekstfiler  = 'C:/MultiScaleMethod/Github/textfiles/'
 
-zoom =1.0
+zoom =1
 
 def readSSData():
     # NOTE: you will probably need to change
     # the file path:
-    fileName = Tekstfiler+'Sigmas8_0.txt'
+    fileName = Tekstfiler+'Sigmas50_0.txt'
     a = np.genfromtxt(fileName)
     a = np.transpose(a)  # In order to get time and E(t) in two columns
     b = float(a[0][0])
@@ -36,8 +36,8 @@ def plotStressStrainData():
     plt.xlim((xmin), (xmax))
     plt.ylim((ymin / zoom), (ymax / zoom))
 
-    #plt.xlim((xmin), (xmax))
-    #plt.ylim((-0.006 / zoom), (0.006 / zoom))
+    #plt.xlim((0.94*xmax), (0.95*xmax))
+    #plt.ylim((-0.005 / zoom), (0.005 / zoom))
 
     ymin, ymax = plt.ylim()
     xmin, xmax = plt.xlim()

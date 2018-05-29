@@ -9,7 +9,7 @@ zoom =1.0
 def readSSData():
     # NOTE: you will probably need to change
     # the file path:
-    fileName = Tekstfiler+'Sigmas9_0.txt'
+    fileName = Tekstfiler+'Sigmas8_0.txt'
     a = np.genfromtxt(fileName)
     a = np.transpose(a)  # In order to get time and E(t) in two columns
     b = float(a[0][0])
@@ -37,7 +37,7 @@ def plotStressStrainData():
     plt.ylim((ymin / zoom), (ymax / zoom))
 
     #plt.xlim((xmin), (xmax))
-    #plt.ylim((-0.02 / zoom), (0.02 / zoom))
+    #plt.ylim((-0.006 / zoom), (0.006 / zoom))
 
     ymin, ymax = plt.ylim()
     xmin, xmax = plt.xlim()

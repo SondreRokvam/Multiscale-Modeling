@@ -76,7 +76,7 @@ def FrameFinder():
                     StressFlags[sa] = 1
         for sa in range(0, len(StressSi[0])):
             if StressFlags[sa]:
-                return kj - 2, StressFlags, StressSi[kj - 2]
+                return kj - 3, StressFlags, StressSi[kj - 3]
     return len(StressSi)-1, StressFlags, StressSi[len(StressSi)-1]
 
 #Globale Directories
@@ -114,7 +114,7 @@ if True:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 
-ParameterSweep=[9]
+ParameterSweep=[8]
 
 nf = 8
 Vf = 0.6  #
@@ -312,8 +312,8 @@ while Q<n:
 
 
             steg = mod.steps['rep'+str(adjusts)]
-            lastTimediff = (StressSigs[-1][0]-StressSigs[-2][0])/2
-            steg.setValues(maxNumInc=Increments['maxNum'], initialInc=lastTimediff,
+
+            steg.setValues(maxNumInc=Increments['maxNum'], initialInc=Increments['initial'],
                            minInc=Increments['min'],
                            maxInc=Increments['max'], convertSDI=CONVERT_SDI_OFF)
             steg.Restart(frequency=1, numberIntervals=0, overlay=OFF, timeMarks=OFF)
@@ -336,9 +336,9 @@ while Q<n:
         for ssss in range(0,len(strains)):
             if Fram[1][ssss]:
                 if StressSigs[-1][ssss+1]>=0:
-                    strains2[ssss] = strains2[ssss] + (adjusts+1)*strains[ssss]
+                    strains2[ssss] = strains2[ssss] + (adjusts+1)*strains[ssss]/10
                 else:
-                    strains2[ssss] = strains2[ssss] - (adjusts+1)*strains[ssss]
+                    strains2[ssss] = strains2[ssss] - (adjusts+1)*strains[ssss]/10
 
         print 'Updated Strain Vector', strains2, '\n\n' + Jobbnavn
 

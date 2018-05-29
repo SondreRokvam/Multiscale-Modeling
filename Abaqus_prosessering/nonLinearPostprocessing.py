@@ -100,13 +100,12 @@ else:
 
     count = 0
     if not adjusts == (reps - 1):
-        if appe:
-            ss = open(Sigmapaths, "a")
-            count = 0
-            for s in HomoSigs[0]:
-                if not HomoSigs[2][count]==0:
-                    ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count]+StressSigs[-1][0],s[0], s[1], s[2], s[3], s[4], s[5]))
-                count = count + 1
-            ss.close()
+        ss = open(Sigmapaths, "a")
+        count = 0
+        for s in HomoSigs[0]:
+            if not HomoSigs[2][count]==0:
+                ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count]+StressSigs[-1][0],s[0], s[1], s[2], s[3], s[4], s[5]))
+            count = count + 1
+        ss.close()
     print 'saved to: ', Sigmapaths
 

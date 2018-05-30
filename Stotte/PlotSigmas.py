@@ -9,7 +9,7 @@ zoom =1
 def readSSData():
     # NOTE: you will probably need to change
     # the file path:
-    fileName = Tekstfiler+'Sigmas50_0.txt'
+    fileName = Tekstfiler+'Sigmas15_0.txt'
     a = np.genfromtxt(fileName)
     a = np.transpose(a)  # In order to get time and E(t) in two columns
     b = float(a[0][0])

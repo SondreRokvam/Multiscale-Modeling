@@ -240,8 +240,8 @@ while len(n)<4:
                     Stiffmatrix[5][a])
 
             # Non linear tester
-        Magni = 2e-2    # Skalarverdi til toyning
-        Ret = 2        # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+        Magni = -2e-2    # Skalarverdi til toyning
+        Ret = 1        # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
         strain = Magni * id[Ret]
 
         print '\n\nReferanse Strain Vector ', strain

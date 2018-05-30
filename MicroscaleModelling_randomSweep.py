@@ -129,7 +129,7 @@ if Iterations:
 # Top level variables
 nf = 8
 Vf = 0.6
-ParameterSweep=[50]
+ParameterSweep=[70]
 nf = ParameterSweep[ItraPara]
 Iterasjonfiks()
 
@@ -240,11 +240,11 @@ while Q<n:
 
         # Non linear tester
     Magni = 2e-2    # Skalarverdi til toyning
-    Ret = 4         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+    Ret = 2        # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
     strain = Magni * id[Ret]
 
     print '\n\nReferanse Strain Vector ', strain
-    stresses = np.dot(Stiffmatrix, strain)# :  ex,  ey,  ex,  Yzy, -Yzx, -Yyx
+    stresses = np.dot(Stiffmatrix, strain)
     print '\nStresses from RefSTRAINS', stresses
     Stresses = stresses[Ret] * id[Ret]
     print '\nReferanse Stress Vector', Stresses

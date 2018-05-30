@@ -77,7 +77,7 @@ Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
 """Meshsize"""
 global FiberSirkelResolution,meshsize,tykkelse,tol
 
-FiberSirkelResolution =  150                               # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
+FiberSirkelResolution =  20                               # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
 
 tykkelse = meshsize    # RVE tykkelse

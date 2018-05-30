@@ -174,6 +174,8 @@ while len(n)<4:
     import xyPlot
     import displayGroupOdbToolset as dgo
     import connectorBehavior
+
+    error = 0
     try:
         #Datalagring
         seed(Q)  # Q er randomfunksjonensnokkelen
@@ -285,7 +287,12 @@ while len(n)<4:
             execfile(processering + 'nonLinearPostprocessing.py')
             t = (time.time() - start_time)
             print('t ved ferdig postprosess=', t)
-
+    except:
+        pass
+        Q = Q + 1000
+        n.append(Q)
+        error=1
+    if not error:
         strains2 = strains.tolist()
         Reset=1
         Jobbnav = Jobbnavn
@@ -320,16 +327,16 @@ while len(n)<4:
                     prevname = difstpNm
                 else:
                     prevname = 'rep' + str(adjusts - 1)
-
+                re =3
                 if diff == 3:
-                    a=2
+                    re=2
                 if diff==2:
-                    a=1
-                if diff==0:
-                    a=0
-                if not diff <= 3:
-                    a=3
-                addedF = int(Frames[adjusts + 1]) - int(Frames[adjusts]) - a  # minus ## for prevantiv
+                    re=1
+                if diff<=0:
+                    re=0
+
+                print Frames[adjusts + 1], Frames[adjusts],a
+                addedF = int(Frames[adjusts + 1]) - int(Frames[adjusts]) - re  # minus ## for prevantiv
 
                 stegy = 'rep' + str(adjusts)
 
@@ -362,9 +369,14 @@ while len(n)<4:
 
             print '\nPrevious Strain Vector', strains2
             print 'Change : ', Fram[1]
+
+            d = 2
+            if strains[Ret] < 0:
+                d = 10
             for ssss in range(0,len(strains)):
                 if Fram[1][ssss]:
-                    adjfactor = strains2[ssss]/2
+
+                    adjfactor = strains2[ssss]/d *strains[Ret]/abs(strains[Ret])
                     print 'Adjust by : ', adjfactor
                     if StressSigs[-1][ssss+1]>=0:
                         strains2[ssss] = strains2[ssss] + adjfactor
@@ -408,9 +420,7 @@ while len(n)<4:
         ss = open('C:/Users/Sondre/Desktop/Ferdig'+str(ParameterSweep[ItraPara])+'.txt', "w")
         ss.close()
         Q = Q + 1000
+        n.append(Q)
         del section, regionToolset, dgm, part, material, assembly, step, interaction
         del load, mesh, job, sketch, visualization, xyPlot, dgo, connectorBehavior
-    except:
-        pass
-        Q = Q + 1000
-        n.append(Q)
+

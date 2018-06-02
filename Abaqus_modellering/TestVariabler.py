@@ -21,7 +21,7 @@ if analyse:
     openModel = 0
 else:
     Createmodel = 0
-    Savemodel = 1
+    Savemodel = 0
     Runjobs = 1
     linearAnalysis = 0
     LinearpostPross = 0
@@ -30,7 +30,7 @@ else:
 
     nonLinearAnalysis = 1 # Finne standard
 
-Increments = {'maxNum': 60, 'initial': 1e-2, 'min': 1e-4, 'max': 0.05}
+Increments = {'maxNum': 60, 'initial': 5e-3, 'min': 1e-4, 'max': 0.05}
 
 Iterations = 0
 

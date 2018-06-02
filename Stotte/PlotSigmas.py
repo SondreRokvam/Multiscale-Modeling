@@ -52,7 +52,7 @@ def plotStressStrainData():
     plt.plot(x, Stresses[4], 'bx--')
     plt.plot(x, Stresses[5], 'gx--')
     plt.plot(x, Stresses[6], 'rx--')
-    #plt.xlim((0.94*xmax), (0.95*xmax))
+    plt.xlim(xmin, (0.01))
     plt.ylim((-0.005 / zoom), (0.005 / zoom))
     plt.tight_layout()
     plt.show()

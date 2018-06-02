@@ -1,7 +1,7 @@
 # Rydde en mappe
 import os
 workpath = 'C:/temp/'
-filelist = [f for f in os.listdir(workpath) if not f.endswith('.bat')]  # if not f.endswith('.inp')]
+filelist = [f for f in os.listdir(workpath) if not (f.endswith('.bat') or f.endswith('.cae'))]  # if not f.endswith('.inp')]
 for f in filelist:
     try:
         os.remove(os.path.join(workpath, f))

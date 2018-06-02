@@ -242,7 +242,7 @@ while len(n)<4:
                     Stiffmatrix[5][a])
 
             # Non linear tester
-        Magni = -2e-2    # Skalarverdi til toyning
+        Magni = -2e-1    # Skalarverdi til toyning
         Ret = 1        # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
         strain = Magni * id[Ret]
 
@@ -372,16 +372,16 @@ while len(n)<4:
 
             d = 2
             if strains[Ret] < 0:
-                d = 5
+                d = 10
             for ssss in range(0,len(strains)):
                 if Fram[1][ssss]:
 
                     adjfactor = abs(strains[ssss])/d
                     print 'Adjust by : ', adjfactor
                     if StressSigs[-1][ssss+1]>=0:
-                        strains2[ssss] = strains2[ssss] + adjfactor
-                    else:
                         strains2[ssss] = strains2[ssss] - adjfactor
+                    else:
+                        strains2[ssss] = strains2[ssss] + adjfactor
             print 'Updated Strain Vector', strains2, '\n\n' + Jobbnavn
 
             a = mod.rootAssembly

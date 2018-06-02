@@ -85,7 +85,7 @@ def FrameFinder():
                     StressFlags[sa] = 1
         for sa in range(0, len(StressSi[0])):
             if StressFlags[sa]:
-                return kj - 4, StressFlags, StressSi[kj - 4]
+                return kj - 4, StressFlags, StressSi[kj]
     #del Ididtifying_diverging_frame_did_notwork
     print 'No divergence found'
     return len(StressSi)-1, StressFlags, StressSi[len(StressSi)-1]
@@ -332,7 +332,7 @@ while len(n)<4:
                     re=2
                 if diff==2:
                     re=1
-                if diff<=0:
+                if diff<=0 or strains[Ret] < 0:
                     re=0
 
                 print Frames[adjusts + 1], Frames[adjusts],a
@@ -372,11 +372,11 @@ while len(n)<4:
 
             d = 2
             if strains[Ret] < 0:
-                d = 10
+                d = 5
             for ssss in range(0,len(strains)):
                 if Fram[1][ssss]:
 
-                    adjfactor = strains2[ssss]/d *strains[Ret]/abs(strains[Ret])
+                    adjfactor = abs(strains[ssss])/d
                     print 'Adjust by : ', adjfactor
                     if StressSigs[-1][ssss+1]>=0:
                         strains2[ssss] = strains2[ssss] + adjfactor

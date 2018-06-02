@@ -9,12 +9,12 @@ def RVEsets():
     x = xydata[0][0]
     y = xydata[0][1]
     r = xydata[0][2]
-    Felements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
+    Felements = e.getByBoundingCylinder((x, y, -2*tykkelse), (x, y, 2*tykkelse), r + tol)
     for i in range(1, len(xydata)):
         x = xydata[i][0]
         y = xydata[i][1]
         r = xydata[i][2]
-        temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r + tol)
+        temp = e.getByBoundingCylinder((x, y, -2*tykkelse), (x, y, 2*tykkelse), r + tol)
         Felements = Felements + temp
     p.Set(name='Fibers', elements=Felements)
     #  Matrix set, Om Interface : Interfaces sets
@@ -22,12 +22,12 @@ def RVEsets():
         x = xydata[0][0]
         y = xydata[0][1]
         r = xydata[0][2]
-        IFelements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
+        IFelements = e.getByBoundingCylinder((x, y, -2*tykkelse), (x, y, 2*tykkelse), r * (1 + rinterface) + tol)
         for i in range(1, len(xydata)):
             x = xydata[i][0]
             y = xydata[i][1]
             r = xydata[i][2]
-            temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
+            temp = e.getByBoundingCylinder((x, y, -2*tykkelse), (x, y, 2*tykkelse), r * (1 + rinterface) + tol)
             IFelements = IFelements + temp
         p.Set(name='IandF', elements=IFelements)  # Fiber+fiberinterface set made
         p.SetByBoolean(name='Interfaces', sets=(p.sets['IandF'], p.sets['Fibers'],), operation=DIFFERENCE)
@@ -39,13 +39,13 @@ def RVEsets():
         x = xydata[0][0]
         y = xydata[0][1]
         r = xydata[0][2]
-        Felements = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
+        Felements = e.getByBoundingCylinder((x, y, -2*tykkelse), (x, y, 2*tykkelse), r * (1 + rinterface) + tol)
         p.Set(name='FiberInt0', elements=Felements)
         for i in range(1, len(xydata)):
             x = xydata[i][0]
             y = xydata[i][1]
             r = xydata[i][2]
-            temp = e.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (1 + rinterface) + tol)
+            temp = e.getByBoundingCylinder((x, y, -2*tykkelse), (x, y,2*tykkelse), r * (1 + rinterface) + tol)
             p.Set(name=('FiberInt' + str(i)), elements=temp)
         del mod.parts[meshPartName].sets['IandF']
         p.SetByBoolean(name='M_and_F', sets=(p.sets['Alle'], p.sets['Interfaces'],), operation=DIFFERENCE)
@@ -68,9 +68,9 @@ def COHstackDir():  # Slette og lage nye element i interface for cohesive elemen
                                                  tykkelse + tol)  # Velge noder front og bak av fiber i Z
             nodesZb = elemNOdes.getByBoundingBox(min, min, 2 * tykkelse - tol, max, max, 2 * tykkelse + tol)
             del min, max
-            ZaFibnodes = nodesZa.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (
+            ZaFibnodes = nodesZa.getByBoundingCylinder((x, y, -2*tykkelse), (x, y,2*tykkelse), r * (
                         rinterface + 1) - tol)  # Velge fiber og interface noder i front og bak av fiber
-            ZbFibnodes = nodesZb.getByBoundingCylinder((x, y, -10.0), (x, y, 10.0), r * (rinterface + 1) - tol)
+            ZbFibnodes = nodesZb.getByBoundingCylinder((x, y, -2*tykkelse), (x, y, 2*tykkelse), r * (rinterface + 1) - tol)
             p.Set(name='ZaBoth', nodes=nodesZa)
             p.Set(name='ZbBoth', nodes=nodesZb)
             p.Set(name='ZaFib', nodes=ZaFibnodes)

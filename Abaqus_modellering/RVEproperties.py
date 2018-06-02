@@ -45,11 +45,9 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
                                                        power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
     if not ConDmPlast:
         del mdb.models['Model-A'].materials['interface'].quadsDamageInitiation
-        mdb.models['Model-A'].materials['interface'].Plastic(table=((0.060, 0.0), (0.061,
-        0.015)))
+        mdb.models['Model-A'].materials['interface'].Plastic(table=Epox)
         del mdb.models['Model-A'].materials['resin'].concreteDamagedPlasticity
-        mdb.models['Model-A'].materials['resin'].Plastic(table=((0.060, 0.0), (0.061,
-        0.015)))
+        mdb.models['Model-A'].materials['resin'].Plastic(table=Sizing)
 
 def SectionsAndOrientations():                                  # Create and assign sections to materials
     p = mdb.models['Model-A'].parts['Part-1-mesh-1']

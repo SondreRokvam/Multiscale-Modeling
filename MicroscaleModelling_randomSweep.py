@@ -129,7 +129,7 @@ if Iterations:
 # Top level variables
 nf = 8
 Vf = 0.6
-ParameterSweep=[15]
+ParameterSweep=[12]
 nf = ParameterSweep[ItraPara]
 Iterasjonfiks()
 
@@ -177,35 +177,14 @@ while len(n)<4:
 
     error = 0
     try:
-        #Datalagring
+        """Datalagring"""
         seed(Q)  # Q er randomfunksjonensnokkelen
         execfile(Modellering + 'Set_text_dirs.py')
 
-
         """ Abaqus RVE model """
-
-        Mdb()  # reset Abaqus
-        model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
-        mod = mdb.models[modelName]                                     # Lage snarvei
-        if Createmodel :
-            xydata = None                       # Fiber kordinater og radiuser
-            if not noFiber:
-                execfile(Modellering+'GenerereFiberPopTilFil.py')            # create a random population
-            CreateNewRVEModel()
-            if Savemodel:
-                mdb.saveAs(pathName=RVEmodellpath)
-        # Prov aa aapne tidligere modell
-        if openModel:
-            Mdb()
-            openMdb(pathName=RVEmodellpath)
-            mod = mdb.models[modelName]
-
-        t = (time.time() - start_time)
-        print('t etter lagd modell=', t)
-
+        execfile(Modellering + 'Model.py')
 
         """Simuleringer"""
-
             # Lineare tester
         Enhetstoyinger = [''] * 6  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
         for g in range(0, 6):
@@ -215,24 +194,26 @@ while len(n)<4:
                 Enhetstoyinger[g] = [Retning[g] + 'noFiber']
 
             # Kjore Linear analyse
-        if linearAnalysis:  # LinearAnalysis for stiffness and small deformation
-            if not Createmodel:
+        if not FoundStiff:
+            if linearAnalysis:  # LinearAnalysis for stiffness and small deformation
+                if not Createmodel:
+                    try:
+                        openMdb(pathName=RVEmodellpath)
+                        mod = mdb.models['Model-A']
+                    except:
+                        print 'Cae not found'
+                        pass
                 try:
-                    openMdb(pathName=RVEmodellpath)
-                    mod = mdb.models['Model-A']
+                    execfile(Modellering +'LinearAnalysis.py')
                 except:
-                    print 'Cae not found'
-                    pass
-            try:
-                execfile(Modellering +'LinearAnalysis.py')
-            except:
-                del Problem_With_nonLinear_Analysis
-            t = (time.time() - start_time)
-            print('t etter lin analyser=', t)
-        if LinearpostPross:
-            execfile(processering + 'LinearPostprocessing.py')
-            t = (time.time() - start_time)
-            print('t etter lin pross=', t)
+                    print 'Problem_With_Linear_Analysis'
+                    del Problem_With_Linear_Analysis
+                t = (time.time() - start_time)
+                print('t etter lin analyser=', t)
+            if LinearpostPross:
+                execfile(processering + 'LinearPostprocessing.py')
+                t = (time.time() - start_time)
+                print('t etter lin pross=', t)
         else:
             Stiffmatrix = np.load(lagrestiffpathmod)
             print '\nStiffnessmatrix:'
@@ -242,12 +223,12 @@ while len(n)<4:
                     Stiffmatrix[5][a])
 
             # Non linear tester
-        Magni = -2e-1    # Skalarverdi til toyning
+        Magni = -4e-2    # Skalarverdi til toyning
         Ret = 1        # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
         strain = Magni * id[Ret]
 
         print '\n\nReferanse Strain Vector ', strain
-        stresses = np.dot(Stiffmatrix, strain)
+        stresses = np.round(np.dot(Stiffmatrix, strain),3)
         print '\nStresses from RefSTRAINS', stresses
         Stresses = stresses[Ret] * id[Ret]
         print '\nReferanse Stress Vector', Stresses
@@ -291,6 +272,7 @@ while len(n)<4:
         pass
         Q = Q + 1000
         n.append(Q)
+        print 'Error in modell and initial tests'
         error=1
     if not error:
         strains2 = strains.tolist()
@@ -330,12 +312,12 @@ while len(n)<4:
                 re =3
                 if diff == 3:
                     re=2
-                if diff==2:
+                if diff==2 or strains[Ret] < 0:
                     re=1
-                if diff<=0 or strains[Ret] < 0:
+                if diff<=0 :
                     re=0
 
-                print Frames[adjusts + 1], Frames[adjusts],a
+                print Frames[adjusts + 1], Frames[adjusts],re
                 addedF = int(Frames[adjusts + 1]) - int(Frames[adjusts]) - re  # minus ## for prevantiv
 
                 stegy = 'rep' + str(adjusts)
@@ -371,17 +353,17 @@ while len(n)<4:
             print 'Change : ', Fram[1]
 
             d = 2
-            if strains[Ret] < 0:
-                d = 10
+            #if strains[Ret] < 0:
+            #    d = 10
             for ssss in range(0,len(strains)):
                 if Fram[1][ssss]:
-
                     adjfactor = abs(strains[ssss])/d
                     print 'Adjust by : ', adjfactor
+
                     if StressSigs[-1][ssss+1]>=0:
-                        strains2[ssss] = strains2[ssss] - adjfactor
-                    else:
                         strains2[ssss] = strains2[ssss] + adjfactor
+                    else:
+                        strains2[ssss] = strains2[ssss] - adjfactor
             print 'Updated Strain Vector', strains2, '\n\n' + Jobbnavn
 
             a = mod.rootAssembly

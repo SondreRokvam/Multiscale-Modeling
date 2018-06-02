@@ -22,7 +22,7 @@ if analyse:
 else:
     Createmodel = 0
     Savemodel = 0
-    Runjobs = 1
+    Runjobs = 0
     linearAnalysis = 0
     LinearpostPross = 0
     nonLinearpostPross = 1
@@ -35,6 +35,15 @@ Increments = {'maxNum': 60, 'initial': 5e-3, 'min': 1e-4, 'max': 0.05}
 Iterations = 0
 
 
+"""Material modeller"""
+
+#Plasticitet
+Yieldlim = 0.060
+
+Strainlim = 0.061
+PlasticStrain = 0.015
+Epox=((Yieldlim, 0.0), (Strainlim, PlasticStrain))
+Sizing =((3*Yieldlim, 0.0), (3*Strainlim, PlasticStrain))
 """Simuleringsvariabler """
 global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin
 

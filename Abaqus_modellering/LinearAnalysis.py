@@ -21,7 +21,7 @@ def create_Linearunitstrainslastcases():
     print '\nComputing stresses for normalized unit strains'
     for i in range(0,6):#   arg:   +   ,len(id)+1
         #Laste inn toyningscase
-        exx, eyy, ezz, exy, exz, eyz = id[i]*0.01
+        exx, eyy, ezz, exy, exz, eyz = id[i]*0.001
         #Strainsene var mulighens litt store.
         mod.DisplacementBC(name='BCX', createStepName=stepName,
                            region=a.sets['RPX'], u1=exx, u2=exy, u3=exz, ur1=UNSET, ur2=UNSET, ur3=UNSET,

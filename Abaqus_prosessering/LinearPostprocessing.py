@@ -44,7 +44,7 @@ def get_stiffness():
                 vol[j] = float(eldat)
 
         for p in range(0,6):
-            stiffmatrix[i][p] = (float(np.sum(vol * SS[:, p]))/(tykkelse*(dL)**2))*100
+            stiffmatrix[i][p] = (float(np.sum(vol * SS[:, p]))/(tykkelse*(dL)**2))*1000
         odb.close()
 
     np.save(lagrestiffpathmod, stiffmatrix)

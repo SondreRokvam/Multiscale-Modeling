@@ -3,13 +3,13 @@ import matplotlib.pyplot as plt
 
 #Globale Directories
 Tekstfiler  = 'C:/MultiScaleMethod/Github/textfiles/'
-
+nf= 12
 zoom =1
 
 def readSSData():
     # NOTE: you will probably need to change
     # the file path:
-    fileName = Tekstfiler+'Sigmas15_0.txt'
+    fileName = Tekstfiler+'Sigmas'+str(nf)+'_0.txt'
     a = np.genfromtxt(fileName)
     a = np.transpose(a)  # In order to get time and E(t) in two columns
     b = float(a[0][0])

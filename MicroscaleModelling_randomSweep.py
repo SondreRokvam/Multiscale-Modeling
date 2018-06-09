@@ -85,7 +85,13 @@ def FrameFinder():
                     StressFlags[sa] = 1
         for sa in range(0, len(StressSi[0])):
             if StressFlags[sa]:
-                return kj - 4, StressFlags, StressSi[kj]
+                return kj - 3, StressFlags, StressSi[kj]
+
+    for sa in range(0, len(StressSi[0])):
+        if Dob[sa]:
+            return len(StressSi) - 2, Dob, StressSi[kj]
+        if Sing[sa]:
+            return len(StressSi) - 1, Sing, StressSi[kj]
     #del Ididtifying_diverging_frame_did_notwork
     print 'No divergence found'
     return len(StressSi)-1, StressFlags, StressSi[len(StressSi)-1]
@@ -176,105 +182,131 @@ while len(n)<4:
     import connectorBehavior
 
     error = 0
-    try:
-        """Datalagring"""
-        seed(Q)  # Q er randomfunksjonensnokkelen
-        execfile(Modellering + 'Set_text_dirs.py')
 
+    """Datalagring"""
+    seed(Q)  # Q er randomfunksjonensnokkelen
+    execfile(Modellering + 'Set_text_dirs.py')
+
+    """Modellering"""
+    try:
         """ Abaqus RVE model """
         execfile(Modellering + 'Model.py')
-
-        """Simuleringer"""
-            # Lineare tester
-        Enhetstoyinger = [''] * 6  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
-        for g in range(0, 6):
-            if not noFibertest:
-                Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
-            else:
-                Enhetstoyinger[g] = [Retning[g] + 'noFiber']
-
-            # Kjore Linear analyse
-        if not FoundStiff:
-            if linearAnalysis:  # LinearAnalysis for stiffness and small deformation
-                if not Createmodel:
-                    try:
-                        openMdb(pathName=RVEmodellpath)
-                        mod = mdb.models['Model-A']
-                    except:
-                        print 'Cae not found'
-                        pass
-                try:
-                    execfile(Modellering +'LinearAnalysis.py')
-                except:
-                    print 'Problem_With_Linear_Analysis'
-                    del Problem_With_Linear_Analysis
-                t = (time.time() - start_time)
-                print('t etter lin analyser=', t)
-            if LinearpostPross:
-                execfile(processering + 'LinearPostprocessing.py')
-                t = (time.time() - start_time)
-                print('t etter lin pross=', t)
-        else:
-            Stiffmatrix = np.load(lagrestiffpathmod)
-            print '\nStiffnessmatrix:'
-            for a in range(0, 6):
-                print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
-                    Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
-                    Stiffmatrix[5][a])
-
-            # Non linear tester
-        Magni = -4e-2    # Skalarverdi til toyning
-        Ret = 1        # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
-        strain = Magni * id[Ret]
-
-        print '\n\nReferanse Strain Vector ', strain
-        stresses = np.round(np.dot(Stiffmatrix, strain),3)
-        print '\nStresses from RefSTRAINS', stresses
-        Stresses = stresses[Ret] * id[Ret]
-        print '\nReferanse Stress Vector', Stresses
-        #print Stresses, Stiffmatrix
-        strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
-
-        print '\nInitial Strain Vector', strains
-        Type = 'comp_'
-        if strains[Ret] > 0:
-            Type = 'tens_'
-
-        cases = [[Retning[Ret] + Type + str(ParameterSweep[ItraPara]) + '__Rand-' + str(Q), strains]]
-
-        for Case in cases:
-            Jobbnavn, Strain = Case
-            if nonLinearAnalysis:
-                if not Createmodel or linearAnalysis:
-                    try:
-                        openMdb(pathName=RVEmodellpath)
-                        mod = mdb.models['Model-A']
-                    except:
-                        print 'Cae not found'
-                        pass
-                try:
-                    execfile(Modellering +'nonLinearAnalysis.py')
-                except:
-                    del Problem_With_nonLinear_Analysis
-                t = (time.time() - start_time)
-                print('t etter nonlin analyser=', t)
-                if Savemodel:
-                    mdb.saveAs(pathName=RVEmodellpath)
-
-        Reset = 0       #For aa logge initielle strain stress
-        stegy=difstpNm
-        if nonLinearpostPross:
-            print '\nPostProcess'
-            execfile(processering + 'nonLinearPostprocessing.py')
-            t = (time.time() - start_time)
-            print('t ved ferdig postprosess=', t)
     except:
         pass
         Q = Q + 1000
         n.append(Q)
-        print 'Error in modell and initial tests'
-        error=1
+        print
+        'Error in modelling'
+        error = 1
+
+    """Stiffness tests"""
     if not error:
+        # Strain test
+        try:
+            Enhetstoyinger = [''] * 6  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
+            for g in range(0, 6):
+                if not noFibertest:
+                    Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[ItraPara])) + '_' + str(Q)]
+                else:
+                    Enhetstoyinger[g] = [Retning[g] + 'noFiber']
+
+                # Kjore Linear analyse
+            if not FoundStiff:
+                if linearAnalysis:  # LinearAnalysis for stiffness and small deformation
+                    if not Createmodel:
+                        try:
+                            openMdb(pathName=RVEmodellpath)
+                            mod = mdb.models['Model-A']
+                        except:
+                            print 'Cae not found'
+                            pass
+                    try:
+                        execfile(Modellering +'LinearAnalysis.py')
+                    except:
+                        print 'Problem_With_Linear_Analysis'
+                        del Problem_With_Linear_Analysis
+                    t = (time.time() - start_time)
+                    print('t etter lin analyser=', t)
+                if LinearpostPross:
+                    execfile(processering + 'LinearPostprocessing.py')
+                    t = (time.time() - start_time)
+                    print('t etter lin pross=', t)
+            else:
+                Stiffmatrix = np.load(lagrestiffpathmod)
+                print '\nStiffnessmatrix:'
+                for a in range(0, 6):
+                    print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
+                        Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
+                        Stiffmatrix[5][a])
+
+                # Non linear tester
+        except:
+            pass
+            Q = Q + 1000
+            n.append(Q)
+            print
+            'Error in Strain test'
+            error = 1
+
+    """Inital Strength test"""
+    if not error:
+        # Stress test
+        try:
+            Magni = 3e-2    # Skalarverdi til toyning
+            Ret = 1        # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+            strain = Magni * id[Ret]
+
+            if True:
+                print '\n\nReferanse Strain Vector ', strain
+                stresses = np.round(np.dot(Stiffmatrix, strain),3)
+                print '\nStresses from RefSTRAINS', stresses
+                Stresses = stresses[Ret] * id[Ret]
+                print '\nReferanse Stress Vector', Stresses
+                #print Stresses, Stiffmatrix
+                strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
+
+                print '\nInitial Strain Vector', strains
+                Type = 'comp_'
+                if strains[Ret] > 0:
+                    Type = 'tens_'
+
+            cases = [[Retning[Ret] + Type + str(ParameterSweep[ItraPara]) + '__Rand-' + str(Q), strains]]
+
+            for Case in cases:
+                Jobbnavn, Strain = Case
+                if nonLinearAnalysis:
+                    if not Createmodel or linearAnalysis:
+                        try:
+                            openMdb(pathName=RVEmodellpath)
+                            mod = mdb.models['Model-A']
+                        except:
+                            print 'Cae not found'
+                            pass
+                    try:
+                        execfile(Modellering +'nonLinearAnalysis.py')
+                    except:
+                        del Problem_With_nonLinear_Analysis
+                    t = (time.time() - start_time)
+                    print('t etter nonlin analyser=', t)
+                    if Savemodel:
+                        mdb.saveAs(pathName=RVEmodellpath)
+
+            Reset = 0       #For aa logge initielle strain stress
+            stegy=difstpNm
+            if nonLinearpostPross:
+                print '\nPostProcess'
+                execfile(processering + 'nonLinearPostprocessing.py')
+                t = (time.time() - start_time)
+                print('t ved ferdig postprosess=', t)
+        except:
+            pass
+            Q = Q + 1000
+            n.append(Q)
+            print 'Error in Stress tests'
+            error=1
+
+    #Adjustment of strain vector
+    if not error and stresstest:
         strains2 = strains.tolist()
         Reset=1
         Jobbnav = Jobbnavn

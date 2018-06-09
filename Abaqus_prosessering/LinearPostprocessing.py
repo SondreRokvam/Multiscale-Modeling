@@ -1,4 +1,4 @@
-"""Post processing"""
+#Post processing
 
 def get_stiffness():
     stiffmatrix = np.zeros([6,6])
@@ -44,13 +44,13 @@ def get_stiffness():
                 vol[j] = float(eldat)
 
         for p in range(0,6):
-            stiffmatrix[i][p] = (float(np.sum(vol * SS[:, p]))/(tykkelse*(dL)**2))*1000
+            stiffmatrix[i][p] = (float(np.sum(vol * SS[:, p]))/(tykkelse*(dL)**2))*100
         odb.close()
 
     np.save(lagrestiffpathmod, stiffmatrix)
     print '\nStiffnessmatrix found\n'
     g = open(Lagrestiffpathprop, "a")
-    g.write(str(int(Q)) + '\t')
+    g.write(str(int(Q)) + '\t\t\t')
     for a in range(0, 6):
         print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
         stiffmatrix[0][a], stiffmatrix[1][a], stiffmatrix[2][a], stiffmatrix[3][a], stiffmatrix[4][a],
@@ -58,7 +58,8 @@ def get_stiffness():
         g.write(str(float(stiffmatrix[0][a]))+'\t'+str(float(stiffmatrix[1][a]))+'\t'+str(float(stiffmatrix[2][a]))+'\t'+str(float(stiffmatrix[3][a]))+'\t'+str(float(stiffmatrix[4][a]))+'\t'+str(float(stiffmatrix[5][a])))
         if not a==5:
             g.write('\t\t')
-        g.write('\n')
+        else:
+            g.write('\n')
     g.close()
     return stiffmatrix
 

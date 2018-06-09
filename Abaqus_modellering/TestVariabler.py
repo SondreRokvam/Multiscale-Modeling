@@ -17,8 +17,8 @@ if analyse:
     else:
         linearAnalysis = 0
         LinearpostPross = 0
-    nonLinearAnalysis = 1
-    nonLinearpostPross =1
+    nonLinearAnalysis = 0
+    nonLinearpostPross = 0
     openModel = 0
 else:
     Createmodel = 0
@@ -33,7 +33,7 @@ else:
 
 Increments = {'maxNum': 60, 'initial': 5e-3, 'min': 1e-4, 'max': 0.05}
 
-Iterations = 0
+Iterations = 1
 
 
 """Material modeller"""
@@ -87,7 +87,7 @@ Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
 """Meshsize"""
 global FiberSirkelResolution,meshsize,tykkelse,tol
 
-FiberSirkelResolution =  30                               # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
+FiberSirkelResolution =  20                               # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
 
 tykkelse = meshsize    # RVE tykkelse

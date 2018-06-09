@@ -20,24 +20,26 @@ def create_Linearunitstrainslastcases():
     #Run the simulations to create stiffnessmatrix
     print '\nComputing stresses for normalized unit strains'
     for i in range(0,6):#   arg:   +   ,len(id)+1
-        #Laste inn toyningscase
-        exx, eyy, ezz, exy, exz, eyz = id[i]*0.001
-        #Strainsene var mulighens litt store.
-        mod.DisplacementBC(name='BCX', createStepName=stepName,
-                           region=a.sets['RPX'], u1=exx, u2=exy, u3=exz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                           amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+        if not error:
+            #Laste inn toyningscase
+            exx, eyy, ezz, exy, exz, eyz = id[i]*0.01
+            #Strainsene var mulighens litt store.
+            mod.DisplacementBC(name='BCX', createStepName=stepName,
+                               region=a.sets['RPX'], u1=exx, u2=exy, u3=exz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                               amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-        mod.DisplacementBC(name='BCY', createStepName=stepName,
-                           region=a.sets['RPY'], u1=exy, u2=eyy, u3=eyz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                           amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+            mod.DisplacementBC(name='BCY', createStepName=stepName,
+                               region=a.sets['RPY'], u1=exy, u2=eyy, u3=eyz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                               amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-        mod.DisplacementBC(name='BCZ', createStepName=stepName,
-                           region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
-                           amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-        run_Job(Enhetstoyinger[i][0],modelName)
-        del exx, eyy, ezz, exy, exz, eyz
+            mod.DisplacementBC(name='BCZ', createStepName=stepName,
+                               region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+                               amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+            run_Job(Enhetstoyinger[i][0],modelName)
 
-"""     STIFFNESS  MATRIX       """
+            del exx, eyy, ezz, exy, exz, eyz
+
+#  STIFFNESS  MATRIX
 create_Linearunitstrainslastcases()     # Unit strain cases. Set boundary condition and create job.
 
 

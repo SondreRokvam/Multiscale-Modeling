@@ -13,7 +13,7 @@ lagrestiffpathmod = Tekstfiler + 'StiffnessM' + str(int(ParameterSweep[ItraPara]
 
 Envelope = Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn i funksjonen
 
-Sigmapaths = Tekstfiler + 'Sigmas' + str(  int(ParameterSweep[ItraPara])) + '_' + str(Q) + '.txt'
+Sigmapaths = Tekstfiler + 'Sigmas' + str(int(ParameterSweep[ItraPara])) + '_' + str(Q) + '.txt'
 
 
 global wiggle, RVEmodellpath

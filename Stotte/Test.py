@@ -1,17 +1,21 @@
-import numpy as np
-
-a = np.ones(3)
-a[1] =2
-a[2] =3
-b = np.ones([3,6])
-b[1][5]=0
-b[2][5]=10
-
-a = np.arange(9.0).reshape((3, 3))
-b = np.arange(3.0)
-print (a,'\n\n', b,'\n\n')
-a=  np.multiply(a, b)
-
-
-print(a)
-a=np.multiply(a,b)
+nums=[5, 10, 15,20,25,30,35,40,45,50,55]
+#nums=[40,50,55]
+for num in nums:
+    fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__NF-'+str(num)+'.txt','r')
+    tekst = fifi.read()
+    fifi.close()
+    lines = tekst.split('\n')
+    print('\n',num)
+    if (len(lines)-1)<25:
+        print ('lines',len(lines)-1)
+        parts = lines[-2].split('\t\t\t')
+    keys=[]
+    for line in lines:
+        part =line.split('\t\t\t')
+        keys.append(part[0])
+    #print ('key',keys)
+    for i in range(0,len(keys)):
+        for j in range(0, len(keys)):
+            if i!=j:
+                if keys[i]==keys[j]:
+                    print('dobbel')

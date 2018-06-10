@@ -137,14 +137,15 @@ if Iterations:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 # Top level variables
-ParameterSweep=[0.55]
+ParameterSweep=[0.03]
 nf = 25
-Vf = ParameterSweep[-1]
-
+Vf = 0.6
+Rclearing  =     ParameterSweep[-1]
+scsc= 1000000
 
 Iterasjonfiks()
 
-n = [Vf*10000+ItraPara*169]           #  Itererer med random nokkeler fra 0 til n
+n = [Vf*scsc+ItraPara*169]           #  Itererer med random nokkeler fra 0 til n
 ItraPara=0
 tests= 10
 print 'Iterasjon : ',ItraPara      #    Antall itersjoner saa langt
@@ -210,7 +211,7 @@ while len(n)<=tests:
         Enhetstoyinger = [''] * 6  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
         for g in range(0, 6):
             if not noFibertest:
-                Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[-1]*1000)) + '_' + str(Q)]
+                Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[-1]*scsc)) + '_' + str(Q)]
             else:
                 Enhetstoyinger[g] = [Retning[g] + 'noFiber']
 

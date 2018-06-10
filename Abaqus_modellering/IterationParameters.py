@@ -1,2 +1,2 @@
 global ItraPara
-ItraPara = 180
+ItraPara = 24

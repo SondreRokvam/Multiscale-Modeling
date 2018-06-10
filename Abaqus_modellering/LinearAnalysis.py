@@ -35,6 +35,7 @@ def create_Linearunitstrainslastcases():
             mod.DisplacementBC(name='BCZ', createStepName=stepName,
                                region=a.sets['RPZ'], u1=exz, u2=eyz, u3=ezz, ur1=UNSET, ur2=UNSET, ur3=UNSET,
                                amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+            print Enhetstoyinger[i][0]
             run_Job(Enhetstoyinger[i][0],modelName)
 
             del exx, eyy, ezz, exy, exz, eyz

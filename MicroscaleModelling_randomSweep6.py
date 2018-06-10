@@ -155,89 +155,70 @@ while len(n)<=tests:
     import displayGroupOdbToolset as dgo
     import connectorBehavior
 
-    Q = int( n[-1] )
+    Q = int(n[-1])
     seed(Q)  # Q er randomfunksjonensnokkelen
     error = 0
-    print Q
-    print n
-    """Datalagring"""
+    print
+    Q
+    print
+    n
 
+    # Datalagring
     execfile(Modellering + 'Set_text_dirs.py')
 
-    """Modellering"""
-    try:
-        """ Abaqus RVE model """
-        execfile(Modellering + 'Model.py')
-    except:
-        print 'Error in modellering'
-        error = 1
+    # Modellere RVE eller aapne eksisterende  -  Sette navn for toyningsretning
+    execfile(Modellering + 'LagOROpen_preplin.py')
 
-    #Prep Stiffness tests
-    if not error:
-        # Strain test
-        Enhetstoyinger = [''] * 6  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
-        for g in range(0, 6):
-            if not noFibertest:
-                Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[-1]*scsc)) + '_' + str(Q)]
-            else:
-                Enhetstoyinger[g] = [Retning[g] + 'noFiber']
-
-        # Kjore Linear analyse
-        if not FoundStiff:
-            if not Createmodel:
-                try:
-                    openMdb(pathName=RVEmodellpath)
-                    mod = mdb.models['Model-A']
-                except:
-                    print 'Cae not found'
-                    error = 1
-                    pass
-
-    if not error:
-        #try:
-        execfile(Modellering +'LinearAnalysis.py')
-        #except:
-        #    print 'Problem_With_Linear_Analysis'
-        #    error = 1
-
-        print('t etter lin analyser=', (time.time() - start_time))
-    if not error:
-        if LinearpostPross:
-            execfile(processering + 'LinearPostprocessing.py')
-            t = (time.time() - start_time)
-            print('t etter lin pross=', t)
-
+    # Linear_Analyse
     if FoundStiff:
         Stiffmatrix = np.load(lagrestiffpathmod)
         print
         '\nStiffnessmatrix:'
         for a in range(0, 6):
-            print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
+            print
+            '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
                 Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
                 Stiffmatrix[5][a])
+    else:
+        if not error:
+            # try:
+            execfile(Modellering + 'LinearAnalysis.py')
+            # except:
+            #    print 'Problem_With_Linear_Analysis'
+            #    error = 1
+
+            print('t etter lin analyser=', (time.time() - start_time))
+        if not error:
+            if LinearpostPross:
+                execfile(processering + 'LinearPostprocessing.py')
+                t = (time.time() - start_time)
+                print('t etter lin pross=', t)
 
         # Non linear tester
-
 
     if nonLinearAnalysis:
         """Inital Strength test"""
         if not error:
             # Stress test
             try:
-                Magni = 3e-2    # Skalarverdi til toyning
-                Ret = 1        # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+                Magni = 3e-2  # Skalarverdi til toyning
+                Ret = 1  # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
                 strain = Magni * id[Ret]
 
                 if True:
-                    print '\n\nReferanse Strain Vector ', strain
-                    stresses = np.round(np.dot(Stiffmatrix, strain),3)
-                    print '\nStresses from RefSTRAINS', stresses
+                    print
+                    '\n\nReferanse Strain Vector ', strain
+                    stresses = np.round(np.dot(Stiffmatrix, strain), 3)
+                    print
+                    '\nStresses from RefSTRAINS', stresses
                     Stresses = stresses[Ret] * id[Ret]
-                    print '\nReferanse Stress Vector', Stresses
-                    #print Stresses, Stiffmatrix
+                    print
+                    '\nReferanse Stress Vector', Stresses
+                    # print Stresses, Stiffmatrix
                     strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
 
-                    print '\nInitial Strain Vector', strains
+                    print
+                    '\nInitial Strain Vector', strains
                     Type = 'comp_'
                     if strains[Ret] > 0:
                         Type = 'tens_'
@@ -252,10 +233,11 @@ while len(n)<=tests:
                                 openMdb(pathName=RVEmodellpath)
                                 mod = mdb.models['Model-A']
                             except:
-                                print 'Cae not found'
+                                print
+                                'Cae not found'
                                 pass
                         try:
-                            execfile(Modellering +'nonLinearAnalysis.py')
+                            execfile(Modellering + 'nonLinearAnalysis.py')
                         except:
                             del Problem_With_nonLinear_Analysis
                         t = (time.time() - start_time)
@@ -263,10 +245,11 @@ while len(n)<=tests:
                         if Savemodel:
                             mdb.saveAs(pathName=RVEmodellpath)
 
-                Reset = 0       #For aa logge initielle strain stress
-                stegy=difstpNm
+                Reset = 0  # For aa logge initielle strain stress
+                stegy = difstpNm
                 if nonLinearpostPross:
-                    print '\nPostProcess'
+                    print
+                    '\nPostProcess'
                     execfile(processering + 'nonLinearPostprocessing.py')
                     t = (time.time() - start_time)
                     print('t ved ferdig postprosess=', t)
@@ -274,36 +257,41 @@ while len(n)<=tests:
                 pass
                 Q = Q + 1000
                 n.append(Q)
-                print 'Error in Stress tests'
-                error=1
+                print
+                'Error in Stress tests'
+                error = 1
 
-        #Adjustment of strain vector
+        # Adjustment of strain vector
         if not error and stresstest:
             strains2 = strains.tolist()
-            Reset=1
+            Reset = 1
             Jobbnav = Jobbnavn
-            prev=0      #for aa vite hvor langt bak vi hoppet forrige gang
+            prev = 0  # for aa vite hvor langt bak vi hoppet forrige gang
             reps = 50
-            adjusts=0
-            Frames = np.zeros(reps+1)
-            while adjusts<reps:
+            adjusts = 0
+            Frames = np.zeros(reps + 1)
+            while adjusts < reps:
                 Fram = FrameFinder()  # Returns frame before divergion
-                if not adjusts==0:
-                    if Fram[0]<prevfram[0]:
-                        Fram= prevfram
-                print '\nfix:  ',adjusts
+                if not adjusts == 0:
+                    if Fram[0] < prevfram[0]:
+                        Fram = prevfram
+                print
+                '\nfix:  ', adjusts
 
-                print Fram
+                print
+                Fram
                 StressSigs = np.genfromtxt(Sigmapaths)
                 StressSigs = StressSigs[:Fram[0]]
 
-                print StressSigs[-1, :]
-                print 'plotpunkter   ', len(StressSigs)-1
+                print
+                StressSigs[-1, :]
+                print
+                'plotpunkter   ', len(StressSigs) - 1
 
                 appe = 0
                 diff = Fram[0] - prev
 
-                if not diff<=0:
+                if not diff <= 0:
                     Frames[adjusts + 1] = Fram[0]
                     appe = 1
 
@@ -313,22 +301,26 @@ while len(n)<=tests:
                         prevname = difstpNm
                     else:
                         prevname = 'rep' + str(adjusts - 1)
-                    re =3
+                    re = 3
                     if diff == 3:
-                        re=2
-                    if diff==2 or strains[Ret] < 0:
-                        re=1
-                    if diff<=0 :
-                        re=0
+                        re = 2
+                    if diff == 2 or strains[Ret] < 0:
+                        re = 1
+                    if diff <= 0:
+                        re = 0
 
-                    print Frames[adjusts + 1], Frames[adjusts],re
+                    print
+                    Frames[adjusts + 1], Frames[adjusts], re
                     addedF = int(Frames[adjusts + 1]) - int(Frames[adjusts]) - re  # minus ## for prevantiv
 
                     stegy = 'rep' + str(adjusts)
 
-                    print 'diff', diff,  'addF', addedF
-                    print prevname
-                    mod.StaticStep(name='rep' + str(adjusts), previous=prevname, nlgeom=ON, stabilizationMagnitude=0.0002,
+                    print
+                    'diff', diff, 'addF', addedF
+                    print
+                    prevname
+                    mod.StaticStep(name='rep' + str(adjusts), previous=prevname, nlgeom=ON,
+                                   stabilizationMagnitude=0.0002,
                                    stabilizationMethod=DAMPING_FACTOR,
                                    continueDampingFactors=False, adaptiveDampingRatio=0.05)
                     IniTid = (StressSigs[-1, 0] - StressSigs[-2, 0]) * 0.9
@@ -352,23 +344,26 @@ while len(n)<=tests:
                             scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
                             numGPUs=0)
 
-
-                print '\nPrevious Strain Vector', strains2
-                print 'Change : ', Fram[1]
+                print
+                '\nPrevious Strain Vector', strains2
+                print
+                'Change : ', Fram[1]
 
                 d = 2
-                #if strains[Ret] < 0:
+                # if strains[Ret] < 0:
                 #    d = 10
-                for ssss in range(0,len(strains)):
+                for ssss in range(0, len(strains)):
                     if Fram[1][ssss]:
-                        adjfactor = abs(strains[ssss])/d
-                        print 'Adjust by : ', adjfactor
+                        adjfactor = abs(strains[ssss]) / d
+                        print
+                        'Adjust by : ', adjfactor
 
-                        if StressSigs[-1][ssss+1]>=0:
+                        if StressSigs[-1][ssss + 1] >= 0:
                             strains2[ssss] = strains2[ssss] + adjfactor
                         else:
                             strains2[ssss] = strains2[ssss] - adjfactor
-                print 'Updated Strain Vector', strains2, '\n\n' + Jobbnavn
+                print
+                'Updated Strain Vector', strains2, '\n\n' + Jobbnavn
 
                 a = mod.rootAssembly
                 exx, eyy, ezz, exy, exz, eyz = strains2
@@ -390,31 +385,32 @@ while len(n)<=tests:
                 except:
                     pass
 
-                print '\nPostProcess'
+                print
+                '\nPostProcess'
                 execfile(processering + 'nonLinearPostprocessing.py')
                 t = (time.time() - start_time)
                 print('t for Restart iterasjon=', t)
 
                 if appe:
-                    adjusts =adjusts+1
-                    print 'count: ', adjusts
+                    adjusts = adjusts + 1
+                    print
+                    'count: ', adjusts
                     prevfram = Fram
-
 
             t = (time.time() - start_time)
             print('Reached end of random key Iteration\tt ved ferdig', t)
-            ss = open('C:/Users/Sondre/Desktop/Ferdig'+str(ParameterSweep[ItraPara])+'.txt', "w")
+            ss = open('C:/Users/Sondre/Desktop/Ferdig' + str(ParameterSweep[ItraPara]) + '.txt', "w")
             ss.close()
             Q = Q + 1000
             n.append(Q)
             del section, regionToolset, dgm, part, material, assembly, step, interaction
             del load, mesh, job, sketch, visualization, xyPlot, dgo, connectorBehavior
 
-
     if error:
-        Q = Q +1
+        Q = Q + 1
         n[-1] = Q
-        print 'Error'
+        print
+        'Error'
     else:
-        Q = Q+1
+        Q = Q + 1
         n.append(Q)

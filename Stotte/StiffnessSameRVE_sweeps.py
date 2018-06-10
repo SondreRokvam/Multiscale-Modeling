@@ -1,12 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-Yeah = np.genfromtxt(GitHub + 'Sweeps.txt')
+Yeah = np.genfromtxt('C:/MultiScaleMethod/Github/Multiscale-Modeling/Sweeps.txt')
 count =0
+scsc = 9973
 for yih in Yeah:
 
-    print('\n',num)
-    fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__VF-'+str(num)+'.txt','r')
+    print('\n',yih)
+    fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__InY-' + str(int(yih*scsc)) + '.txt','r')
     tekst = fifi.read()
     fifi.close()
     lines = tekst.split('\n')
@@ -44,9 +45,10 @@ for yih in Yeah:
 
 
     for csi in range(0,36):
-        plt.plot(nummy[count],Cumavg[csi,-1],'x')
+        plt.plot(Yeah[count],Cumavg[csi,-1],'x')
         #plt.plot(Xaxis,Ploting[csi,:],'x')
     #plt.xlim(0, 25)
+    plt.xscale('log')
     #plt.ylim(12.5, 20)
     count = count + 1
 plt.tight_layout()

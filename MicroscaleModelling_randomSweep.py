@@ -160,53 +160,15 @@ while len(n)<=tests:
     error = 0
     print Q
     print n
-    """Datalagring"""
 
+
+        #Datalagring
     execfile(Modellering + 'Set_text_dirs.py')
 
-    """Modellering"""
-    try:
-        """ Abaqus RVE model """
-        execfile(Modellering + 'Model.py')
-    except:
-        print 'Error in modellering'
-        error = 1
+        #Modellere RVE eller aapne eksisterende  -  Sette navn for toyningsretning
+    execfile(Modellering + 'LagOROpen_preplin.py')
 
-    #Prep Stiffness tests
-    if not error:
-        # Strain test
-        Enhetstoyinger = [''] * 6  # 6 Enhetstoyinger - Exx, Eyy, Ezz, Exy, Exz, Eyz
-        for g in range(0, 6):
-            if not noFibertest:
-                Enhetstoyinger[g] = [Retning[g] + str(int(ParameterSweep[-1]*scsc)) + '_' + str(Q)]
-            else:
-                Enhetstoyinger[g] = [Retning[g] + 'noFiber']
-
-        # Kjore Linear analyse
-        if not FoundStiff:
-            if not Createmodel:
-                try:
-                    openMdb(pathName=RVEmodellpath)
-                    mod = mdb.models['Model-A']
-                except:
-                    print 'Cae not found'
-                    error = 1
-                    pass
-
-    if not error:
-        #try:
-        execfile(Modellering +'LinearAnalysis.py')
-        #except:
-        #    print 'Problem_With_Linear_Analysis'
-        #    error = 1
-
-        print('t etter lin analyser=', (time.time() - start_time))
-    if not error:
-        if LinearpostPross:
-            execfile(processering + 'LinearPostprocessing.py')
-            t = (time.time() - start_time)
-            print('t etter lin pross=', t)
-
+    # Linear_Analyse
     if FoundStiff:
         Stiffmatrix = np.load(lagrestiffpathmod)
         print
@@ -215,6 +177,21 @@ while len(n)<=tests:
             print '%7f \t %7f \t %7f \t %7f \t %7f \t %7f' % (
                 Stiffmatrix[0][a], Stiffmatrix[1][a], Stiffmatrix[2][a], Stiffmatrix[3][a], Stiffmatrix[4][a],
                 Stiffmatrix[5][a])
+    else:
+        if not error:
+            #try:
+            execfile(Modellering +'LinearAnalysis.py')
+            #except:
+            #    print 'Problem_With_Linear_Analysis'
+            #    error = 1
+
+            print('t etter lin analyser=', (time.time() - start_time))
+        if not error:
+            if LinearpostPross:
+                execfile(processering + 'LinearPostprocessing.py')
+                t = (time.time() - start_time)
+                print('t etter lin pross=', t)
+
 
         # Non linear tester
 

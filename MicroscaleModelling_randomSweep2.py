@@ -102,7 +102,7 @@ def FrameFinder():
 
 
 #Globale Directories
-GitHub, workpath = 'C:/MultiScaleMethod/Github/Multiscale-Modeling/', 'C:/Temp/'
+GitHub, workpath = 'C:/MultiScaleMethod/Github/Multiscale-Modeling/', 'C:/Temp/Vf/'
 Tekstfiler, Modellering,processering = 'C:/MultiScaleMethod/Github/textfiles/', GitHub+'Abaqus_modellering/',GitHub+'Abaqus_prosessering/'
 
 """Intierings"""
@@ -137,7 +137,7 @@ if Iterations:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 # Top level variables
-ParameterSweep=[0.45]
+ParameterSweep=[0.5]
 nf = 25
 Vf = ParameterSweep[-1]
 

@@ -137,7 +137,7 @@ if Iterations:
 #Klareringsavstand, sweepe nedover til crash, analysere data
 #ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
 # Top level variables
-ParameterSweep=[0.40]
+ParameterSweep=[0.45]
 nf = 25
 Vf = ParameterSweep[-1]
 

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 nums=[5, 10, 15,20,25,30,35,40,45,50,55]
-nums= [0.4,0.45,0.5,0.55,0.6,0.65,0.7]
+#nums= [0.4,0.45,0.5,0.55,0.6,0.65,0.7]
 for num in nums:
     print('\n',num)
     fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__NF-'+str(num)+'.txt','r')
@@ -41,10 +41,10 @@ for num in nums:
     plt.xlabel('Average basis')
     plt.plot(Xaxis, Cumavg[0, :])
 
-    if num == 20:
-        for csi in range(0,36):
-            plt.plot(Xaxis,Cumavg[csi,:])
-            plt.plot(Xaxis,Ploting[csi,:],'x')
+
+    for csi in range(0,36):
+        plt.plot(Xaxis,Cumavg[csi,:])
+        plt.plot(Xaxis,Ploting[csi,:],'x')
     plt.xlim(0, 25)
     plt.ylim(12.5, 20)
 plt.tight_layout()

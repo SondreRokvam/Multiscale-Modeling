@@ -100,71 +100,70 @@ def FrameFinder():
     print 'No divergence found'
     return len(StressSi)-1, StressFlags, StressSi[len(StressSi)-1]
 
+Yeah = np.genfromtxt(GitHub + 'Sweeps.txt')
+ParameterSweep = Yeah[2]
 
-#Globale Directories
+# Globale Directories
 GitHub, workpath = 'C:/MultiScaleMethod/Github/Multiscale-Modeling/', 'C:/Temp/Vf/'
-Tekstfiler, Modellering,processering = 'C:/MultiScaleMethod/Github/textfiles/', GitHub+'Abaqus_modellering/',GitHub+'Abaqus_prosessering/'
-
-"""Intierings"""
-if True:
-    """Start"""
-    #Sette variabler
-    execfile(Modellering+'TestVariabler.py')            # Sette Test variabler
-
-
-    #INFO DUMP
-    if Interface and Createmodel and not noFibertest:
-        print('Aspect ratio for Interface elementsn= ' + str(round(meshsize / (rinterface * rmean), 2)) +
-              '\t Interface element thickness = ' + str(float(ElementInterfaceT * rmean)))
-    if not noFibertest and FiberSirkelResolution<20:
-        print 'For grov opplosning, avslutter..'
-        del error
-
-
-"""Iterasjonsprameter"""
-execfile(Modellering + 'IterationParameters.py')  # Sette iterasjonsnummer
+Tekstfiler, Modellering, processering = 'C:/MultiScaleMethod/Github/textfiles/', GitHub + 'Abaqus_modellering/', GitHub + 'Abaqus_prosessering/'
 
 # Open for big scale iterations
+execfile(Modellering + 'IterationParameters.py')  # Sette iterasjonsnummer
 if Iterations:
     Itra = open(Tekstfiler + 'Iterasjoner.txt', "a")
     Itra.write('\n')
     Itra.close()
+    Iterasjonfiks()
 
-
-#Meshsize/ Fiberresolution, Sweepe fiberresolution
-#Interface element thickness, Sweepe nedover til crash, analysere data
-#RVE size from nf       # Trenger minimum RVE convergence test
-#Klareringsavstand, sweepe nedover til crash, analysere data
-#ParameterSweep=np.round(np.linspace(2 ,80,79)) # nf sweep
-# Top level variables
-ParameterSweep=[0.02+0.0075]
 nf = 25
 Vf = 0.6
-Rclearing  =     ParameterSweep[-1]
-scsc= 1000000
+scsc = 9973  # A prime for good measure
 
-Iterasjonfiks()
+# Hvilken parameter sweepes
 
-n = [Vf*scsc+ItraPara*169]           #  Itererer med random nokkeler fra 0 til n
-ItraPara=0
-tests= 10
-print 'Iterasjon : ',ItraPara      #    Antall itersjoner saa langt
+#   Meshsize/ Fiberresolution
+#   Interface element thickness
+#   RVE size from nf
+#   Critical RVE convergence test
+#   Klareringsavstand
 
-#nf= int(ParameterSweep[ItraPara])
 
-"""Sette Iterasjonsavhengige variabler"""
-print('t ved start=', time.time() - start_time)
+SkalereInterface = ParameterSweep
+print
+'Iterasjon : ', ItraPara  # Antall itersjoner saa langt
 
-if nf == 0 or Vf == 0 or noFibertest:
-    nf = 0
-    Vf = 0
-    dL = rmean * 5
-    noFiber = 1
-if not nf == 0:  # RVE dL er relativ av nf, rmean og V
-    dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5
-    noFiber = 0
+# Loops
+tests = 1  # Antall iterasjoner per startup
+n = [int(ParameterSweep * scsc + ItraPara * 169)]
+ItraPara = 0
 
-#Random modellering lokke
+# Intiering
+if True:
+    # Sette variabler
+    execfile(Modellering + 'TestVariabler.py')
+
+    # INFO DUMP
+    if Interface and Createmodel and not noFibertest:
+        print
+        'Interface elements aspect ratio: ' + str(round(meshsize / (rinterface * rmean), 2))
+        print
+        'Interface element thickness    : ' + str(float(ElementInterfaceT * rmean)))
+        if not noFibertest and FiberSirkelResolution < 20:
+            print
+        'For grov opplosning, avslutter..'
+        del error
+
+        if nf == 0 or Vf == 0 or noFibertest:
+            nf = 0
+        Vf = 0
+        dL = rmean * 5
+        noFiber = 1
+        if not nf == 0:  # RVE dL er relativ av nf, rmean og V
+            dL = ((nf * pi * rmean ** 2) / (Vf)) ** 0.5
+        noFiber = 0
+        print('t ved start=', time.time() - start_time)
+
+        # Arbeids lokke
 
 while len(n)<=tests:
     #IMPORTERER ALT FRA ABAQUS

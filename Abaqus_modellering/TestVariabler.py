@@ -41,10 +41,11 @@ Iterations = 1
 #Plasticitet
 Yieldlim = 0.060
 
-Strainlim = 0.061
+Plastlim = 0.061
 PlasticStrain = 0.015
-Epox=((Yieldlim, 0.0), (Strainlim, PlasticStrain))
-Sizing =((3*Yieldlim, 0.0), (3*Strainlim, PlasticStrain))
+Epox=((Yieldlim, 0.0), (Plastlim, PlasticStrain))
+
+Sizing =((SkalereInterface*Yieldlim, 0.0), (SkalereInterface*Plastlim, PlasticStrain))
 """Simuleringsvariabler """
 global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin
 

@@ -6,7 +6,7 @@ global coordpath, Lagrestiffpathprop, lagrestiffpathmod,Envelope,Sigmapaths
 coordpath = Tekstfiler + 'RVEcoordinatsandRadiuses' + str(
     int(ParameterSweep[ItraPara])) + '_' + str(Q) + '.txt'  # Skriver ned generert fiberPop for reference.
 
-Lagrestiffpathprop = Tekstfiler + 'Stiffness__CLF-' + str(int(ParameterSweep[-1]*scsc)) + '.txt'  # Skrives ned statistikk til ett annet script
+Lagrestiffpathprop = Tekstfiler + 'Stiffness__InY-' + str(int(ParameterSweep[-1]*scsc)) + '.txt'  # Skrives ned statistikk til ett annet script
 
 lagrestiffpathmod = Tekstfiler + 'StiffnessM' + str(int(ParameterSweep[-1]*scsc)) + '_' + str(
                             Q) +'.npy'  # Lagrer ned Stiffnessmatrix

@@ -33,7 +33,7 @@ else:
 
 Increments = {'maxNum': 60, 'initial': 5e-3, 'min': 1e-4, 'max': 0.05}
 
-Iterations = 1
+
 
 
 """Material modeller"""

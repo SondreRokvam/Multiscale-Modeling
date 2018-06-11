@@ -2,10 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 #Globale Directories
-Tekstfiler  = 'C:/MultiScaleMethod/Github/textfiles/'
+Tekstfiler  = 'C:/MultiScaleMethod/Github/textfiles/Stresstests/'
 nf= 0
 zoom =1
-
+#Type = 'sher_Ex'
+Type = 'sher_'
+filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmas'+Type)]  # if not f.endswith('.inp')]
+print(filelist)
 def readSSData(fily):
     # NOTE: you will probably need to change
     # the file path:
@@ -32,19 +35,19 @@ def plotStressStrainData():
         plt.ylabel('Stresses [GPa]')
         plt.xlabel('Strain')
 
-        ymin, ymax = plt.ylim()
-        xmin, xmax = plt.xlim()
+        #ymin, ymax = plt.ylim()
+        #xmin, xmax = plt.xlim()
 
-        print (ymin, ymax, xmin, xmax)
+        #print (ymin, ymax, xmin, xmax)
 
         #plt.xlim((xmin), (xmax))
         #plt.ylim((ymin / zoom), (ymax / zoom))
 
         #plt.xlim((0.94*xmax), (0.95*xmax))
         #plt.ylim((-0.007 / zoom), (0.007 / zoom))
-        ymin, ymax = plt.ylim()
-        xmin, xmax = plt.xlim()
-        print (ymin, ymax, xmin, xmax)
+        #ymin, ymax = plt.ylim()
+        #xmin, xmax = plt.xlim()
+        #print (ymin, ymax, xmin, xmax)
         plt.tight_layout()
         plt.show()
 
@@ -67,13 +70,13 @@ def plotStressStrainData():
         ymin, ymax = plt.ylim()
         xmin, xmax = plt.xlim()
 
-        print (ymin, ymax, xmin, xmax)
+        #print (ymin, ymax, xmin, xmax)
 
 
 
         #plt.xlim((0.94*xmax), (0.95*xmax))
         #plt.ylim((-0.007 / zoom), (0.007 / zoom))
-        print (ymin, ymax, xmin, xmax)
+        #print (ymin, ymax, xmin, xmax)
     plt.tight_layout()
     plt.show()
 
@@ -90,7 +93,5 @@ def plotStressStrainData():
         plt.show()
         """
 
-filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmas')]  # if not f.endswith('.inp')]
-print(filelist)
 
 plotStressStrainData()

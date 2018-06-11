@@ -1,2 +1,2 @@
 global ItraPara
-ItraPara = 7
+ItraPara = 0

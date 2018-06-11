@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 Yeah = np.genfromtxt('C:/MultiScaleMethod/Github/Multiscale-Modeling/Sweeps.txt')
+Yeah =Yeah[0:5]
 count =0
 scsc = 9973
 for yih in Yeah:

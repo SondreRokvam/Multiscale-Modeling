@@ -7,7 +7,7 @@ Tekstfiler  = 'C:/MultiScaleMethod/Github/textfiles/Stresstests/'
 #Type =  tens_      comp_        sher_
 #['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
 
-Type = 'sher_'
+Type = 'comp_'
 
 
 filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmas'+Type)]  # if not f.endswith('.inp')]

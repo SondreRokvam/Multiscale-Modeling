@@ -40,7 +40,8 @@ for num in nums:
     for csi in range(0, 36):
         for x in range(0,len(Ploting[csi,:])):
             Cumavg[csi][x]=np.sum(Ploting[csi, :][0:(x+1)])/(x+1)
-    plt.ylabel('Stiffness constants RVE models [GPa]')
+    plt.title('Volume fraction effect on stiffness')
+    plt.ylabel('Stiffness matrix constants [GPa]')
     plt.xlabel('Volume fraction')
 
 

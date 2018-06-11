@@ -39,21 +39,21 @@ for yih in Yeah:
     for csi in range(0, 36):
         for x in range(0,len(Ploting[csi,:])):
             Cumavg[csi][x]=np.sum(Ploting[csi, :][0:(x+1)])/(x+1)
-    plt.ylabel('Stiffness constants RVE models [GPa]')
-    plt.xlabel('Volume fraction')
 
+    plt.title('Interface Plastic Yield effect on stiffness')
+    plt.ylabel('Stiffness matrix constants [GPa]')
+    plt.xlabel('Relative Plastic Yield of interface')
 
-
-    for csi in range(0,36):
-        plt.plot(Yeah[count],Cumavg[csi,-1],'x')
-        #plt.plot(Xaxis,Ploting[csi,:],'x')
-    #plt.xlim(0, 25)
+    for csi in range(0, 36):
+        # plt.plot(Yeah[count], Cumavg[csi, -1], 'x')
+        for xx in range(0, len(Cumavg[csi, :])):
+            plt.plot(Yeah[count], Cumavg[csi, xx], 'x')
+        # plt.plot(Xaxis,Ploting[csi,:],'x')
+    # plt.xlim(0, 25)
     plt.xscale('log')
-    #plt.ylim(12.5, 20)
+    # plt.ylim(12.5, 20)
     count = count + 1
 plt.tight_layout()
 plt.show()
-
-
 
 

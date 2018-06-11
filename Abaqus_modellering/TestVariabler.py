@@ -1,12 +1,12 @@
-"""         Script variabler                                      """
+"""         Script variabler                """
 
 global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 #numCPU = multiprocessing.cpu_count()
 numCPU = 1
 
-analyse =1
+analyse = 1
 FoundStiff = 0
-stresstest=0
+stresstest = 1
 if analyse:
     Createmodel = 1
     Savemodel = 1
@@ -17,21 +17,21 @@ if analyse:
     else:
         linearAnalysis = 0
         LinearpostPross = 0
-    nonLinearAnalysis = 0
-    nonLinearpostPross = 0
+    nonLinearAnalysis = 1
+    nonLinearpostPross = 1
     openModel = 0
 else:
     Createmodel = 0
     Savemodel = 0
-    Runjobs = 0
+    Runjobs = 1
     linearAnalysis = 0
     LinearpostPross = 0
-    nonLinearpostPross = 1
-    openModel = 1
 
+
+    openModel = 1
     nonLinearAnalysis = 1 # Finne standard
 
-Increments = {'maxNum': 60, 'initial': 5e-3, 'min': 1e-4, 'max': 0.05}
+Increments = {'maxNum': 30, 'initial': 1e-2, 'min': 5e-4, 'max': 0.1}
 
 
 
@@ -45,7 +45,7 @@ Plastlim = 0.061
 PlasticStrain = 0.015
 Epox=((Yieldlim, 0.0), (Plastlim, PlasticStrain))
 
-Sizing =((SkalereInterface*Yieldlim, 0.0), (SkalereInterface*Plastlim, PlasticStrain))
+Sizing =((Yieldlim, 0.0), (Plastlim, PlasticStrain))
 """Simuleringsvariabler """
 global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin
 

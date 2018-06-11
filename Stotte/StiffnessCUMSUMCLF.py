@@ -40,8 +40,11 @@ for num in nums:
     for csi in range(0, 36):
         for x in range(0,len(Ploting[csi,:])):
             Cumavg[csi][x]=np.sum(Ploting[csi, :][0:(x+1)])/(x+1)
-    plt.ylabel('Stiffness constants RVE models [GPa]')
-    plt.xlabel('Volume fraction')
+
+    plt.title('Clearing distance effect on stiffness')
+    plt.ylabel('Stiffness matrix constants [GPa]')
+    plt.xlabel('Clearing distance')
+
     for asa in range(0,len(Ploting[csi, :])):
         plt.plot(nummy[count], Ploting[csi, asa], '+')
 

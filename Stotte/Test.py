@@ -5,7 +5,7 @@ count =0
 scsc = 9973
 
 for yih in Yeah:
-    fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__InY-' + str(int(yih*scsc)) + '.txt','r')
+    fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__InPST-' + str(int(yih*scsc)) + '.txt','r')
     tekst = fifi.read()
     fifi.close()
     lines = tekst.split('\n')
@@ -23,9 +23,9 @@ for yih in Yeah:
             if i!=j:
                 if keys[i]==keys[j]:
                     print('dobbel')
+
+
 """
-
-
     print('\n',num)
     fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__InY-' + str(int(ParameterSweep*scsc)) + '.txt','r')
     

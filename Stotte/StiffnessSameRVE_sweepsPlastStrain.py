@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-nums=[5, 10, 15,20,25,30,35,40,45,50,55]
-#nums= [0.4,0.45,0.5,0.55,0.6,0.65,0.7]
-for num in nums:
-    print('\n',num)
-    fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__NF-'+str(num)+'.txt','r')
+Yeah = np.genfromtxt('C:/MultiScaleMethod/Github/Multiscale-Modeling/Sweeps.txt')
+count =0
+scsc = 9973
+for yih in Yeah:
+
+    print('\n',yih)
+    fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__InPST-' + str(int(yih*scsc)) + '.txt','r')
     tekst = fifi.read()
     fifi.close()
     lines = tekst.split('\n')
@@ -38,18 +40,19 @@ for num in nums:
         for x in range(0,len(Ploting[csi,:])):
             Cumavg[csi][x]=np.sum(Ploting[csi, :][0:(x+1)])/(x+1)
 
-
-    plt.title('Stiffness convergence for number of fibers in RVEs')
+    plt.title('Interface Plastic strain effect on stiffness')
     plt.ylabel('Stiffness matrix constants [GPa]')
-    plt.xlabel('Average basis')
-    plt.plot(Xaxis, Cumavg[0, :])
-
+    plt.xlabel('Relative plastic strain of interface ')
 
     for csi in range(0,36):
-        plt.plot(Xaxis,Cumavg[csi,:])
-        plt.plot(Xaxis,Ploting[csi,:],'x')
-    plt.xlim(0, 25)
-    plt.ylim(12.5, 20)
+        #plt.plot(Yeah[count], Cumavg[csi, -1], 'x')
+        for xx in range(0, len(Cumavg[csi, :])):
+            plt.plot(Yeah[count], Cumavg[csi, xx], 'x')
+        #plt.plot(Xaxis,Ploting[csi,:],'x')
+    #plt.xlim(0, 25)
+    plt.xscale('log')
+    #plt.ylim(12.5, 20)
+    count = count + 1
 plt.tight_layout()
 plt.show()
 

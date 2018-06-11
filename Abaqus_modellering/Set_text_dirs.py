@@ -3,12 +3,12 @@
 global coordpath, Lagrestiffpathprop, lagrestiffpathmod,Envelope,Sigmapaths
 
 
-coordpath = Tekstfiler + 'RVEcoordinatsandRadiuses' + str(
+coordpath = Tekstfiler+ '/RVE_Coords/RVEcoordinatsandRadiuses' + str(
     int(ParameterSweep)) + '_' + str(Q) + '.txt'  # Skriver ned generert fiberPop for reference.
 
-Lagrestiffpathprop = Tekstfiler + 'Stiffness__InY-' + str(int(ParameterSweep*9973)) + '.txt'  # Skrives ned statistikk til ett annet script
+Lagrestiffpathprop = Tekstfiler + 'Stiffness__InPST-' + str(int(ParameterSweep*9973)) + '.txt'  # Skrives ned statistikk til ett annet script
 
-lagrestiffpathmod = Tekstfiler + 'StiffnessM' + str(int(ParameterSweep*scsc)) + '_' + str(
+lagrestiffpathmod = Tekstfiler + '/StiffMat_np/StiffnessM' + str(int(ParameterSweep*scsc)) + '_' + str(
                             Q) +'.npy'  # Lagrer ned Stiffnessmatrix
 
 Envelope = Tekstfiler + 'envelope'  # Parameteravhengig - Spesifikt navn i funksjonen

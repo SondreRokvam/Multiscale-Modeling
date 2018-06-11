@@ -79,33 +79,34 @@ def getHomogenizedSigmas():
     return Sigma_frame, Volume_frame,Time_frame
 
 HomoSigs = getHomogenizedSigmas()
-np.save(Tekstfiler+'Sisss', HomoSigs[0])
+if HomoSigs != 0:
+    np.save(Tekstfiler+'Sisss', HomoSigs[0])
 
-if not Reset:
-    ss = open(Sigmapaths, "w")
-    ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (abs(strains[Ret]),0,0,0,0,0,0))
-    #print HomoSigs[0][-1]
-    count =0
-    for s in HomoSigs[0]:
-        ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count],s[0], s[1], s[2], s[3], s[4], s[5]))
-        count = count + 1
-    ss.close()
-    print 'saved to: ' ,Sigmapaths
-else:
-    ss = open(Sigmapaths, "w")
-    for sds in StressSigs:
-        ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (sds[0], sds[1], sds[2], sds[3],
-                                                   sds[4], sds[5], sds[6]))
-    ss.close()
-
-    count = 0
-    if not adjusts == (reps - 1):
-        ss = open(Sigmapaths, "a")
-        count = 0
+    if not Reset:
+        ss = open(Sigmapaths, "w")
+        ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (abs(strains[Ret]),0,0,0,0,0,0))
+        #print HomoSigs[0][-1]
+        count =0
         for s in HomoSigs[0]:
-            if not HomoSigs[2][count]==0:
-                ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count]+StressSigs[-1][0],s[0], s[1], s[2], s[3], s[4], s[5]))
+            ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count],s[0], s[1], s[2], s[3], s[4], s[5]))
             count = count + 1
         ss.close()
-    print 'saved to: ', Sigmapaths
+        print 'saved to: ' ,Sigmapaths
+    else:
+        ss = open(Sigmapaths, "w")
+        for sds in StressSigs:
+            ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (sds[0], sds[1], sds[2], sds[3],
+                                                       sds[4], sds[5], sds[6]))
+        ss.close()
+
+        count = 0
+        if not adjusts == (reps - 1):
+            ss = open(Sigmapaths, "a")
+            count = 0
+            for s in HomoSigs[0]:
+                if not HomoSigs[2][count]==0:
+                    ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (HomoSigs[2][count]+StressSigs[-1][0],s[0], s[1], s[2], s[3], s[4], s[5]))
+                count = count + 1
+            ss.close()
+        print 'saved to: ', Sigmapaths
 

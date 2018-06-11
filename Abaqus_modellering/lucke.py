@@ -96,7 +96,7 @@ if stresstest:
             error=1"""
     if Savemodel:
         mdb.saveAs(pathName=RVEmodellpath)
-    d=[0.95]*6
+    d=0.95
     """Adjusting strength test"""
     if not error:
         strains2 = strains.tolist()
@@ -181,8 +181,8 @@ if stresstest:
 
             for ssss in range(0,len(strains)):
                 if Fram[1][ssss]:
-                    if d[ssss]>0.10:
-                        d[ssss] = d[ssss] * 0.80
+                    if d>0.33:
+                        d = d * 0.75
                     adjfactor = abs(strains2[ssss])*d[ssss]
                     print 'Adjust by : ', adjfactor
 

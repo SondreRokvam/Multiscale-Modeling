@@ -37,8 +37,8 @@ def plotStressStrainData():
 
         print (ymin, ymax, xmin, xmax)
 
-        plt.xlim((xmin), (xmax))
-        plt.ylim((ymin / zoom), (ymax / zoom))
+        #plt.xlim((xmin), (xmax))
+        #plt.ylim((ymin / zoom), (ymax / zoom))
 
         #plt.xlim((0.94*xmax), (0.95*xmax))
         #plt.ylim((-0.007 / zoom), (0.007 / zoom))
@@ -69,13 +69,10 @@ def plotStressStrainData():
 
         print (ymin, ymax, xmin, xmax)
 
-        plt.xlim((xmin), (xmax))
-        plt.ylim((ymin / zoom), (ymax / zoom))
+
 
         #plt.xlim((0.94*xmax), (0.95*xmax))
         #plt.ylim((-0.007 / zoom), (0.007 / zoom))
-        ymin, ymax = plt.ylim()
-        xmin, xmax = plt.xlim()
         print (ymin, ymax, xmin, xmax)
     plt.tight_layout()
     plt.show()

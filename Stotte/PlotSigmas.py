@@ -3,11 +3,13 @@ import matplotlib.pyplot as plt
 import os
 #Globale Directories
 Tekstfiler  = 'C:/MultiScaleMethod/Github/textfiles/Stresstests/'
-nf= 0
-zoom =1
-#Type = 'sher_Ex'
+
+#Type =  tens_      comp_        sher_
 #['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
+
 Type = 'sher_'
+
+
 filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmas'+Type)]  # if not f.endswith('.inp')]
 print(filelist)
 def readSSData(fily):

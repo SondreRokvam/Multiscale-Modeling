@@ -43,8 +43,8 @@ if stresstest:
     """Inital Strength test"""
     if not error:
         #try:
-        Magni = 3e-2    # Skalarverdi til toyning
-        Ret = 5         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+        Magni = -3e-2    # Skalarverdi til toyning
+        Ret = 1         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
         strain = Magni * id[Ret]
 
         ### SETTE lagringsplass

@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
-nums=[5, 10, 15,20,25,30,35,40,45,50,55]
+import os
+filelist = [f for f in os.listdir('C:/MultiScaleMethod/Github/textfiles/') if f.startswith('Stiffness__NF-')]
+nums=[5, 14, 23,32,41,50,59]
+print(filelist)
 #nums= [0.4,0.45,0.5,0.55,0.6,0.65,0.7]
-for num in nums:
+for nffile in filelist:
     print('\n',num)
-    fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__NF-'+str(num)+'.txt','r')
+    fifi = open('C:/MultiScaleMethod/Github/textfiles/'+nffile,'r')
     tekst = fifi.read()
     fifi.close()
     lines = tekst.split('\n')
@@ -48,8 +50,6 @@ for num in nums:
     for csi in range(0,36):
         plt.plot(Xaxis,Cumavg[csi,:])
         plt.plot(Xaxis,Ploting[csi,:],'x')
-    plt.xlim(0, 25)
-    plt.ylim(12.5, 20)
 plt.tight_layout()
 plt.show()
 

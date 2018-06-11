@@ -6,7 +6,7 @@ numCPU = 1
 
 analyse = 1
 FoundStiff = 0
-stresstest = 1
+stresstest = 0
 if analyse:
     Createmodel = 1
     Savemodel = 1
@@ -17,8 +17,8 @@ if analyse:
     else:
         linearAnalysis = 0
         LinearpostPross = 0
-    nonLinearAnalysis = 1
-    nonLinearpostPross = 1
+    nonLinearAnalysis = 0
+    nonLinearpostPross = 0
     openModel = 0
 else:
     Createmodel = 0
@@ -26,7 +26,6 @@ else:
     Runjobs = 1
     linearAnalysis = 0
     LinearpostPross = 0
-
 
     openModel = 1
     nonLinearAnalysis = 1 # Finne standard

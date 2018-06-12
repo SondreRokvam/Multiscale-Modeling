@@ -1,7 +1,7 @@
 # Sette variabler
 execfile(Modellering + 'TestVariabler.py')
 ###NF parameter sweeps
-Vf=float(ParameterSweep)
+Rclearing=float(ParameterSweep)
 # INFO DUMP
 if Interface and Createmodel and not noFibertest:
     print

@@ -54,7 +54,7 @@ for nfs in range(0,len(nums)):
 #plt.legend(loc=2)
 plt.ylim(50, 65)
 plt.ylim(11, 20)
-#plt.ylim(2.5, 10)
+plt.ylim(3, 8)
 #plt.ylim(-2.5, 2.5)
 plt.xlim(0, 100)
 plt.title('Stiffness convergence for number of fibers in RVEs')

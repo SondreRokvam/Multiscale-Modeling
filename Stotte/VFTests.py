@@ -4,13 +4,13 @@ Yeah = np.genfromtxt('C:/MultiScaleMethod/Github/Multiscale-Modeling/Sweeps.txt'
 count =0
 scsc = 9973
 
-nums=[5, 14, 23,32,41,50,59]
+nums=[0.4,0.45,0.5,0.55,0.6,0.65,0.7]
 
 
 for yih in Yeah:
     print(yih)
     try:
-        fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__NF-' + str(int(yih*scsc)) + '.txt','r')
+        fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__VF-' + str(int(yih*scsc)) + '.txt','r')
         tekst = fifi.read()
         fifi.close()
         lines = tekst.split('\n')
@@ -28,3 +28,5 @@ for yih in Yeah:
                         print('dobbel')
     except:
         pass
+
+

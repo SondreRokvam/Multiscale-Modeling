@@ -44,7 +44,7 @@ if stresstest:
     if not error:
         #try:
         Magni = [-3e-2,-3e-2]    # Skalarverdi til toyning
-        Ret = [1,2]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+        Ret = [0,1]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
         strain = 0* id[0]
         for roos in range(0,len(Ret)):
             strain = strain+ Magni[roos] * id[Ret[roos]]
@@ -57,8 +57,7 @@ if stresstest:
             print '\nStresses from RefSTRAINS', stresses
             Stresses = 0 * id[0]
             for roos in range(0, len(Ret)):
-                strain = Magni[roos] * id[roos]
-                Stresses = Stresses +  stresses[Ret[0]] * id[roos]
+                Stresses = Stresses +  stresses[Ret[0]] * id[Ret[roos]]
             print '\nReferanse Stress Vector', Stresses
             #print Stresses, Stiffmatrix
             strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
@@ -111,7 +110,7 @@ if stresstest:
             error=1"""
     if Savemodel:
         mdb.saveAs(pathName=RVEmodellpath)
-    d=[1.8]*6
+    d=[0.8]*6
     """Adjusting strength test"""
     if not error:
         strains2 = strains.tolist()
@@ -132,7 +131,7 @@ if stresstest:
             StressSigs = np.genfromtxt(Sigmapaths)
             StressSigs = StressSigs[:Fram[0]]
 
-            print StressSigs[-1, :]
+            #print StressSigs[-1, :]
             print 'plotpunkter   ', len(StressSigs)-1
 
             appe = 0
@@ -170,7 +169,7 @@ if stresstest:
 
                 steg = mod.steps['rep' + str(adjusts)]
 
-                steg.setValues(maxNumInc=Increments['maxNum'], initialInc=Increments['initial'],
+                steg.setValues(maxNumInc=Increments['maxNum'], initialInc=Increments['min']*1.1,
                                minInc=Increments['min'], maxInc=Increments['max'], convertSDI=CONVERT_SDI_OFF)
 
                 steg.Restart(frequency=1, numberIntervals=0, overlay=OFF, timeMarks=OFF)

@@ -23,7 +23,7 @@ if analyse:
 else:
     Createmodel = 0
     Savemodel = 0
-    Runjobs = 0
+    Runjobs = 1
     linearAnalysis = 0
     LinearpostPross = 0
 

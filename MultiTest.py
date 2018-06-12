@@ -57,7 +57,7 @@ def FrameFinder():
     StressSi = np.genfromtxt(Sigmapaths)
     StressSi = StressSi[1:, 1:]
     for a in range(0, 6):
-        if a == Ret[0] or a == Ret[1]:
+        if not (a == Ret[0] or a == Ret[1]):
             StressSi[1:, a] = np.multiply(StressSi[1:, a], 1 / StressSi[1:, Ret[0]])
     Sing = [0]*6
     Dob = [0]*6

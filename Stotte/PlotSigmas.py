@@ -11,7 +11,7 @@ Type = 'comp_'
 
 #Sigmascomp_comp_EyyEzz0_0.txt
 filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmas'+Type)]  # if not f.endswith('.inp')]
-filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmascomp_comp_Eyy')]  # if not f.endswith('.inp')]
+filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmascomp_comp_Exx')]  # if not f.endswith('.inp')]
 print(filelist)
 def readSSData(fily):
     # NOTE: you will probably need to change

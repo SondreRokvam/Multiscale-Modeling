@@ -57,15 +57,15 @@ def FrameFinder():
     StressSi = np.genfromtxt(Sigmapaths)
     StressSi = StressSi[1:, 1:]
     for a in range(0, 6):
-        if not a == Ret:
-            StressSi[1:, a] = np.multiply(StressSi[1:, a], 1 / StressSi[1:, Ret])
+        if a == Ret[0] or a == Ret[1]:
+            StressSi[1:, a] = np.multiply(StressSi[1:, a], 1 / StressSi[1:, Ret[0]])
     Sing = [0]*6
     Dob = [0]*6
     Trecharm = [0]*6
     StressFlags = [0]*6
     for kj in range(0,len(StressSi)):
         for sa in range(0,len(StressSi[0])):
-            if not sa==Ret:
+            if not (sa==Ret[0]or sa==Ret[1]):
                 if not Trecharm[sa]:
                     if not Dob[sa]:
                         if not Sing[sa]:
@@ -134,4 +134,4 @@ while len(n)<=tests:
     import displayGroupOdbToolset as dgo
     import connectorBehavior
 
-    execfile(Modellering + 'lucke.py')
+    execfile(Modellering + 'Multilucke.py')

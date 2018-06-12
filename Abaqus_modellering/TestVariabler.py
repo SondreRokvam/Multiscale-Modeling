@@ -31,7 +31,7 @@ else:
     openModel = 1
     nonLinearAnalysis = 1 # Finne standard
 
-Increments = {'maxNum': 30, 'initial': 1e-2, 'min': 5e-4, 'max': 0.1}
+Increments = {'maxNum': 50, 'initial': 1e-2, 'min': 0.8e-3, 'max': 0.1}
 
 
 

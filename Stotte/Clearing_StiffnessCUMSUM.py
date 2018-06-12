@@ -20,7 +20,7 @@ for num in Yeah:
     lines = lines[:-1]
     # print (lines)
     if len(lines) >= 50:
-        lines = lines[0:50]
+        lines = lines[0:5]
     print('lines', len(lines))
     allparts = []
     for line in lines:
@@ -54,15 +54,16 @@ for yeh in range(0, 36):
     for plot in plotsss:
         test.append(plot[0][yeh][:])
     plt.boxplot(test)
-    #plt.ylim(45, 65)
-    #plt.ylim(11, 20)
-    #plt.ylim(2.5, 10)
-    #plt.ylim(-2.5, 2.5)
+    #plt.ylim(50, 62.5)
+    plt.ylim(9, 18)
+    plt.ylim(2.5, 7.5)
+    plt.ylim(-1, 2)
 plt.title('Minimum inter-fiber distance effect on stiffness')
 plt.ylabel('Stiffness matrix constants [GPa]')
 plt.xlabel('Minimum inter-fiber distance, relative to mean fiber radius')
 plt.tight_layout()
 plt.show()
+
 
 
 

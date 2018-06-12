@@ -54,7 +54,7 @@ for nfs in range(0,len(nums)):
 #plt.legend(loc=2)
 plt.ylim(50, 65)
 plt.ylim(11, 20)
-plt.ylim(2.5, 10)
+#plt.ylim(2.5, 10)
 #plt.ylim(-2.5, 2.5)
 plt.xlim(0, 100)
 plt.title('Stiffness convergence for number of fibers in RVEs')
@@ -66,14 +66,15 @@ plt.show()
 
 #for plot in plotsss:
 for yeh in range(0, 36):
+    yeh=0
     test=[]
     for plot in plotsss:
         test.append(plot[0][yeh][:])
     plt.boxplot(test)
     #plt.ylim(45, 65)
-    plt.ylim(11, 20)
-    plt.ylim(2.5, 10)
-    plt.ylim(-2.5, 2.5)
+    #plt.ylim(11, 20)
+    #plt.ylim(2.5, 10)
+    #plt.ylim(-2.5, 2.5)
 plt.tight_layout()
 #plt.show()
 

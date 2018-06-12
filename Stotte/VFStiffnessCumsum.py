@@ -17,6 +17,8 @@ for num in nums:
     lines = tekst.split('\n')
     lines = lines[:-1]
     # print (lines)
+    if len(lines)>=50:
+        lines= lines[0:50]
     print('lines', len(lines))
     allparts = []
     for line in lines:

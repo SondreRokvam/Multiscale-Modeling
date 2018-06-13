@@ -51,6 +51,7 @@ def RVEsets():
         p.SetByBoolean(name='M_and_F', sets=(p.sets['Alle'], p.sets['Interfaces'],), operation=DIFFERENCE)
     else:  # Bare matrix.
         p.SetByBoolean(name='Matrix', sets=(p.sets['Alle'], p.sets['Fibers'],), operation=DIFFERENCE)
+        p.SetByBoolean(name='M_and_F', sets=(p.sets['Alle'],),)
 
 
 def COHstackDir():  # Slette og lage nye element i interface for cohesive elementstack direction i Interface

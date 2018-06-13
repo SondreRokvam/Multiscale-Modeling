@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.patches as mpatches
 import os
 #filelist = [f for f in os.listdir('C:/MultiScaleMethod/Github/textfiles/') if f.startswith('Stiffness__NF-')]
-nums=[5, 14, 23,32,41,50,59]
+nums=[49]
 colos=['b','c','g','y','m','r','k']
 scsc=9973
 #print(filelist)
@@ -12,16 +12,17 @@ scsc=9973
 plotsss=[]
 for nfs in range(0,len(nums)):
     print(nums[nfs])
-    fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__NF-' + str(int(nums[nfs]*scsc)) + '.txt','r')
+    fifi = open('C:/MultiScaleMethod/Github/textfiles/Stiffness__Inty-' + str(int(nums[nfs])) + '.txt','r')
     tekst = fifi.read()
     fifi.close()
     lines = tekst.split('\n')
-    lines = lines[:2]
+    lines = lines[:-1]
     #print (lines)
-    print ('lines',len(lines))
+    print (lines)
     allparts=[]
     for line in lines:
         parts = line.split('\t\t\t')
+        print(parts)
         part = parts[1]
         bits = part.split('\t\t')
         alldata=[]
@@ -47,19 +48,19 @@ for nfs in range(0,len(nums)):
     #plt.plot(Xaxis, Cumavg[0, :],colos[nfs]+'-')
 
     for csi in range(0,36):
-        plt.plot(Xaxis,Cumavg[csi,:],colos[nfs]+'x', label='NF-' + str(int(nums[nfs])))
+        plt.plot(Xaxis,Cumavg[csi,:],colos[nfs]+'o', label='NF-' + str(int(nums[nfs])))
         #plt.plot(Xaxis,Ploting[csi,:],'x')
         #plt.gca().legend(('NF-' + str(int(nums[nfs]))))
 #plt.legend()
 #plt.legend(loc=2)
-#plt.ylim(50, 65)
-#plt.ylim(11, 20)
+#plt.ylim(54, 60)
+#plt.ylim(8, 20)
 #plt.ylim(3, 8)
 #plt.ylim(-2.5, 2.5)
 plt.xlim(0, 3)
-plt.title('Stiffness convergence for number of fibers in RVEs')
+plt.title('Effect of interface presence')
 plt.ylabel('Stiffness matrix constants [GPa]')
-plt.xlabel('Number of RVEs')
+plt.xlabel('Scaling of interface properties')
 #plt.tight_layout()
 plt.show()
 

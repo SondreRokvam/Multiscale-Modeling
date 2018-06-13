@@ -20,7 +20,7 @@ for num in Yeah:
     lines = lines[:-1]
     # print (lines)
     if len(lines) >= 50:
-        lines = lines[0:5]
+        lines = lines[0:51]
     print('lines', len(lines))
     allparts = []
     for line in lines:

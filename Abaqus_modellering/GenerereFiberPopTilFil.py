@@ -17,7 +17,11 @@ def modellereRVEsnitt():  # Lage fiber populasjon
             gtol = Rclearing * r  # Dodsone klaring toleranse
             ytredodgrense = r + gtol  # Dodzone avstand, lengst fra kantene
             indredodgrense = r - gtol  # Dodzone avstand, naermest kantene
-
+        else:
+            r=rmean
+            gtol = Rclearing * r  # Dodsone klaring toleranse
+            ytredodgrense = r + gtol  # Dodzone avstand, lengst fra kantene
+            indredodgrense = r - gtol  # Dodzone avstand, naermest kantene
         frem = countsjikt(coord) / nf  # Forlopig fremdrift - antall fibersenter som finnes i RVE/totalt antall fiber (nf)
         fvf = frem * Vf  # Forlopig volumfraksjon
 
@@ -238,11 +242,14 @@ if Fibervariation:
     radiuser = []
     for fib in range(0, nf):
         radiuser.append(gauss(rmean, Rstdiv))
+else:
+    r=rmean
 modellereRVEsnitt()
 #Finne Vf etter modellering
 fA = []
-for radius in radiuser:
-    fA.append(pi * radius ** 2)
-global FaktiskVf
-FaktiskVf = round(float(np.sum(fA) / dL ** 2),4)
-print 'Modelled Vf = '+str(FaktiskVf)
+if Fibervariation:
+    for radius in radiuser:
+        fA.append(pi * radius ** 2)
+    global FaktiskVf
+    FaktiskVf = round(float(np.sum(fA) / dL ** 2),4)
+    print 'Modelled Vf = '+str(FaktiskVf)

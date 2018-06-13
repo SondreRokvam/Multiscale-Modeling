@@ -26,22 +26,23 @@ def get_stiffness():
             if eldat > 0.0:
                 SS[j] = datas
                 vol[j] = float(eldat)
-        dataa = fras.fieldOutputs['S'].getSubset(position=CENTROID,
-                                                 region=inst.elementSets[
-                                                     'INTERFACES'])
-        dat2 = len(inst.elementSets['INTERFACES'].elements)
-        for j in range(dat1, dat1 + dat2):
-            eldat = float(fras.fieldOutputs['EVOL'].getSubset(
-                region=inst.elementSets['INTERFACES']).values[
-                              j - dat1].data)
-            datas = dataa.values[j - dat1].data
-            # Utelukker cohesive volumes ugyldige verdier, OBS! Avhenging av orientation
-            if eldat > 0.0:
-                SS[j][2] = float(datas[2])  # Avhenging av orientation
-                SS[j][4] = float(datas[4])
-                SS[j][5] = float(datas[5])
-                dodvolum[j] = float(eldat)
-                vol[j] = float(eldat)
+        if Interface:
+            dataa = fras.fieldOutputs['S'].getSubset(position=CENTROID,
+                                                     region=inst.elementSets[
+                                                         'INTERFACES'])
+            dat2 = len(inst.elementSets['INTERFACES'].elements)
+            for j in range(dat1, dat1 + dat2):
+                eldat = float(fras.fieldOutputs['EVOL'].getSubset(
+                    region=inst.elementSets['INTERFACES']).values[
+                                  j - dat1].data)
+                datas = dataa.values[j - dat1].data
+                # Utelukker cohesive volumes ugyldige verdier, OBS! Avhenging av orientation
+                if eldat > 0.0:
+                    SS[j][2] = float(datas[2])  # Avhenging av orientation
+                    SS[j][4] = float(datas[4])
+                    SS[j][5] = float(datas[5])
+                    dodvolum[j] = float(eldat)
+                    vol[j] = float(eldat)
 
         for p in range(0,6):
             stiffmatrix[i][p] = (float(np.sum(vol * SS[:, p]))/(tykkelse*(dL)**2))*100

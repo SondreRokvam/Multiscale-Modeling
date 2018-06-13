@@ -44,8 +44,9 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
                 intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
                                                        power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
     if not ConDmPlast:
-        del mdb.models['Model-A'].materials['interface'].quadsDamageInitiation
-        mdb.models['Model-A'].materials['interface'].Plastic(table=Epox)
+        if Interface:
+            del mdb.models['Model-A'].materials['interface'].quadsDamageInitiation
+            mdb.models['Model-A'].materials['interface'].Plastic(table=Epox)
         del mdb.models['Model-A'].materials['resin'].concreteDamagedPlasticity
         mdb.models['Model-A'].materials['resin'].Plastic(table=Sizing)
 

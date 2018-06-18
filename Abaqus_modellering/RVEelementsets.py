@@ -54,6 +54,7 @@ def RVEsets():
         p.SetByBoolean(name='M_and_F', sets=(p.sets['Alle'],),)
 
 
+
 def COHstackDir():  # Slette og lage nye element i interface for cohesive elementstack direction i Interface
     p = mod.parts[meshPartName]
     for i in range(0, len(xydata)):

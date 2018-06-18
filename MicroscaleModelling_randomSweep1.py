@@ -107,7 +107,7 @@ ParameterSweep = Yeah[1]
 
 # Intiering
 execfile(Modellering + 'Initial.py')
-
+Fibervariation = int(ParameterSweep)
 
 n = [int(ParameterSweep * scsc + ItraPara * 169)]
 ItraPara = 0

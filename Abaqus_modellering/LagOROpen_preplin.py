@@ -1,10 +1,5 @@
-try:
-    """ Abaqus RVE model """
-    execfile(Modellering + 'Model.py')
-except:
-    print
-    'Error in modellering'
-    error = 1
+
+execfile(Modellering + 'Model.py')
 
 # Prep Stiffness tests
 if not error:

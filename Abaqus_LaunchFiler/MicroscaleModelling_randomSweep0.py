@@ -42,18 +42,6 @@ def run_Job(Jobb, modelName):
         qw = open(Jobsss, "a")
         qw.write('call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job=' + Jobb + ' interactive cpus=' + str(numCPU))
         qw.close()
-def Iterasjonfiks():
-    global Jobsss
-    Jobsss = workpath + 'Abaqusjobs.bat'
-    Itra = open(Tekstfiler + 'Iterasjoner.txt', "r")
-    Content = Itra.read()
-    cals = Content.split('\n')
-    number = len(cals) - 1
-    Itra.close()
-    InterestingParameter = 'ItraPara'
-    Itra = open(Modellering + 'IterationParameters.py', "w")
-    Itra.write('global ' + InterestingParameter + '\n' + InterestingParameter + ' = ' + str(int(number)))
-    Itra.close()
 def FrameFinder():
     limit = 0.05
     print Sigmapaths
@@ -101,10 +89,9 @@ def FrameFinder():
     return len(StressSi)-1, StressFlags, StressSi[len(StressSi)-1]
 
 # Init : forste fix
-execfile('C:/MultiScaleMethod/Github/Multiscale-Modeling/Abaqus_modellering/Init.py')
+execfile('C:/MultiScaleMethod/Github/Multiscale-Modeling/Abaqus_modellering/1Setup.py')
 
-
-ParameterSweep = Yeah[3]
+ParameterSweep = Yeah[1]
 
 # Intiering
 execfile(Modellering + 'Initial.py')
@@ -138,4 +125,4 @@ while len(n)<=tests:
     import displayGroupOdbToolset as dgo
     import connectorBehavior
 
-    execfile(Modellering + 'lucke.py')
+    execfile(Modellering + 'Multilucke.py')

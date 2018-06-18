@@ -3,36 +3,34 @@
 global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 #numCPU = multiprocessing.cpu_count()
 numCPU = 1
-
-analyse = 0
-FoundStiff = 1
+Model = 1
+analyse = 1
+FoundStiff = 0
 stresstest = 1
-if analyse:
+if Model:
     Createmodel = 1
     Savemodel = 1
-    Runjobs = 1
-    if not FoundStiff:
-        linearAnalysis = 1
-        LinearpostPross = 1
-    else:
-        linearAnalysis = 0
-        LinearpostPross = 0
-    nonLinearAnalysis = 1
-    nonLinearpostPross = 1
     openModel = 0
 else:
     Createmodel = 0
     Savemodel = 0
-    Runjobs = 1
+    openModel = 1
+
+if not FoundStiff:
+    linearAnalysis = 1
+    LinearpostPross = 1
+else:
     linearAnalysis = 0
     LinearpostPross = 0
 
-
-    openModel = 1
+if analyse:
+    Runjobs = 1
+    nonLinearAnalysis = 1
+    nonLinearpostPross = 1
+else:
+    Runjobs = 1
     nonLinearAnalysis = 1 # Finne standard
-
-Increments = {'maxNum': 50, 'initial': 1e-2, 'min': 0.8e-3, 'max': 0.1}
-
+    nonLinearpostPross = 1
 
 
 
@@ -60,28 +58,7 @@ global MaterialDens, ConDmPlast
 ConDmPlast = 0
 MaterialDens  = 0                           #   Material Density
 
-
-
-
-
-
-"""    RVEmodel variabler                                      """
-global noFibertest,Fibervariation,rmean,Rstdiv,Interface,rinterface,ElementInterfaceT,id, Retning
-
-noFibertest = 0                                     # ON/OFF Fiber i modellen.
-Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
-
-rmean = 8.7096                              # Gjennomsnittradius pa fiber
-Rstdiv = 0.6374                             # OStandard avvik fra gjennomsnittsradius
-
-Interface = 1                                   # ON/OFF CohesiveInterface
-rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
-ElementInterfaceT = 0                  # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
-
-id   =   np.identity(6)          # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
-Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
-
-
+Increments = {'maxNum': 50, 'initial': 1e-2, 'min': 0.8e-3, 'max': 0.1}
 
 
 
@@ -96,8 +73,6 @@ tol = rinterface * 0.4  # Modelleringstoleranse - Mindre en minste modelleringsv
 
 
 
-
-
 """RVE populasjon"""
 global r,gtol,ytredodgrense,indredodgrense,iterasjonsgrense,Rclearing
 
@@ -109,8 +84,6 @@ ytredodgrense = r + gtol  # Dodzone avstand, ytre grense fra kanter/hjorner
 indredodgrense = r - gtol  # Dodzone avstand, indre grense fra kanter/hjorner
 
 iterasjonsgrense = 10000  # iterasjonsgrense i Fiberutplassering loop
-
-
 
 
 

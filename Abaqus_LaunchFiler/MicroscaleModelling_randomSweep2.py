@@ -101,9 +101,9 @@ def FrameFinder():
     return len(StressSi)-1, StressFlags, StressSi[len(StressSi)-1]
 
 # Init : forste fix
-execfile('C:/MultiScaleMethod/Github/Multiscale-Modeling/Abaqus_modellering/Init.py')
+execfile('C:/MultiScaleMethod/Github/Multiscale-Modeling/Abaqus_modellering/1Setup.py')
 
-ParameterSweep = Yeah[1]
+ParameterSweep = Yeah[2]
 
 # Intiering
 execfile(Modellering + 'Initial.py')
@@ -137,4 +137,4 @@ while len(n)<=tests:
     import displayGroupOdbToolset as dgo
     import connectorBehavior
 
-    execfile(Modellering + 'Multilucke.py')
+    execfile(Modellering + 'lucke.py')

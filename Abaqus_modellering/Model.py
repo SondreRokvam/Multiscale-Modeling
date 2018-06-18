@@ -6,13 +6,12 @@ if Createmodel:
     if not noFiber:
         execfile(Modellering + 'GenerereFiberPopTilFil.py')  # create a random population
     CreateNewRVEModel()
-    if Savemodel:
-        mdb.saveAs(pathName=RVEmodellpath)
 # Prov aa aapne tidligere modell
 if openModel:
     Mdb()
     openMdb(pathName=RVEmodellpath)
     mod = mdb.models[modelName]
+    del mdb.models['Model-A'].steps['Enhetstoyninger']
 
 t = (time.time() - start_time)
 print('t etter lagd modell=', t)

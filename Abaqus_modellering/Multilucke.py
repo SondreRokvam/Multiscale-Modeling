@@ -35,6 +35,8 @@ else:
             t = (time.time() - start_time)
             print('t etter lin pross=', t)
 
+if Savemodel and not error:
+    mdb.saveAs(pathName=RVEmodellpath)
 
     # Non linear tester
 
@@ -43,12 +45,13 @@ if stresstest:
     """Inital Strength test"""
     if not error:
         #try:
-        Magni = [-3e-2,-3e-2]    # Skalarverdi til toyning
-        Ret = [0,1]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
-        strain = 0* id[0]
+        Magni = [2e-1]    # Skalarverdi til toyning
+        Ret = [0]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+        strain = 0.0 * id[0]
         for roos in range(0,len(Ret)):
             strain = strain+ Magni[roos] * id[Ret[roos]]
 
+        Increments = {'maxNum': 100, 'initial': 1e-2, 'min': 1e-5, 'max': 0.1}
         ### SETTE lagringsplass
 
         if True:
@@ -81,13 +84,7 @@ if stresstest:
 
         for Case in cases:
             Jobbnavn, Strain = Case
-            if not Createmodel or linearAnalysis:
-                try:
-                    openMdb(pathName=RVEmodellpath)
-                    mod = mdb.models['Model-A']
-                except:
-                    print 'Cae not found'
-                    pass
+
             #try:
             execfile(Modellering +'nonLinearAnalysis.py')
             #except:
@@ -108,8 +105,6 @@ if stresstest:
             n.append(Q)
             print 'Error in Stress tests'
             error=1"""
-    if Savemodel:
-        mdb.saveAs(pathName=RVEmodellpath)
     d=[0.8]*6
     """Adjusting strength test"""
     if not error:
@@ -117,7 +112,7 @@ if stresstest:
         Reset=1
         Jobbnav = Jobbnavn
         prev=0      #for aa vite hvor langt bak vi hoppet forrige gang
-        reps = 50
+        reps = 12
         adjusts=0
         Frames = np.zeros(reps+1)
         while adjusts<reps:
@@ -162,15 +157,16 @@ if stresstest:
 
                 print 'diff', diff,  'addF', addedF
                 print prevname
+                lolo=1.0- StressSigs[-1][0]
                 mod.StaticStep(name='rep' + str(adjusts), previous=prevname, nlgeom=ON, stabilizationMagnitude=0.0002,
                                stabilizationMethod=DAMPING_FACTOR,
-                               continueDampingFactors=False, adaptiveDampingRatio=0.05)
+                               continueDampingFactors=False, adaptiveDampingRatio=0.05, timePeriod= lolo)
                 #IniTid = (StressSigs[-1, 0] - StressSigs[-2, 0]) * 0.9
 
                 steg = mod.steps['rep' + str(adjusts)]
 
-                steg.setValues(maxNumInc=Increments['maxNum'], initialInc=Increments['min']*1.1,
-                               minInc=Increments['min'], maxInc=Increments['max'], convertSDI=CONVERT_SDI_OFF)
+                steg.setValues(maxNumInc=Increments['maxNum'], initialInc=Increments['min']*1.1*lolo,
+                               minInc=Increments['min']*lolo, maxInc=Increments['max']*lolo, convertSDI=CONVERT_SDI_OFF)
 
                 steg.Restart(frequency=1, numberIntervals=0, overlay=OFF, timeMarks=OFF)
 
@@ -240,7 +236,7 @@ if stresstest:
         print('Reached end of random key Iteration\tt ved ferdig', t)
         ss = open('C:/Users/Sondre/Desktop/Ferdig'+str(ParameterSweep[ItraPara])+'.txt', "w")
         ss.close()
-        Q = Q + 1000
+        Q = Q + 21
         n.append(Q)
         del section, regionToolset, dgm, part, material, assembly, step, interaction
         del load, mesh, job, sketch, visualization, xyPlot, dgo, connectorBehavior
@@ -250,6 +246,7 @@ if error:
     Q = Q +1
     n[-1] = Q
     print 'Error'
+    del asda
 else:
     Q = Q+1
     n.append(Q)

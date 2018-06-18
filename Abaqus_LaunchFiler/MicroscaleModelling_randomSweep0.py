@@ -48,33 +48,59 @@ def FrameFinder():
     StressSi = np.genfromtxt(Sigmapaths)
     StressSi = StressSi[1:, 1:]
     for a in range(0, 6):
-        if not a == Ret:
-            StressSi[1:, a] = np.multiply(StressSi[1:, a], 1 / StressSi[1:, Ret])
+        if len(Ret)==2:
+            if not a == Ret[0]:
+                if not a == Ret[1]:
+                    StressSi[1:, a] = np.multiply(StressSi[1:, a], 1 / StressSi[1:, Ret[0]])
+        else:
+            if not a == Ret[0]:
+                StressSi[1:, a] = np.multiply(StressSi[1:, a], 1 / StressSi[1:, Ret[0]])
     Sing = [0]*6
     Dob = [0]*6
     Trecharm = [0]*6
     StressFlags = [0]*6
     for kj in range(0,len(StressSi)):
         for sa in range(0,len(StressSi[0])):
-            if not sa==Ret:
-                if not Trecharm[sa]:
-                    if not Dob[sa]:
-                        if not Sing[sa]:
-                            if abs(StressSi[kj][sa]) > limit:
-                                Sing[sa]=1
-                        else:
-                            if abs(StressSi[kj][sa]) > limit:     #   Feilmargin
-                                Dob[sa] = 1
+            if len(Ret) == 2:
+                if not (sa == Ret[0] or sa == Ret[1]):
+                    if not Trecharm[sa]:
+                        if not Dob[sa]:
+                            if not Sing[sa]:
+                                if abs(StressSi[kj][sa]) > limit:
+                                    Sing[sa]=1
                             else:
-                                Sing[sa]=0
-                    else:
-                        if abs(StressSi[kj][sa]) > limit:  # Feilmargin
-                            Trecharm[sa] = 1
+                                if abs(StressSi[kj][sa]) > limit:     #   Feilmargin
+                                    Dob[sa] = 1
+                                else:
+                                    Sing[sa]=0
                         else:
-                            Sing[sa] = 0
-                            Dob[sa] = 0
-                else:
-                    StressFlags[sa] = 1
+                            if abs(StressSi[kj][sa]) > limit:  # Feilmargin
+                                Trecharm[sa] = 1
+                            else:
+                                Sing[sa] = 0
+                                Dob[sa] = 0
+                    else:
+                        StressFlags[sa] = 1
+            else:
+                if not sa==Ret[0]:
+                    if not Trecharm[sa]:
+                        if not Dob[sa]:
+                            if not Sing[sa]:
+                                if abs(StressSi[kj][sa]) > limit:
+                                    Sing[sa]=1
+                            else:
+                                if abs(StressSi[kj][sa]) > limit:     #   Feilmargin
+                                    Dob[sa] = 1
+                                else:
+                                    Sing[sa]=0
+                        else:
+                            if abs(StressSi[kj][sa]) > limit:  # Feilmargin
+                                Trecharm[sa] = 1
+                            else:
+                                Sing[sa] = 0
+                                Dob[sa] = 0
+                    else:
+                        StressFlags[sa] = 1
         for sa in range(0, len(StressSi[0])):
             if StressFlags[sa]:
                 return kj - 3, StressFlags, StressSi[kj]
@@ -99,7 +125,7 @@ execfile(Modellering + 'Initial.py')
 
 n = [int(ParameterSweep * scsc + ItraPara * 169)]
 ItraPara = 0
-tests = 5  # Antall iterasjoner per startup
+tests = 1  # Antall iterasjoner per startup
 
   # Arbeids lokke
 

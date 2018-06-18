@@ -3,9 +3,9 @@
 global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 #numCPU = multiprocessing.cpu_count()
 numCPU = 1
-Model = 1
+Model = 0
+FoundStiff = 1
 analyse = 1
-FoundStiff = 0
 stresstest = 1
 if Model:
     Createmodel = 1
@@ -28,10 +28,9 @@ if analyse:
     nonLinearAnalysis = 1
     nonLinearpostPross = 1
 else:
-    Runjobs = 1
-    nonLinearAnalysis = 1 # Finne standard
-    nonLinearpostPross = 1
-
+    Runjobs = 0
+    nonLinearAnalysis = 0 # Finne standard
+    nonLinearpostPross = 0
 
 
 """Material modeller"""
@@ -58,7 +57,7 @@ global MaterialDens, ConDmPlast
 ConDmPlast = 0
 MaterialDens  = 0                           #   Material Density
 
-Increments = {'maxNum': 50, 'initial': 1e-2, 'min': 0.8e-3, 'max': 0.1}
+
 
 
 

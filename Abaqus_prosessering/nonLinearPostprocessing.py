@@ -84,8 +84,8 @@ if HomoSigs != 0:
 
     if not Reset:
         ss = open(Sigmapaths, "w")
-        #ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (abs(strains[Ret]),0,0,0,0,0,0))
-        ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (abs(2.0),0,0,0,0,0,0))
+        ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (abs(strains[Ret[0]]),0,0,0,0,0,0))
+        #ss.write('%f\t%f\t%f\t%f\t%f\t%f\t%f\n' % (abs(2.0),0,0,0,0,0,0))
         #print HomoSigs[0][-1]
         count =0
         for s in HomoSigs[0]:

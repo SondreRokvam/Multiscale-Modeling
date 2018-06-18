@@ -1,16 +1,11 @@
 Iterations = 0
+
 # Globale Directories
 GitHub, workpath = 'C:/MultiScaleMethod/Github/Multiscale-Modeling/', 'C:/Temp/'
 Tekstfiler, Modellering, processering = 'C:/MultiScaleMethod/Github/textfiles/', GitHub + 'Abaqus_modellering/', GitHub + 'Abaqus_prosessering/'
 
 
 Yeah = np.genfromtxt(GitHub + 'Sweeps.txt')
-
-
-
-nf = 25
-Vf = 0.6
-scsc = 9973  # A prime for good measure
 
 # Hvilken parameter sweepes
 
@@ -22,9 +17,9 @@ scsc = 9973  # A prime for good measure
 
 
 
-
-# Loops
-
+nf = 10
+Vf = 0.6
+scsc = 9973  # A prime for good measure
 
 
 # Open for big scale iterations

@@ -1,33 +1,51 @@
-"""         Script variabler                                      """
+"""         Script variabler                """
 
 global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 #numCPU = multiprocessing.cpu_count()
 numCPU = 1
 
-analyse =1
+analyse = 0
+FoundStiff = 1
+stresstest = 1
 if analyse:
     Createmodel = 1
     Savemodel = 1
     Runjobs = 1
-    linearAnalysis = 1
+    if not FoundStiff:
+        linearAnalysis = 1
+        LinearpostPross = 1
+    else:
+        linearAnalysis = 0
+        LinearpostPross = 0
     nonLinearAnalysis = 1
-    LinearpostPross = 1
-    nonLinearpostPross =1
+    nonLinearpostPross = 1
     openModel = 0
 else:
     Createmodel = 0
     Savemodel = 0
-    Runjobs = 0
+    Runjobs = 1
     linearAnalysis = 0
-    nonLinearAnalysis = 0
     LinearpostPross = 0
-    nonLinearpostPross = 1
+
+
     openModel = 1
-Increments = {'maxNum': 30, 'initial': 2e-3, 'min': 1e-6, 'max': 1e-1}
+    nonLinearAnalysis = 1 # Finne standard
+
+Increments = {'maxNum': 50, 'initial': 1e-2, 'min': 0.8e-3, 'max': 0.1}
 
 
 
 
+"""Material modeller"""
+
+#Plasticitet
+Yieldlim = 0.060
+
+Plastlim = 0.061
+PlasticStrain = 0.015
+Epox=((Yieldlim, 0.0), (Plastlim, PlasticStrain))
+
+Sizing =((Yieldlim, 0.0), (Plastlim, PlasticStrain))
 """Simuleringsvariabler """
 global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin
 

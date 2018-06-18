@@ -2,6 +2,8 @@
 
 This script automates the creation and strain/stress testing for stiffness and strength estimation of a fiber composite on the microscale.
 
+Simple plasticity models are used for matrix material behaviour.
+
 The modelling folder contains all scripts which automates Abaqus commands and simulations.
 In the prossessering folder are the scripts for data extraction are placed.
 

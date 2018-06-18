@@ -1,12 +1,6 @@
 """Filen er laget for aa bli kjort av microscale scriptet"""
 # Lage materialer, material sections og assigne materialer til sections for Matrix, Fiber og Interface
 """Material Constants for Resin, Fiber and Interfaze/Bond/Sizing"""
-ResCon2 = {'E,v':(3,0.35), 'Den':1.2e-06,
-          'CDP':(0.1, 0.1, 1.16, 0.89, 0.0001),
-          'cdpCCH':((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)),
-          'cdpCTS':(0.6, 0.09),
-          'cdpCTD':((0.0, 0.0), (0.9, 1.487)),
-          'cdpCCD':((0.0, 0.0), (0.0, 0.32), (0.9, 0.55))}
 ResCon = {'E,v':(3.0,0.35), 'Den':1.2e-06,
           'CDP':(0.1, 0.1, 1.16, 0.89, 0.0001),
           'cdpCCH':((0.102, 0.0), (0.104, 0.05), (0.106, 0.32), (0.00102, 0.55)),
@@ -16,7 +10,7 @@ ResCon = {'E,v':(3.0,0.35), 'Den':1.2e-06,
 
 FibCon = {'E,v':(90,0.22), 'Den':2.55e-06}
 
-IntCon = {'Trac':(0.060, 0.060, 0.060), 'Den':1.2e-06,
+IntCon = {'Trac':(3.0, 3.0, 3.0), 'Den':1.2e-06,
           'QDI':(0.042, 0.063, 0.063),
           'qdiDEpower':1.2,   'qdiDE':(0.0028, 0.0078, 0.0078), }
 
@@ -51,11 +45,9 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
                                                        power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
     if not ConDmPlast:
         del mdb.models['Model-A'].materials['interface'].quadsDamageInitiation
-        mdb.models['Model-A'].materials['interface'].Plastic(table=((0.060, 0.0), (0.061,
-        0.015)))
+        mdb.models['Model-A'].materials['interface'].Plastic(table=Epox)
         del mdb.models['Model-A'].materials['resin'].concreteDamagedPlasticity
-        mdb.models['Model-A'].materials['resin'].Plastic(table=((0.060, 0.0), (0.061,
-        0.015)))
+        mdb.models['Model-A'].materials['resin'].Plastic(table=Sizing)
 
 def SectionsAndOrientations():                                  # Create and assign sections to materials
     p = mdb.models['Model-A'].parts['Part-1-mesh-1']

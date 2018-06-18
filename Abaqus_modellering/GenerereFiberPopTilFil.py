@@ -9,7 +9,9 @@ def modellereRVEsnitt():  # Lage fiber populasjon
     sidepunkt = 0
     hjornepunkt = 0
     senterpunkt = 0
+    coun=0
     while nplassert < nf:
+        coun=coun+1
         if Fibervariation:  # Radiusene fordeles med variasjoner
             r= radiuser[int(nplassert)]
             gtol = Rclearing * r  # Dodsone klaring toleranse
@@ -129,6 +131,8 @@ def modellereRVEsnitt():  # Lage fiber populasjon
         else:
             nkrasj = nkrasj + 1
         books.append(nplassert)  # keeping record of amount of tries
+        if len(books)>1.5e6:
+            del ass
     g = open(coordpath, "w")
     for l in range(0, len(coord)):
         g.write(str(coord[l][0]) + '\t' + str(coord[l][1]) + '\t' + str(coord[l][2]))

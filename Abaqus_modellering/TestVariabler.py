@@ -9,7 +9,7 @@ FoundStiff = 0
 stresstest = 0
 if analyse:
     Createmodel = 1
-    Savemodel = 1
+    Savemodel = 0
     Runjobs = 1
     if not FoundStiff:
         linearAnalysis = 1
@@ -36,12 +36,13 @@ Increments = {'maxNum': 30, 'initial': 1e-2, 'min': 5e-4, 'max': 0.1}
 
 
 """Material modeller"""
+SCCALAR=1
 
 #Plasticitet
-Yieldlim = 0.060
+Yieldlim = 0.060*SCCALAR
 
-Plastlim = 0.061
-PlasticStrain = 0.015
+Plastlim = 0.061*SCCALAR
+PlasticStrain = 0.015*SCCALAR
 Epox=((Yieldlim, 0.0), (Plastlim, PlasticStrain))
 
 Sizing =((Yieldlim, 0.0), (Plastlim, PlasticStrain))
@@ -73,8 +74,8 @@ Fibervariation = 1                                  # ON/OFF variasjon fiberradi
 rmean = 8.7096                              # Gjennomsnittradius pa fiber
 Rstdiv = 0.6374                             # OStandard avvik fra gjennomsnittsradius
 
-Interface = 1                                   # ON/OFF CohesiveInterface
-rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
+Interface = 0                                   # ON/OFF CohesiveInterface
+rinterface = 0.005                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
 ElementInterfaceT = 0                  # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
 
 id   =   np.identity(6)          # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'

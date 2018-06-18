@@ -108,7 +108,7 @@ Fibervariation = int(ParameterSweep)
 
 n = [int(ParameterSweep * scsc + ItraPara * 169)]
 ItraPara = 0
-tests = 5  # Antall iterasjoner per startup
+tests = 1  # Antall iterasjoner per startup
 
   # Arbeids lokke
 

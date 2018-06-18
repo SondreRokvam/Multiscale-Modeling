@@ -1,4 +1,4 @@
-Iterations = 1
+Iterations = 0
 # Globale Directories
 GitHub, workpath = 'C:/MultiScaleMethod/Github/Multiscale-Modeling/', 'C:/Temp/'
 Tekstfiler, Modellering, processering = 'C:/MultiScaleMethod/Github/textfiles/', GitHub + 'Abaqus_modellering/', GitHub + 'Abaqus_prosessering/'

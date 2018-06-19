@@ -25,6 +25,7 @@ def getHomogenizedSigmas():
         vol = np.zeros(antallElems)
         dodvolum = np.zeros(antallElems)
         SS = np.zeros([antallElems, 6])
+        41
 
         ###Matrix og Fibers
         dataa = fras.fieldOutputs['S'].getSubset(position=CENTROID, region=inst.elementSets['M_AND_F'])

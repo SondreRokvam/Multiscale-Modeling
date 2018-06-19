@@ -10,8 +10,8 @@ Tekstfiler  = 'C:/MultiScaleMethod/Github/textfiles/Stresstests/'
 Type = 'comp_'
 
 #Sigmascomp_comp_EyyEzz0_0.txt
-filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmas'+Type)]  # if not f.endswith('.inp')]
-filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmas')]  # if not f.endswith('.inp')]
+#filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmas'+Type)]  # if not f.endswith('.inp')]
+filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmassher_t')]  # if not f.endswith('.inp')]
 print(filelist)
 def readSSData(fily):
     # NOTE: you will probably need to change
@@ -81,8 +81,8 @@ def plotStressStrainData():
         #plt.xlim((0.94*xmax), (0.95*xmax))
         plt.ylim((-0.03 ), (0.03))
         #print (ymin, ymax, xmin, xmax)
-    plt.tight_layout()
-    plt.show()
+        plt.tight_layout()
+        plt.show()
 
     """
         plt.plot(x, Stresses[1], 'bo--')

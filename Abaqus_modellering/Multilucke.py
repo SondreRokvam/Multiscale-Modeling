@@ -1,3 +1,79 @@
+def FrameFinder():
+    limit = 0.05
+    print Sigmapaths
+    StressSi = np.genfromtxt(Sigmapaths)
+    StressSi = StressSi[1:, 1:]
+    for a in range(0, 6):
+        if len(Ret)==2:
+            if not a == Ret[0]:
+                if not a == Ret[1]:
+                    StressSi[1:, a] = np.multiply(StressSi[1:, a], 1 / StressSi[1:, Ret[0]])
+        else:
+            if not a == Ret[0]:
+                StressSi[1:, a] = np.multiply(StressSi[1:, a], 1 / StressSi[1:, Ret[0]])
+    Sing = [0]*6
+    Dob = [0]*6
+    Trecharm = [0]*6
+    StressFlags = [0]*6
+    for kj in range(0,len(StressSi)):
+        for sa in range(0,len(StressSi[0])):
+            if len(Ret) == 2:
+                if not (sa == Ret[0] or sa == Ret[1]):
+                    if not Trecharm[sa]:
+                        if not Dob[sa]:
+                            if not Sing[sa]:
+                                if abs(StressSi[kj][sa]) > limit:
+                                    Sing[sa]=1
+                            else:
+                                if abs(StressSi[kj][sa]) > limit:     #   Feilmargin
+                                    Dob[sa] = 1
+                                else:
+                                    Sing[sa]=0
+                        else:
+                            if abs(StressSi[kj][sa]) > limit:  # Feilmargin
+                                Trecharm[sa] = 1
+                            else:
+                                Sing[sa] = 0
+                                Dob[sa] = 0
+                    else:
+                        StressFlags[sa] = 1
+            else:
+                if not sa==Ret[0]:
+                    if not Trecharm[sa]:
+                        if not Dob[sa]:
+                            if not Sing[sa]:
+                                if abs(StressSi[kj][sa]) > limit:
+                                    Sing[sa]=1
+                            else:
+                                if abs(StressSi[kj][sa]) > limit:     #   Feilmargin
+                                    Dob[sa] = 1
+                                else:
+                                    Sing[sa]=0
+                        else:
+                            if abs(StressSi[kj][sa]) > limit:  # Feilmargin
+                                Trecharm[sa] = 1
+                            else:
+                                Sing[sa] = 0
+                                Dob[sa] = 0
+                    else:
+                        StressFlags[sa] = 1
+        for sa in range(0, len(StressSi[0])):
+            if StressFlags[sa]:
+                for sts in range(0,len(StressFlags)):
+                    if StressFlags[sts] == 0:
+                        StressFlags[sts] = StressFlags[sts]+Dob[sts]
+                print StressFlags
+                return kj - 3, StressFlags, StressSi[kj]
+
+    for sa in range(0, len(StressSi[0])):
+        if Dob[sa]:
+            return len(StressSi) - 2, Dob, StressSi[kj]
+        if Sing[sa]:
+            return len(StressSi) - 1, Sing, StressSi[kj]
+    #del Ididtifying_diverging_frame_did_notwork
+    print 'No divergence found'
+    return len(StressSi)-1, StressFlags, StressSi[len(StressSi)-1]
+
 Q = int( n[-1] )
 seed(Q)  # Q er randomfunksjonensnokkelen
 error = 0
@@ -43,15 +119,16 @@ if Savemodel and not error:
 
 if stresstest:
     """Inital Strength test"""
+
     if not error:
         #try:
-        Magni = [2e-1]    # Skalarverdi til toyning
-        Ret = [0]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+        Magni = [2e-1,2e-1]    # Skalarverdi til toyning
+        Ret = [3,1]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
         strain = 0.0 * id[0]
         for roos in range(0,len(Ret)):
             strain = strain+ Magni[roos] * id[Ret[roos]]
 
-        Increments = {'maxNum': 100, 'initial': 1e-2, 'min': 1e-5, 'max': 0.1}
+        Increments = {'maxNum': 100, 'initial': 1e-2, 'min': 1e-8, 'max': 0.1}
         ### SETTE lagringsplass
 
         if True:
@@ -71,7 +148,7 @@ if stresstest:
                 if roos == 3 or roos == 4 or roos == 5:
                     Type = Type+'sher_'
                 else:
-                    if Stresses[roos] > 0:
+                    if strains[roos] > 0:
                         Type = Type +'tens_'
                     else:
                         Type = Type +'comp_'
@@ -105,6 +182,7 @@ if stresstest:
             n.append(Q)
             print 'Error in Stress tests'
             error=1"""
+
     d=[0.8]*6
     """Adjusting strength test"""
     if not error:
@@ -190,9 +268,9 @@ if stresstest:
 
             for ssss in range(0,len(strains)):
                 if Fram[1][ssss]:
-                    if d[ssss]>0.3:
+                    if d[ssss]>0.4:
                         d[ssss] = d[ssss] * 0.75
-                    adjfactor = abs(strains2[ssss])*d[ssss]
+                    adjfactor = abs(strains[ssss])*d[ssss]
                     print 'Adjust by : ', adjfactor
 
                     if StressSigs[-1][ssss+1]>=0:

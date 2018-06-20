@@ -80,10 +80,8 @@ error = 0
 print Q
 print n
 
-
     #Datalagring
 execfile(Modellering + 'Set_text_dirs.py')
-
     #Modellere RVE eller aapne eksisterende  -  Sette navn for toyningsretning
 execfile(Modellering + 'LagOROpen_preplin.py')
 
@@ -111,23 +109,23 @@ else:
             t = (time.time() - start_time)
             print('t etter lin pross=', t)
     del mdb.models['Model-A'].steps['Enhetstoyninger']
-
-if Savemodel and Model:
+if Model:
     mdb.saveAs(pathName=RVEmodellpath)
+    print 'saved'
 
     # Non linear tester
+
 Damage=0
 if Damage:
     mdb.models['Model-A'].materials['resin'].DuctileDamageInitiation(table=((0.035,
         0.0, 0.0), ))
-
 if stresstest:
     """Inital Strength test"""
-
     if not error:
         #try:
         Magni = [5e-1]    # Skalarverdi til toyning
-        Ret = [0]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+        Ret = [3]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+        DIRSS=  ['Transverse2', 'Transverse3', 'Fiber_Parallel1', 'Shear23', '\Shear12', 'Shear13']
         strain = 0.0 * id[0]
         for roos in range(0,len(Ret)):
             strain = strain+ Magni[roos] * id[Ret[roos]]
@@ -148,16 +146,15 @@ if stresstest:
             print '\nInitial Strain Vector', np.round(strains,3)
             Type=''
             Dirs =''
-        if len(Ret)==1:
-            for roos in [Ret[0]]:
-                if roos == 3 or roos == 4 or roos == 5:
-                    Type = Type + '_Shear_'
+        for roos in [Ret[0]]:
+            if roos == 3 or roos == 4 or roos == 5:
+                Type = Type + '_Shear'
+            else:
+                if strains[roos] > 0:
+                    Type = Type + '_Tension'
                 else:
-                    if strains[roos] > 0:
-                        Type = Type + '_Tension_'
-                    else:
-                        Type = Type + '_Compression_'
-            Dirs = Dirs + Retning[roos]
+                    Type = Type + '_Compression_'
+            Dirs = Dirs + DIRSS[roos]
         if len(Ret)==2:
                 for roos in Ret:
                     if roos == 3 or roos == 4 or roos == 5:
@@ -167,12 +164,12 @@ if stresstest:
                             Type = Type + 'Tension'
                         else:
                             Type = Type + 'Compression'
-                Dirs = Dirs + Retning[roos]
+                    Dirs = Dirs + DIRSS[roos]
 
 
 
-        cases = [[Dirs + Type + '__Rand-' +str(int(ParameterSweep*scsc)) +  str(Q), strains]]
-        Sigmapaths = Tekstfiler + '/Stresstests/'+ Dirs + Type + '__Rand-' +str(int(ParameterSweep*scsc)) +  str(Q) + '.txt'
+        cases = [[Dirs + Type + '__Rand-' +str(key) +  str(Q), strains]]
+        Sigmapaths = Tekstfiler + '/Stresstests/'+ Dirs + Type + '__Rand-' +str(key) +  str(Q) + '.txt'
 
         for Case in cases:
             Jobbnavn, Strain = Case

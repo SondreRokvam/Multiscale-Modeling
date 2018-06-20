@@ -135,4 +135,4 @@ while len(n)<=tests:
     import displayGroupOdbToolset as dgo
     import connectorBehavior
 
-    execfile(Modellering + 'lucke.py')
+    execfile(Modellering + 'Multilucke.py')

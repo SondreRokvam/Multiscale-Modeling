@@ -3,7 +3,7 @@
 global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 #numCPU = multiprocessing.cpu_count()
 numCPU = 1
-Model = 0
+Model = 1
 FoundStiff = 1
 analyse = 1
 stresstest = 1
@@ -34,7 +34,7 @@ else:
 
 
 """Material modeller"""
-
+global Epox, Sizing
 #Plasticitet
 Yieldlim = 0.060
 

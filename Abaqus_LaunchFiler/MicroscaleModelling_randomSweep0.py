@@ -46,16 +46,15 @@ def run_Job(Jobb, modelName):
 
 # Init : forste fix
 execfile('C:/MultiScaleMethod/Github/Multiscale-Modeling/Abaqus_modellering/1Setup.py')
+key=0
 
-ParameterSweep = Yeah[1]
+
+ParameterSweep = Yeah[key]
 
 # Intiering
 execfile(Modellering + 'Initial.py')
+execfile(Modellering + 'Testinfo.py')
 
-
-n = [int(ParameterSweep * scsc + ItraPara * 169)]
-ItraPara = 0
-tests = 1  # Antall iterasjoner per startup
 
   # Arbeids lokke
 

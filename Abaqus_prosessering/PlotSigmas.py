@@ -11,7 +11,7 @@ Type = 'comp_'
 
 #Sigmascomp_comp_EyyEzz0_0.txt
 #filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmas'+Type)]  # if not f.endswith('.inp')]
-filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmassher_t')]  # if not f.endswith('.inp')]
+filelist = [f for f in os.listdir(Tekstfiler) ]  # if not f.endswith('.inp')]
 print(filelist)
 def readSSData(fily):
     # NOTE: you will probably need to change
@@ -28,16 +28,18 @@ def plotStressStrainData():
         x =Stresses[0]*stray
         plt.ylabel('Stresses [GPa]')
         plt.xlabel('Strain')
-        plt.plot(x,Stresses[1], 'b-')
-        plt.plot(x,Stresses[2], 'y-')
-        plt.plot(x,Stresses[3], 'r-')
-        plt.plot(x,Stresses[4], 'g--')
-        plt.plot(x,Stresses[5], 'c--')
-        plt.plot(x,Stresses[6], 'm--')
-
-        plt.title('Stress Strain curve'+fily[0:15])
+        plt.plot(x,Stresses[3], 'r-',label='\u03C31')
+        plt.plot(x,Stresses[1], 'b-',label='\u03C32')
+        plt.plot(x,Stresses[2], 'y-',label='\u03C33')
+        plt.plot(x,Stresses[4], 'g--',label='\u03C423')
+        plt.plot(x,Stresses[5], 'c--',label='\u03C412')
+        plt.plot(x,Stresses[6], 'm--',label='\u03C413')
+        fis=fily.split('99')
+        plt.title('Plasticity models, Stress Strain curve:\n'+fis[0])
         plt.ylabel('Stresses [GPa]')
         plt.xlabel('Strain')
+
+        plt.legend(loc='best')
 
         #ymin, ymax = plt.ylim()
         #xmin, xmax = plt.xlim()
@@ -54,7 +56,7 @@ def plotStressStrainData():
         #print (ymin, ymax, xmin, xmax)
         plt.tight_layout()
         plt.show()
-
+    """
     for fily in filelist:
         Stresses, stray = readSSData(fily)
         x =Stresses[0]*stray
@@ -79,12 +81,12 @@ def plotStressStrainData():
 
 
         #plt.xlim((0.94*xmax), (0.95*xmax))
-        plt.ylim((-0.03 ), (0.03))
+        plt.ylim((-0.1 ), (0.1))
         #print (ymin, ymax, xmin, xmax)
         plt.tight_layout()
         plt.show()
 
-    """
+    
         plt.plot(x, Stresses[1], 'bo--')
         plt.plot(x, Stresses[2], 'yo--')
         plt.plot(x, Stresses[3], 'ro--')

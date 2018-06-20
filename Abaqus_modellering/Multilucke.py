@@ -110,25 +110,29 @@ else:
             execfile(processering + 'LinearPostprocessing.py')
             t = (time.time() - start_time)
             print('t etter lin pross=', t)
+    del mdb.models['Model-A'].steps['Enhetstoyninger']
 
-if Savemodel and not error:
+if Savemodel and Model:
     mdb.saveAs(pathName=RVEmodellpath)
 
     # Non linear tester
-
+Damage=0
+if Damage:
+    mdb.models['Model-A'].materials['resin'].DuctileDamageInitiation(table=((0.035,
+        0.0, 0.0), ))
 
 if stresstest:
     """Inital Strength test"""
 
     if not error:
         #try:
-        Magni = [2e-1,2e-1]    # Skalarverdi til toyning
-        Ret = [3,1]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+        Magni = [5e-1]    # Skalarverdi til toyning
+        Ret = [0]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
         strain = 0.0 * id[0]
         for roos in range(0,len(Ret)):
             strain = strain+ Magni[roos] * id[Ret[roos]]
 
-        Increments = {'maxNum': 100, 'initial': 1e-2, 'min': 1e-8, 'max': 0.1}
+        Increments = {'maxNum': 300, 'initial': 1e-2, 'min': 1e-8, 'max': 0.1}
         ### SETTE lagringsplass
 
         if True:
@@ -138,26 +142,37 @@ if stresstest:
             Stresses = 0 * id[0]
             for roos in range(0, len(Ret)):
                 Stresses = Stresses +  stresses[Ret[0]] * id[Ret[roos]]
-            print '\nReferanse Stress Vector', Stresses
+            print '\nReferanse Stress Vector', np.round(Stresses,3)
             #print Stresses, Stiffmatrix
             strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
-            print '\nInitial Strain Vector', strains
+            print '\nInitial Strain Vector', np.round(strains,3)
             Type=''
             Dirs =''
-            for roos in Ret:
+        if len(Ret)==1:
+            for roos in [Ret[0]]:
                 if roos == 3 or roos == 4 or roos == 5:
-                    Type = Type+'sher_'
+                    Type = Type + '_Shear_'
                 else:
                     if strains[roos] > 0:
-                        Type = Type +'tens_'
+                        Type = Type + '_Tension_'
                     else:
-                        Type = Type +'comp_'
-                Dirs= Dirs+Retning[roos]
+                        Type = Type + '_Compression_'
+            Dirs = Dirs + Retning[roos]
+        if len(Ret)==2:
+                for roos in Ret:
+                    if roos == 3 or roos == 4 or roos == 5:
+                        Type = Type + 'Shear'
+                    else:
+                        if strains[roos] > 0:
+                            Type = Type + 'Tension'
+                        else:
+                            Type = Type + 'Compression'
+                Dirs = Dirs + Retning[roos]
 
 
 
-        cases = [[Dirs + Type + str(int(ParameterSweep*scsc)) + '__Rand-' + str(Q), strains]]
-        Sigmapaths = Tekstfiler + '/Stresstests/Sigmas' + Type + Dirs + str( int(ParameterSweep * scsc)) + '_' + str(Q) + '.txt'
+        cases = [[Dirs + Type + '__Rand-' +str(int(ParameterSweep*scsc)) +  str(Q), strains]]
+        Sigmapaths = Tekstfiler + '/Stresstests/'+ Dirs + Type + '__Rand-' +str(int(ParameterSweep*scsc)) +  str(Q) + '.txt'
 
         for Case in cases:
             Jobbnavn, Strain = Case
@@ -185,7 +200,7 @@ if stresstest:
 
     d=[0.8]*6
     """Adjusting strength test"""
-    if not error:
+    if not error and False:
         strains2 = strains.tolist()
         Reset=1
         Jobbnav = Jobbnavn
@@ -324,7 +339,6 @@ if error:
     Q = Q +1
     n[-1] = Q
     print 'Error'
-    del asda
 else:
     Q = Q+1
     n.append(Q)

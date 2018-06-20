@@ -90,16 +90,14 @@ def FrameFinder():
 
 # Init : forste fix
 execfile('C:/MultiScaleMethod/Github/Multiscale-Modeling/Abaqus_modellering/1Setup.py')
+key=1
 
-ParameterSweep = Yeah[1]
+
+ParameterSweep = Yeah[key]
 
 # Intiering
 execfile(Modellering + 'Initial.py')
-
-
-n = [int(ParameterSweep * scsc + ItraPara * 169)]
-ItraPara = 0
-tests = 5  # Antall iterasjoner per startup
+execfile(Modellering + 'Testinfo.py')
 
   # Arbeids lokke
 

@@ -1,3 +1,4 @@
+key=2
 from random import *
 from math import *
 import numpy as np
@@ -42,68 +43,9 @@ def run_Job(Jobb, modelName):
         qw = open(Jobsss, "a")
         qw.write('call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job=' + Jobb + ' interactive cpus=' + str(numCPU))
         qw.close()
-def Iterasjonfiks():
-    global Jobsss
-    Jobsss = workpath + 'Abaqusjobs.bat'
-    Itra = open(Tekstfiler + 'Iterasjoner.txt', "r")
-    Content = Itra.read()
-    cals = Content.split('\n')
-    number = len(cals) - 1
-    Itra.close()
-    InterestingParameter = 'ItraPara'
-    Itra = open(Modellering + 'IterationParameters.py', "w")
-    Itra.write('global ' + InterestingParameter + '\n' + InterestingParameter + ' = ' + str(int(number)))
-    Itra.close()
-def FrameFinder():
-    limit = 0.05
-    print Sigmapaths
-    StressSi = np.genfromtxt(Sigmapaths)
-    StressSi = StressSi[1:, 1:]
-    for a in range(0, 6):
-        if not a == Ret:
-            StressSi[1:, a] = np.multiply(StressSi[1:, a], 1 / StressSi[1:, Ret])
-    Sing = [0]*6
-    Dob = [0]*6
-    Trecharm = [0]*6
-    StressFlags = [0]*6
-    for kj in range(0,len(StressSi)):
-        for sa in range(0,len(StressSi[0])):
-            if not sa==Ret:
-                if not Trecharm[sa]:
-                    if not Dob[sa]:
-                        if not Sing[sa]:
-                            if abs(StressSi[kj][sa]) > limit:
-                                Sing[sa]=1
-                        else:
-                            if abs(StressSi[kj][sa]) > limit:     #   Feilmargin
-                                Dob[sa] = 1
-                            else:
-                                Sing[sa]=0
-                    else:
-                        if abs(StressSi[kj][sa]) > limit:  # Feilmargin
-                            Trecharm[sa] = 1
-                        else:
-                            Sing[sa] = 0
-                            Dob[sa] = 0
-                else:
-                    StressFlags[sa] = 1
-        for sa in range(0, len(StressSi[0])):
-            if StressFlags[sa]:
-                return kj - 3, StressFlags, StressSi[kj]
-
-    for sa in range(0, len(StressSi[0])):
-        if Dob[sa]:
-            return len(StressSi) - 2, Dob, StressSi[kj]
-        if Sing[sa]:
-            return len(StressSi) - 1, Sing, StressSi[kj]
-    #del Ididtifying_diverging_frame_did_notwork
-    print 'No divergence found'
-    return len(StressSi)-1, StressFlags, StressSi[len(StressSi)-1]
 
 # Init : forste fix
 execfile('C:/MultiScaleMethod/Github/Multiscale-Modeling/Abaqus_modellering/1Setup.py')
-key=2
-
 
 ParameterSweep = Yeah[key]
 
@@ -112,7 +54,6 @@ execfile(Modellering + 'Initial.py')
 execfile(Modellering + 'Testinfo.py')
 
   # Arbeids lokke
-
 while len(n)<=tests:
     #IMPORTERER ALT FRA ABAQUS
     from abaqus import *

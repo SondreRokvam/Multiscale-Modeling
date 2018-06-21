@@ -1,3 +1,4 @@
+key=0
 from random import *
 from math import *
 import numpy as np
@@ -43,11 +44,8 @@ def run_Job(Jobb, modelName):
         qw.write('call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job=' + Jobb + ' interactive cpus=' + str(numCPU))
         qw.close()
 
-
 # Init : forste fix
 execfile('C:/MultiScaleMethod/Github/Multiscale-Modeling/Abaqus_modellering/1Setup.py')
-key=0
-
 
 ParameterSweep = Yeah[key]
 
@@ -55,9 +53,7 @@ ParameterSweep = Yeah[key]
 execfile(Modellering + 'Initial.py')
 execfile(Modellering + 'Testinfo.py')
 
-
   # Arbeids lokke
-
 while len(n)<=tests:
     #IMPORTERER ALT FRA ABAQUS
     from abaqus import *

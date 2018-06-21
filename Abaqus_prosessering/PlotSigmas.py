@@ -35,7 +35,9 @@ def plotStressStrainData():
         plt.plot(x,Stresses[5], 'c--',label='\u03C412')
         plt.plot(x,Stresses[6], 'm--',label='\u03C413')
         fis=fily.split('__')
-        plt.title('Plasticity models, Stress Strain curve:\n'+fis[0])
+        Test= 'Plasticity, Damage, Interface Damage, '
+        Title =Test+'Stress Strain curve:\n'+fis[0]
+        plt.title(Title)
         plt.ylabel('Stresses [GPa]')
         plt.xlabel('Strain')
 
@@ -55,6 +57,7 @@ def plotStressStrainData():
         #xmin, xmax = plt.xlim()
         #print (ymin, ymax, xmin, xmax)
         plt.tight_layout()
+        plt.savefig('C:/MultiScaleMethod/Github/Plots/'+Test+fis[0]+'.png')
         plt.show()
     """
     for fily in filelist:

@@ -3,10 +3,10 @@
 global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 #numCPU = multiprocessing.cpu_count()
 numCPU = 1
-Model = 1
-FoundStiff = 0
+Model = 0
+FoundStiff = 1
 analyse = 1
-stresstest = 0
+stresstest = 1
 if Model:
     Createmodel = 1
     Savemodel = 1
@@ -34,15 +34,15 @@ else:
 
 
 """Material modeller"""
-global Epox, Sizing
+global Yieldlim, Plastlim, PlasticStrain
 #Plasticitet
 Yieldlim = 0.060
 
 Plastlim = 0.061
 PlasticStrain = 0.015
-Epox=((Yieldlim, 0.0), (Plastlim, PlasticStrain))
 
-Sizing =((Yieldlim, 0.0), (Plastlim, PlasticStrain))
+
+
 """Simuleringsvariabler """
 global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin
 

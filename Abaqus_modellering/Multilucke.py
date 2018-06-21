@@ -119,11 +119,11 @@ Plastic=1
 if Plastic:
     mdb.models['Model-A'].materials['resin'].Plastic(table=((Yieldlim, 0.0), (Plastlim, PlasticStrain)))
     mdb.models['Model-A'].materials['resin'].Plastic(table=((Yieldlim, 0.0), (Plastlim, PlasticStrain)))
-Damage=1
+Damage=0
 if Damage:
     mdb.models['Model-A'].materials['resin'].DuctileDamageInitiation(table=((0.035,
         0.0, 0.0), ))
-Interdamage=1
+Interdamage=0
 if Interdamage:
     IntCon = {'Trac': (3.0, 3.0, 3.0), 'Den': 1.2e-06,
               'QDI': (0.061, 0.061, 0.061),
@@ -141,7 +141,7 @@ for sisss in shears:
         """Inital Strength test"""
         if not error:
             #try:
-            Magni = [1.5e-1]    # Skalarverdi til toyning
+            Magni = [3e-1]    # Skalarverdi til toyning
             Ret = [sisss]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
             DIRSS=  ['2', '3', '1', '23', '12', '13']
             strain = 0.0 * id[0]

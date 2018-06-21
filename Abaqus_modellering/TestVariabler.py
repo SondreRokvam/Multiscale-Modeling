@@ -3,8 +3,8 @@
 global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 #numCPU = multiprocessing.cpu_count()
 numCPU = 1
-Model = 0
-FoundStiff = 1
+Model = 1
+FoundStiff = 0
 analyse = 1
 stresstest = 1
 if Model:

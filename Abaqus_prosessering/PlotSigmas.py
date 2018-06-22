@@ -35,7 +35,7 @@ def plotStressStrainData():
         plt.plot(x,Stresses[5], 'c--',label='\u03C412')
         plt.plot(x,Stresses[6], 'm--',label='\u03C413')
         fis=fily.split('__')
-        Test= 'Plasticity, '
+        Test= 'Plasticity, Matrix damage and delamination '
         Title =Test+'Stress Strain curve:\n'+fis[0]
         plt.title(Title)
         plt.ylabel('Stresses [GPa]')

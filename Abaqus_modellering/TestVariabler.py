@@ -5,7 +5,7 @@ global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Inc
 numCPU = 8
 Model = 0
 FoundStiff = 1
-analyse = 0
+analyse = 1
 stresstest = 1
 Rerun = 1
 if Model:

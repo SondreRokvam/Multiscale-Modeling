@@ -75,7 +75,7 @@ def FrameFinder():
                     StressSi = StressSi[kj - 1:kj + 3, :]
                 except:
                     StressSi = StressSi[kj - 1:kj + 1, :]
-                return kj - 4, StressFlags, (StressSi[1,1:]-StressSi[0,1:])/(StressSi[-1,0]-StressSi[0,0])*(1.0-StressSi[1,0])
+                return kj - 4, StressFlags, (StressSi[-1,1:]-StressSi[0,1:])/(StressSi[-1,0]-StressSi[0,0])*(1.0-StressSi[1,0])
 
     for sa in range(0, len(StressSi[0])):
         if Dob[sa]:
@@ -166,8 +166,8 @@ for sisss in Mult:
         """Inital Strength test"""
         if not error:
             #try:
-            Magni = [sisss[0]]    # Skalarverdi til toyning
-            Ret = [sisss[1]]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+            Magni = [sisss[0], Size]    # Skalarverdi til toyning
+            Ret = [sisss[1], 4]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
             DIRSS=  ['2', '3', '1', '23', '12', '13']
             strain = 0.0 * id[0]
             for roos in range(0,len(Ret)):
@@ -211,7 +211,7 @@ for sisss in Mult:
                         Type = Type + DIRSS[roos]
 
             cases = [[Type + '__Rand-' +str(key) +  str(Q), strains]]
-            Sigmapaths = Tekstfiler + '/Stresstests/'+ Type+ '__Rand-' +  str(Q)+ '.txt'
+            Sigmapaths = Tekstfiler + 'Stresstests/'+ Type+ '__Rand-' +  str(Q)+ '.txt'
 
 
             for Case in cases:
@@ -261,7 +261,7 @@ for sisss in Mult:
 
                 appe = 0
                 diff = Fram[0] - prev
-                ReSigmapaths = Tekstfiler + '/Stresstests/' + Type + '__Rand-' + str(Q) + str(attempts) + 'RE.txt'
+                ReSigmapaths = Tekstfiler + 'Stresstests/' + Type + '__Rand-' + str(Q) + str(attempts) + 'RE.txt'
                 if not diff<=1:
                     Reset = 1
 
@@ -371,7 +371,7 @@ for sisss in Mult:
 
             t = (time.time() - start_time)
             print('Reached end of random key Iteration\tt ved ferdig', t)
-            ss = open('C:/Users/Sondre/Desktop/Ferdig'+str(ParameterSweep[ItraPara])+'.txt', "w")
+            ss = open('C:/Users/Sondre/Desktop/Ferdig'+str(key)+'.txt', "w")
             ss.close()
             Q = Q + 21
             n.append(Q)

@@ -1,5 +1,5 @@
 def FrameFinder():
-    limit = 0.05
+    limit = 0.01
     print Sigmapaths
     StressSi = np.genfromtxt(Sigmapaths)
     StressSi = StressSi[1:, 1:]
@@ -59,11 +59,11 @@ def FrameFinder():
                         StressFlags[sa] = 1
         for sa in range(0, len(StressSi[0])):
             if StressFlags[sa]:
-                for sts in range(0,len(StressFlags)):
-                    if StressFlags[sts] == 0:
-                        StressFlags[sts] = StressFlags[sts]+Dob[sts]
-                print StressFlags
-                return kj - 3, StressFlags, StressSi[kj]
+                #for sts in range(0,len(StressFlags)):
+                    #if StressFlags[sts] == 0:
+                     #   StressFlags[sts] = StressFlags[sts]+Dob[sts]
+                #print StressFlags
+                return kj - 5, StressFlags, StressSi[kj]
 
     for sa in range(0, len(StressSi[0])):
         if Dob[sa]:
@@ -133,19 +133,19 @@ if Interdamage:
     intF.QuadsDamageInitiation(table=(IntCon['QDI'],))
     intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, table=(IntCon['qdiDE'],))
 Size = 1.6e-1
-Case1= [[Size, 1],
-        [Size, 0],
+Case1= [[Size, 0],
+        [Size, 1],
         [Size, 2]]
 
 Case2= [[Size,3],
         [Size, 4],
         [Size, 5]]
 
-Case3 = [[-Size,2],
+Case3 = [[-Size, 0],
         [-Size, 1],
-        [-Size, 0]]
+        [-Size,2]]
 #for sisss in normal:
-for sisss in Case3:
+for sisss in Case1:
     if stresstest:
         """Inital Strength test"""
         if not error:
@@ -221,9 +221,9 @@ for sisss in Case3:
                 print 'Error in Stress tests'
                 error=1"""
 
-        d=[0.8]*6
+        d=[0.25]*6
         """Adjusting strength test"""
-        if not error and False:
+        if not error:
             strains2 = strains.tolist()
             Reset=1
             Jobbnav = Jobbnavn
@@ -306,9 +306,9 @@ for sisss in Case3:
 
                 for ssss in range(0,len(strains)):
                     if Fram[1][ssss]:
-                        if d[ssss]>0.4:
-                            d[ssss] = d[ssss] * 0.75
-                        adjfactor = abs(strains[ssss])*d[ssss]
+                        if d[ssss]>0.15:
+                            d[ssss] = d[ssss] * 0.8
+                        adjfactor = abs(strains[ssss])*d[ssss]/10
                         print 'Adjust by : ', adjfactor
 
                         if StressSigs[-1][ssss+1]>=0:

@@ -52,55 +52,49 @@ def plotStressStrainData():
         #plt.ylim((ymin / zoom), (ymax / zoom))
 
         #plt.xlim((0.94*xmax), (0.95*xmax))
-        #plt.ylim((-0.007 / zoom), (0.007 / zoom))
+        #plt.ylim((-0.007 ), (0.007 ))
         #ymin, ymax = plt.ylim()
         #xmin, xmax = plt.xlim()
         #print (ymin, ymax, xmin, xmax)
         plt.tight_layout()
-        plt.savefig('C:/MultiScaleMethod/Github/Plots/'+Test+fis[0]+'.png')
+        #plt.savefig('C:/MultiScaleMethod/Github/Plots/'+Test+fis[0]+'.png')
         plt.show()
-    """
-    for fily in filelist:
         Stresses, stray = readSSData(fily)
-        x =Stresses[0]*stray
+        x = Stresses[0] * stray
         plt.ylabel('Stresses [GPa]')
         plt.xlabel('Strain')
-        plt.plot(x,Stresses[1], 'b-')
-        plt.plot(x,Stresses[2], 'y-')
-        plt.plot(x,Stresses[3], 'r-')
-        plt.plot(x,Stresses[4], 'g--')
-        plt.plot(x,Stresses[5], 'c--')
-        plt.plot(x,Stresses[6], 'm--')
-
-        plt.title('Stress Strain curve for RVE')
+        plt.plot(x, Stresses[3], 'r-', label='\u03C31')
+        plt.plot(x, Stresses[1], 'b-', label='\u03C32')
+        plt.plot(x, Stresses[2], 'y-', label='\u03C33')
+        plt.plot(x, Stresses[4], 'g--', label='\u03C423')
+        plt.plot(x, Stresses[5], 'c--', label='\u03C412')
+        plt.plot(x, Stresses[6], 'm--', label='\u03C413')
+        fis = fily.split('__')
+        Test = 'Plasticity, Matrix damage and delamination '
+        Title = Test + 'Stress Strain curve:\n' + fis[0]
+        plt.title(Title)
         plt.ylabel('Stresses [GPa]')
         plt.xlabel('Strain')
 
-        ymin, ymax = plt.ylim()
-        xmin, xmax = plt.xlim()
+        plt.legend(loc='best')
 
-        #print (ymin, ymax, xmin, xmax)
+        # ymin, ymax = plt.ylim()
+        # xmin, xmax = plt.xlim()
 
+        # print (ymin, ymax, xmin, xmax)
 
+        # plt.xlim((xmin), (xmax))
+        # plt.ylim((ymin / zoom), (ymax / zoom))
 
-        #plt.xlim((0.94*xmax), (0.95*xmax))
-        plt.ylim((-0.1 ), (0.1))
-        #print (ymin, ymax, xmin, xmax)
+        # plt.xlim((0.94*xmax), (0.95*xmax))
+        plt.ylim((-0.007 ), (0.007 ))
+        # ymin, ymax = plt.ylim()
+        # xmin, xmax = plt.xlim()
+        # print (ymin, ymax, xmin, xmax)
         plt.tight_layout()
+        # plt.savefig('C:/MultiScaleMethod/Github/Plots/'+Test+fis[0]+'.png')
         plt.show()
 
-    
-        plt.plot(x, Stresses[1], 'bo--')
-        plt.plot(x, Stresses[2], 'yo--')
-        plt.plot(x, Stresses[3], 'ro--')
-        plt.plot(x, Stresses[4], 'bx--')
-        plt.plot(x, Stresses[5], 'gx--')
-        plt.plot(x, Stresses[6], 'rx--')
-        #plt.xlim(xmin, (0.01))
-        plt.ylim((-0.007 / zoom), (0.007 / zoom))
-        plt.tight_layout()
-        plt.show()
-        """
 
 
 plotStressStrainData()

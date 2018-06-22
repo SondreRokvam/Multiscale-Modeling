@@ -148,9 +148,9 @@ if not ConDmPlast:
 
 
 Size = 0.8e-1
-Mult = [[Size, 0]]
+Mult = [[Size, 4]]
 
-Case1 = [[Size, 0],
+Case1 = [[Size, 4],
         [Size, 1],
         [Size, 2]]
 Case2 = [[Size,3],
@@ -166,8 +166,8 @@ for sisss in Mult:
         """Inital Strength test"""
         if not error:
             #try:
-            Magni = [sisss[0], Size]    # Skalarverdi til toyning
-            Ret = [sisss[1], 4]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+            Magni = [sisss[0],Size]    # Skalarverdi til toyning
+            Ret = [sisss[1], 5]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
             DIRSS=  ['2', '3', '1', '23', '12', '13']
             strain = 0.0 * id[0]
             for roos in range(0,len(Ret)):
@@ -184,7 +184,7 @@ for sisss in Mult:
                 print 'Stresses from RefSTRAINS', stresses
                 Stresses = 0 * id[0]
                 for roos in range(0, len(Ret)):
-                    Stresses = Stresses +  abs(stresses[Ret[0]])*stresses[roos]/abs(stresses[roos]) * id[Ret[roos]]
+                    Stresses = Stresses +  abs(stresses[Ret[0]])*stresses[Ret[roos]]/abs(stresses[Ret[roos]]) * id[Ret[roos]]
                 print 'Referanse Stress Vector', np.round(Stresses,3)
                 #print Stresses, Stiffmatrix
                 strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)

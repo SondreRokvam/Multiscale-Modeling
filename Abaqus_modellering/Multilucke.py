@@ -119,30 +119,39 @@ Plastic=1
 if Plastic:
     mdb.models['Model-A'].materials['resin'].Plastic(table=((Yieldlim, 0.0), (Plastlim, PlasticStrain)))
     mdb.models['Model-A'].materials['resin'].Plastic(table=((Yieldlim, 0.0), (Plastlim, PlasticStrain)))
-Damage=0
+Damage=1
 if Damage:
     mdb.models['Model-A'].materials['resin'].DuctileDamageInitiation(table=((0.035,
-        0.0, 0.0), ))
+                                                                             0.0, 0.0),))
+    mdb.models['Model-A'].materials['resin'].ductileDamageInitiation.DamageEvolution(
+        type=DISPLACEMENT, table=((0.001, ), ))
 Interdamage=0
 if Interdamage:
-    IntCon = {'Trac': (3.0, 3.0, 3.0), 'Den': 1.2e-06,
-              'QDI': (0.061, 0.061, 0.061),
+    IntCon = {'QDI': (0.061, 0.061, 0.061),
               'qdiDEpower': 1.2, 'qdiDE': (0.0078, 0.0078, 0.0078), }
     intF = mdb.models['Model-A'].materials['interface']
     intF.QuadsDamageInitiation(table=(IntCon['QDI'],))
     intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
                                                power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
+Size = 1.6e-1
+Case1= [[Size, 1],
+        [Size, 0],
+        [Size, 2]]
 
-shears= [3,4]
-normal= [0,2]
+Case2= [[Size,3],
+        [Size, 4]]
+
+Case3 = [-[Size,2],
+        [-Size, 1],
+        [-Size, 0]]
 #for sisss in normal:
-for sisss in shears:
+for sisss in Case1:
     if stresstest:
         """Inital Strength test"""
         if not error:
             #try:
-            Magni = [3e-1]    # Skalarverdi til toyning
-            Ret = [sisss]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
+            Magni = [sisss[0]]    # Skalarverdi til toyning
+            Ret = [sisss[1]]         # Mulige lastretninger STRAINS:  exx, eyy, ezz,  exy,  exz,  eyz
             DIRSS=  ['2', '3', '1', '23', '12', '13']
             strain = 0.0 * id[0]
             for roos in range(0,len(Ret)):

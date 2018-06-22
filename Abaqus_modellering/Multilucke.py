@@ -119,13 +119,13 @@ Plastic=1
 if Plastic:
     mdb.models['Model-A'].materials['resin'].Plastic(table=((Yieldlim, 0.0), (Plastlim, PlasticStrain)))
     mdb.models['Model-A'].materials['resin'].Plastic(table=((Yieldlim, 0.0), (Plastlim, PlasticStrain)))
-Damage=0
+Damage=1
 if Damage:
     mdb.models['Model-A'].materials['resin'].DuctileDamageInitiation(table=((0.035,
                                                                              0.0, 0.0),))
     mdb.models['Model-A'].materials['resin'].ductileDamageInitiation.DamageEvolution(
         type=DISPLACEMENT, table=((0.001, ), ))
-Interdamage=0
+Interdamage=1
 if Interdamage:
     IntCon = {'QDI': (0.061, 0.061, 0.061),
               'qdiDEpower': 1.2, 'qdiDE': (0.0078, 0.0078, 0.0078), }
@@ -145,7 +145,7 @@ Case3 = [[-Size,2],
         [-Size, 1],
         [-Size, 0]]
 #for sisss in normal:
-for sisss in Case1:
+for sisss in Case3:
     if stresstest:
         """Inital Strength test"""
         if not error:

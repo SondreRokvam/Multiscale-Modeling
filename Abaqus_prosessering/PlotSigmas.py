@@ -12,7 +12,7 @@ Type = 'comp_'
 #Sigmascomp_comp_EyyEzz0_0.txt
 #filelist = [f for f in os.listdir(Tekstfiler) if f.startswith('Sigmas'+Type)]  # if not f.endswith('.inp')]
 filelist = [f for f in os.listdir(Tekstfiler) ]  # if not f.endswith('.inp')]
-print(filelist)
+print(len(filelist),'\n',filelist)
 def readSSData(fily):
     # NOTE: you will probably need to change
     # the file path:
@@ -35,7 +35,7 @@ def plotStressStrainData():
         plt.plot(x,Stresses[5], 'c--',label='\u03C412')
         plt.plot(x,Stresses[6], 'm--',label='\u03C413')
         fis=fily.split('__')
-        Test= 'Plasticity, Damage, '
+        Test= 'Plasticity, '
         Title =Test+'Stress Strain curve:\n'+fis[0]
         plt.title(Title)
         plt.ylabel('Stresses [GPa]')

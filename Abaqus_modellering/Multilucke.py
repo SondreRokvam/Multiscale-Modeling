@@ -72,10 +72,10 @@ def FrameFinder():
                     StressSi = np.genfromtxt(ReSigmapaths)
                 StressSi = StressSi[1:, :]
                 try:
-                    StressSi = StressSi[kj - 3:kj , :]
+                    StressSi = StressSi[kj - 4:kj , :]
                 except:
-                    StressSi = StressSi[kj - 3:kj, :]
-                return kj - 4, StressFlags, (StressSi[-1,1:]-StressSi[0,1:])/(StressSi[-1,0]-StressSi[0,0])*(1.0-StressSi[1,0])
+                    StressSi = StressSi[kj - 4:kj, :]
+                return kj - 4, StressFlags, (StressSi[2,1:]-StressSi[0,1:])/(StressSi[2,0]-StressSi[0,0])*(1.0-StressSi[0,0])
 
     for sa in range(0, len(StressSi[0])):
         if Dob[sa]:

@@ -28,7 +28,7 @@ def plotStressStrainData():
         x =Stresses[0]*stray
         plt.ylabel('Stresses [GPa]')
         plt.xlabel('Strain')
-        plt.plot(x,Stresses[3], 'r-',label='\u03C31')
+        plt.plot(x,Stresses[3], 'ro-',label='\u03C31')
         plt.plot(x,Stresses[1], 'b-',label='\u03C32')
         plt.plot(x,Stresses[2], 'y-',label='\u03C33')
         plt.plot(x,Stresses[4], 'g--',label='\u03C423')
@@ -57,8 +57,12 @@ def plotStressStrainData():
         #xmin, xmax = plt.xlim()
         #print (ymin, ymax, xmin, xmax)
         plt.tight_layout()
-        #plt.savefig('C:/MultiScaleMethod/Github/Plots/'+Test+fis[0]+'.png')
+        plt.savefig('C:/MultiScaleMethod/Github/Plots/'+Test+fily+'.png')
         plt.show()
+
+
+        #Small scale zoom
+        """
         Stresses, stray = readSSData(fily)
         x = Stresses[0] * stray
         plt.ylabel('Stresses [GPa]')
@@ -94,7 +98,7 @@ def plotStressStrainData():
         plt.tight_layout()
         # plt.savefig('C:/MultiScaleMethod/Github/Plots/'+Test+fis[0]+'.png')
         plt.show()
-
+        """
 
 
 plotStressStrainData()

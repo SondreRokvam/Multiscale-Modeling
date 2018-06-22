@@ -28,7 +28,7 @@ def run_Job(Jobb, modelName):
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
             scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=numCPU,
             numDomains=numCPU, numGPUs=1)
-    if Runjobs:
+    if Runjobs or Rerun:
         try:
             mdb.jobs[Jobb].submit(consistencyChecking=OFF)
             mdb.jobs[Jobb].waitForCompletion()
@@ -38,11 +38,7 @@ def run_Job(Jobb, modelName):
         except:
             error=1
             pass
-    else:
-        mdb.jobs[Jobb].writeInput(consistencyChecking=OFF)
-        qw = open(Jobsss, "a")
-        qw.write('call "C:\SIMULIA\Abaqus\6.14-4\code\bin\abq6144.exe" job=' + Jobb + ' interactive cpus=' + str(numCPU))
-        qw.close()
+
 
 # Init : forste fix
 execfile('C:/MultiScaleMethod/Github/Multiscale-Modeling/Abaqus_modellering/1Setup.py')

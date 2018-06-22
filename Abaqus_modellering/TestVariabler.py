@@ -2,11 +2,12 @@
 
 global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 #numCPU = multiprocessing.cpu_count()
-numCPU = 1
+numCPU = 8
 Model = 0
 FoundStiff = 1
-analyse = 1
+analyse = 0
 stresstest = 1
+Rerun = 1
 if Model:
     Createmodel = 1
     Savemodel = 1
@@ -25,12 +26,8 @@ else:
 
 if analyse:
     Runjobs = 1
-    nonLinearAnalysis = 1
-    nonLinearpostPross = 1
 else:
     Runjobs = 0
-    nonLinearAnalysis = 0 # Finne standard
-    nonLinearpostPross = 0
 
 
 """Material modeller"""

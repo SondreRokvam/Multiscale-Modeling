@@ -1,7 +1,10 @@
 def FrameFinder():
-    limit = 0.01
+    limit = 0.05
     print Sigmapaths
-    StressSi = np.genfromtxt(Sigmapaths)
+    if not Reset:
+        StressSi = np.genfromtxt(Sigmapaths)
+    else:
+        StressSi = np.genfromtxt(ReSigmapaths)
     StressSi = StressSi[1:, 1:]
     for a in range(0, 6):
         if len(Ret)==2:
@@ -59,11 +62,20 @@ def FrameFinder():
                         StressFlags[sa] = 1
         for sa in range(0, len(StressSi[0])):
             if StressFlags[sa]:
-                #for sts in range(0,len(StressFlags)):
-                    #if StressFlags[sts] == 0:
-                     #   StressFlags[sts] = StressFlags[sts]+Dob[sts]
-                #print StressFlags
-                return kj - 5, StressFlags, StressSi[kj]
+                for sts in range(0,len(StressFlags)):
+                    if StressFlags[sts] == 0:
+                        StressFlags[sts] = StressFlags[sts]+Dob[sts]
+                print StressFlags
+                if not Reset:
+                    StressSi = np.genfromtxt(Sigmapaths)
+                else:
+                    StressSi = np.genfromtxt(ReSigmapaths)
+                StressSi = StressSi[1:, :]
+                try:
+                    StressSi = StressSi[kj - 1:kj + 3, :]
+                except:
+                    StressSi = StressSi[kj - 1:kj + 1, :]
+                return kj - 4, StressFlags, (StressSi[1,1:]-StressSi[0,1:])/(StressSi[-1,0]-StressSi[0,0])*(1.0-StressSi[1,0])
 
     for sa in range(0, len(StressSi[0])):
         if Dob[sa]:
@@ -72,7 +84,7 @@ def FrameFinder():
             return len(StressSi) - 1, Sing, StressSi[kj]
     #del Ididtifying_diverging_frame_did_notwork
     print 'No divergence found'
-    return len(StressSi)-1, StressFlags, StressSi[len(StressSi)-1]
+    return len(StressSi)-1, StressFlags, StressSi[-1]
 
 Q = int( n[-1] )
 seed(Q)  # Q er randomfunksjonensnokkelen
@@ -115,37 +127,41 @@ if Model:
     print 'saved'
 
     # Non linear tester
-Plastic=1
-if Plastic:
-    mdb.models['Model-A'].materials['resin'].Plastic(table=((Yieldlim, 0.0), (Plastlim, PlasticStrain)))
-    mdb.models['Model-A'].materials['resin'].Plastic(table=((Yieldlim, 0.0), (Plastlim, PlasticStrain)))
-Damage=1
-if Damage:
-    mdb.models['Model-A'].materials['resin'].DuctileDamageInitiation(table=((0.035,
-                                                                             0.0, 0.0),))
-    mdb.models['Model-A'].materials['resin'].ductileDamageInitiation.DamageEvolution(
-        type=DISPLACEMENT, table=((0.001, ), ))
-Interdamage=1
-if Interdamage:
-    IntCon = {'QDI': (0.061, 0.061, 0.061),
-              'qdiDEpower': 1.2, 'qdiDE': (0.0078, 0.0078, 0.0078), }
-    intF = mdb.models['Model-A'].materials['interface']
-    intF.QuadsDamageInitiation(table=(IntCon['QDI'],))
-    intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, table=(IntCon['qdiDE'],))
-Size = 1.6e-1
-Case1= [[Size, 0],
+if not ConDmPlast:
+    Plastic=1
+    Damage=0
+    Interdamage=0
+    if Plastic:
+        mdb.models['Model-A'].materials['resin'].Plastic(table=((Yieldlim, 0.0), (Plastlim, PlasticStrain)))
+        mdb.models['Model-A'].materials['resin'].Plastic(table=((Yieldlim, 0.0), (Plastlim, PlasticStrain)))
+    if Damage:
+        mdb.models['Model-A'].materials['resin'].DuctileDamageInitiation(table=((0.035,
+                                                                                 0.0, 0.0),))
+        mdb.models['Model-A'].materials['resin'].ductileDamageInitiation.DamageEvolution(
+            type=DISPLACEMENT, table=((0.001, ), ))
+    if Interdamage:
+        IntCon = {'QDI': (0.061, 0.061, 0.061),
+                  'qdiDEpower': 1.2, 'qdiDE': (0.0078, 0.0078, 0.0078), }
+        intF = mdb.models['Model-A'].materials['interface']
+        intF.QuadsDamageInitiation(table=(IntCon['QDI'],))
+        intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, table=(IntCon['qdiDE'],))
+
+
+Size = 0.8e-1
+Mult = [[Size, 0]]
+
+Case1 = [[Size, 0],
         [Size, 1],
         [Size, 2]]
-
-Case2= [[Size,3],
+Case2 = [[Size,3],
         [Size, 4],
         [Size, 5]]
-
 Case3 = [[-Size, 0],
         [-Size, 1],
         [-Size,2]]
+
 #for sisss in normal:
-for sisss in Case1:
+for sisss in Mult:
     if stresstest:
         """Inital Strength test"""
         if not error:
@@ -158,88 +174,86 @@ for sisss in Case1:
                 strain = strain+ Magni[roos] * id[Ret[roos]]
 
             Increments = {'maxNum': 300, 'initial': 1e-2, 'min': 1e-8, 'max': 0.1}
+
+
             ### SETTE lagringsplass
 
             if True:
-                print '\n\nReferanse Strain Vector ', strain
+                print '\nReferanse Strain Vector ', strain
                 stresses = np.round(np.dot(Stiffmatrix, strain),3)
-                print '\nStresses from RefSTRAINS', stresses
+                print 'Stresses from RefSTRAINS', stresses
                 Stresses = 0 * id[0]
                 for roos in range(0, len(Ret)):
-                    Stresses = Stresses +  stresses[Ret[0]] * id[Ret[roos]]
-                print '\nReferanse Stress Vector', np.round(Stresses,3)
+                    Stresses = Stresses +  abs(stresses[Ret[0]])*stresses[roos]/abs(stresses[roos]) * id[Ret[roos]]
+                print 'Referanse Stress Vector', np.round(Stresses,3)
                 #print Stresses, Stiffmatrix
                 strains = np.dot(np.linalg.inv(Stiffmatrix), Stresses)
-                print '\nInitial Strain Vector', np.round(strains,3)
+                print 'Initial Strain Vector', np.round(strains,3)
                 Type=''
-            for roos in [Ret[0]]:
-                if roos == 3 or roos == 4 or roos == 5:
-                    Type = Type + 'Shear_'
-                else:
-                    if strains[roos] > 0:
-                        Type = Type + 'Tension_'
+                for roos in [Ret[0]]:
+                    if roos == 3 or roos == 4 or roos == 5:
+                        Type = Type + 'Shear_'
                     else:
-                        Type = Type + 'Compression_'
-                Type = Type + DIRSS[roos]
-            if len(Ret)==2:
-                    for roos in Ret:
+                        if Stresses[roos] > 0:
+                            Type = Type + 'Tension_'
+                        else:
+                            Type = Type + 'Compression_'
+                    Type = Type + DIRSS[roos]
+                if len(Ret)==2:
+                    for roos in [Ret[1]]:
                         if roos == 3 or roos == 4 or roos == 5:
                             Type = Type + '_Shear_'
                         else:
-                            if strains[roos] > 0:
+                            if Stresses[roos] > 0:
                                 Type = Type + '_Tension_'
                             else:
                                 Type = Type + '_Compression_'
                         Type = Type + DIRSS[roos]
 
-
-
             cases = [[Type + '__Rand-' +str(key) +  str(Q), strains]]
-            Sigmapaths = Tekstfiler + '/Stresstests/'+ Type+ '__Rand-' +  str(Q) + '.txt'
+            Sigmapaths = Tekstfiler + '/Stresstests/'+ Type+ '__Rand-' +  str(Q)+ '.txt'
+
 
             for Case in cases:
                 Jobbnavn, Strain = Case
 
-                #try:
                 execfile(Modellering +'nonLinearAnalysis.py')
-                #except:
-                #    del Problem_With_nonLinear_Analysis
-                t = (time.time() - start_time)
-                print('t etter nonlin analyser=', t)
-
+                print('t etter nonlin analyser=', (time.time() - start_time))
 
                 Reset = 0       #For aa logge initielle strain stress
                 stegy=difstpNm
                 print '\nPostProcess'
-                execfile(processering + 'nonLinearPostprocessing.py')
-                t = (time.time() - start_time)
-                print('t ved ferdig postprosess=', t)
-            """except:
-                pass
-                Q = Q + 1000
-                n.append(Q)
-                print 'Error in Stress tests'
-                error=1"""
+                if analyse:
+                    execfile(processering + 'nonLinearPostprocessing.py')
+                print('t ved ferdig postprosess=', (time.time() - start_time))
 
-        d=[0.25]*6
+
+        d=[0.8]*6
         """Adjusting strength test"""
-        if not error:
+        if not error and Rerun:
             strains2 = strains.tolist()
-            Reset=1
+
             Jobbnav = Jobbnavn
             prev=0      #for aa vite hvor langt bak vi hoppet forrige gang
-            reps = 12
+            reps = 5
             adjusts=0
             Frames = np.zeros(reps+1)
+            lolo=1.0
+            attempts= 0
             while adjusts<reps:
                 Fram = FrameFinder()  # Returns frame before divergion
+                if attempts==0:
+                    Loao=Fram[2]
                 if not adjusts==0:
                     if Fram[0]<prevfram[0]:
                         Fram= prevfram
                 print '\nfix:  ',adjusts
 
                 print Fram
-                StressSigs = np.genfromtxt(Sigmapaths)
+                if Reset:
+                    StressSigs = np.genfromtxt(ReSigmapaths)
+                else:
+                    StressSigs = np.genfromtxt(Sigmapaths)
                 StressSigs = StressSigs[:Fram[0]]
 
                 #print StressSigs[-1, :]
@@ -247,8 +261,10 @@ for sisss in Case1:
 
                 appe = 0
                 diff = Fram[0] - prev
-
+                ReSigmapaths = Tekstfiler + '/Stresstests/' + Type + '__Rand-' + str(Q) + str(attempts) + 'RE.txt'
                 if not diff<=1:
+                    Reset = 1
+
                     Frames[adjusts + 1] = Fram[0]
                     appe = 1
 
@@ -258,22 +274,16 @@ for sisss in Case1:
                         prevname = difstpNm
                     else:
                         prevname = 'rep' + str(adjusts - 1)
-                    re =3
-                    if diff == 3:
-                        re=2
-                    if diff==2 or strains[Ret].any() < 0:
-                        re=1
-                    if diff<=0 :
-                        re=0
 
-                    print Frames[adjusts + 1], Frames[adjusts],re
-                    addedF = int(Frames[adjusts + 1]) - int(Frames[adjusts]) - re  # minus ## for prevantiv
+
+                    print Frames[adjusts + 1], Frames[adjusts]
+                    addedF = int(Frames[adjusts + 1]) - int(Frames[adjusts])  # minus ## for prevantiv
 
                     stegy = 'rep' + str(adjusts)
 
                     print 'diff', diff,  'addF', addedF
                     print prevname
-                    lolo=1.0- StressSigs[-1][0]
+                    lolo=lolo- StressSigs[-1][0]
                     mod.StaticStep(name='rep' + str(adjusts), previous=prevname, nlgeom=ON, stabilizationMagnitude=0.0002,
                                    stabilizationMethod=DAMPING_FACTOR,
                                    continueDampingFactors=False, adaptiveDampingRatio=0.05, timePeriod= lolo)
@@ -281,7 +291,7 @@ for sisss in Case1:
 
                     steg = mod.steps['rep' + str(adjusts)]
 
-                    steg.setValues(maxNumInc=Increments['maxNum'], initialInc=Increments['min']*1.1*lolo,
+                    steg.setValues(maxNumInc=Increments['maxNum'], initialInc=lolo*(StressSigs[-1][0]-StressSigs[-2][0]),
                                    minInc=Increments['min']*lolo, maxInc=Increments['max']*lolo, convertSDI=CONVERT_SDI_OFF)
 
                     steg.Restart(frequency=1, numberIntervals=0, overlay=OFF, timeMarks=OFF)
@@ -299,23 +309,32 @@ for sisss in Case1:
                             numGPUs=0)
 
 
-                print '\nPrevious Strain Vector', strains2
+                print '\nPrevious Strain Vector', np.round(strains2,4)
                 print 'Change : ', Fram[1]
-
-
-
-                for ssss in range(0,len(strains)):
-                    if Fram[1][ssss]:
-                        if d[ssss]>0.15:
-                            d[ssss] = d[ssss] * 0.8
-                        adjfactor = abs(strains[ssss])*d[ssss]/10
-                        print 'Adjust by : ', adjfactor
-
-                        if StressSigs[-1][ssss+1]>=0:
-                            strains2[ssss] = strains2[ssss] - adjfactor
+                FEEDbakc=1
+                if FEEDbakc:
+                    loas=[]
+                    for asa in range(0,6):
+                        if asa != Ret[0]:
+                            if len(Ret)==2:
+                                if asa != Ret[1]:
+                                    loas.append(1)
+                                else:
+                                    loas.append(0)
+                            else:
+                                if asa==2:
+                                    loas.append(1)
+                                else:
+                                    loas.append(1)
                         else:
-                            strains2[ssss] = strains2[ssss] + adjfactor
-                print 'Updated Strain Vector', strains2, '\n\n' + Jobbnavn
+                            loas.append(0)
+                    adjfac = np.dot(np.linalg.inv(Stiffmatrix), np.multiply(Fram[2], loas))
+
+                    print np.round(adjfac), loas
+
+                    strains2 = strains2 - adjfac
+
+                print 'Updated Strain Vector', np.round(strains2,2), '\n\n' + Jobbnavn
 
                 a = mod.rootAssembly
                 exx, eyy, ezz, exy, exz, eyz = strains2
@@ -338,14 +357,16 @@ for sisss in Case1:
                     pass
 
                 print '\nPostProcess'
-                execfile(processering + 'nonLinearPostprocessing.py')
-                t = (time.time() - start_time)
-                print('t for Restart iterasjon=', t)
+                if Reset:
+                    execfile(processering + 'nonLinearPostprocessing.py')
+                    t = (time.time() - start_time)
+                    print('t for Restart iterasjon=', t)
 
                 if appe:
                     adjusts =adjusts+1
                     print 'count: ', adjusts
                     prevfram = Fram
+                attempts= attempts+1
 
 
             t = (time.time() - start_time)

@@ -131,8 +131,7 @@ if Interdamage:
               'qdiDEpower': 1.2, 'qdiDE': (0.0078, 0.0078, 0.0078), }
     intF = mdb.models['Model-A'].materials['interface']
     intF.QuadsDamageInitiation(table=(IntCon['QDI'],))
-    intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
-                                               power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
+    intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, table=(IntCon['qdiDE'],))
 Size = 1.6e-1
 Case1= [[Size, 1],
         [Size, 0],
@@ -141,7 +140,7 @@ Case1= [[Size, 1],
 Case2= [[Size,3],
         [Size, 4]]
 
-Case3 = [-[Size,2],
+Case3 = [[-Size,2],
         [-Size, 1],
         [-Size, 0]]
 #for sisss in normal:

@@ -119,7 +119,7 @@ Plastic=1
 if Plastic:
     mdb.models['Model-A'].materials['resin'].Plastic(table=((Yieldlim, 0.0), (Plastlim, PlasticStrain)))
     mdb.models['Model-A'].materials['resin'].Plastic(table=((Yieldlim, 0.0), (Plastlim, PlasticStrain)))
-Damage=1
+Damage=0
 if Damage:
     mdb.models['Model-A'].materials['resin'].DuctileDamageInitiation(table=((0.035,
                                                                              0.0, 0.0),))
@@ -138,7 +138,8 @@ Case1= [[Size, 1],
         [Size, 2]]
 
 Case2= [[Size,3],
-        [Size, 4]]
+        [Size, 4],
+        [Size, 5]]
 
 Case3 = [[-Size,2],
         [-Size, 1],

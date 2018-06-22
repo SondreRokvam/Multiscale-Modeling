@@ -57,7 +57,7 @@ def plotStressStrainData():
         #xmin, xmax = plt.xlim()
         #print (ymin, ymax, xmin, xmax)
         plt.tight_layout()
-        #plt.savefig('C:/MultiScaleMethod/Github/Plots/'+Test+fis[0]+'.png')
+        plt.savefig('C:/MultiScaleMethod/Github/Plots/'+Test+fis[0]+'.png')
         plt.show()
     """
     for fily in filelist:

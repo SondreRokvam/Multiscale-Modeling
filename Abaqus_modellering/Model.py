@@ -6,8 +6,6 @@ if Createmodel:
     if not noFiber:
         execfile(Modellering + 'GenerereFiberPopTilFil.py')  # create a random population
     CreateNewRVEModel()
-    if Savemodel:
-        mdb.saveAs(pathName=RVEmodellpath)
 # Prov aa aapne tidligere modell
 if openModel:
     Mdb()

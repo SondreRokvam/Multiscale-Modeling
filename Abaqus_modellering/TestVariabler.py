@@ -2,50 +2,44 @@
 
 global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 #numCPU = multiprocessing.cpu_count()
-numCPU = 1
-
-analyse = 0
+numCPU = 8
+Model = 0
 FoundStiff = 1
+analyse = 1
 stresstest = 1
-if analyse:
+Rerun = 1
+if Model:
     Createmodel = 1
     Savemodel = 1
-    Runjobs = 1
-    if not FoundStiff:
-        linearAnalysis = 1
-        LinearpostPross = 1
-    else:
-        linearAnalysis = 0
-        LinearpostPross = 0
-    nonLinearAnalysis = 1
-    nonLinearpostPross = 1
     openModel = 0
 else:
     Createmodel = 0
     Savemodel = 0
-    Runjobs = 1
+    openModel = 1
+
+if not FoundStiff:
+    linearAnalysis = 1
+    LinearpostPross = 1
+else:
     linearAnalysis = 0
     LinearpostPross = 0
 
-
-    openModel = 1
-    nonLinearAnalysis = 1 # Finne standard
-
-Increments = {'maxNum': 50, 'initial': 1e-2, 'min': 0.8e-3, 'max': 0.1}
-
-
+if analyse:
+    Runjobs = 1
+else:
+    Runjobs = 0
 
 
 """Material modeller"""
-
+global Yieldlim, Plastlim, PlasticStrain
 #Plasticitet
 Yieldlim = 0.060
 
 Plastlim = 0.061
 PlasticStrain = 0.015
-Epox=((Yieldlim, 0.0), (Plastlim, PlasticStrain))
 
-Sizing =((Yieldlim, 0.0), (Plastlim, PlasticStrain))
+
+
 """Simuleringsvariabler """
 global Atapt_Damp_Ratio,Dampening,Stabl_Magn,Singlepin,tripplepin
 
@@ -64,27 +58,6 @@ MaterialDens  = 0                           #   Material Density
 
 
 
-
-"""    RVEmodel variabler                                      """
-global noFibertest,Fibervariation,rmean,Rstdiv,Interface,rinterface,ElementInterfaceT,id, Retning
-
-noFibertest = 0                                     # ON/OFF Fiber i modellen.
-Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
-
-rmean = 8.7096                              # Gjennomsnittradius pa fiber
-Rstdiv = 0.6374                             # OStandard avvik fra gjennomsnittsradius
-
-Interface = 1                                   # ON/OFF CohesiveInterface
-rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
-ElementInterfaceT = 0                  # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
-
-id   =   np.identity(6)          # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
-Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
-
-
-
-
-
 """Meshsize"""
 global FiberSirkelResolution,meshsize,tykkelse,tol
 
@@ -93,8 +66,6 @@ meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resol
 
 tykkelse = meshsize    # RVE tykkelse
 tol = rinterface * 0.4  # Modelleringstoleranse - Mindre en minste modelleringsvariabel (rInterface)
-
-
 
 
 
@@ -109,8 +80,6 @@ ytredodgrense = r + gtol  # Dodzone avstand, ytre grense fra kanter/hjorner
 indredodgrense = r - gtol  # Dodzone avstand, indre grense fra kanter/hjorner
 
 iterasjonsgrense = 10000  # iterasjonsgrense i Fiberutplassering loop
-
-
 
 
 

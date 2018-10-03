@@ -19,4 +19,4 @@ global wiggle, RVEmodellpath
 
 wiggle = random() * rmean  # Omplasseringsgrenser for fiberomplassering
 
-RVEmodellpath = workpath + 'RVEmodel__Parameter-' + str(int(ParameterSweep*scsc)) + '__RandKey-' + str(Q)
+RVEmodellpath = workpath + 'RVEmodel__Parameter-' + str(key) + '__RandKey-' + str(Q)

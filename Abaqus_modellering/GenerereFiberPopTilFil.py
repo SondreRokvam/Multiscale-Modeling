@@ -148,7 +148,7 @@ def modellereRVEsnitt():  # Lage fiber populasjon
     del coord
     del books
 
-#Stotte funsjoner til modellere RVE
+#Support funsjoner til modellere RVE
 def countsjikt(coord):
     i_sjikt = 0.0
     for i in range(len(coord)):

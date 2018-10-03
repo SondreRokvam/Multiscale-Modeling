@@ -29,7 +29,7 @@ def create_nonLinearstrainedlastcases(Strain, Jobbinfo):
                              variables=('RT', 'UT'),region=regDef,
                              sectionPoints=DEFAULT, rebar=EXCLUDE)
 
-    print '\nJob : ',Jobbinfo,'\nStrains : ',Strain,'\nIncrements : ',Increments
+    print '\nJob : ',Jobbinfo,'\nStrains : ',np.round(Strain,4),'\nIncrements : ',Increments
     print '\nnon Linear load analysis'
 
     # Lagring av output data base filer .odb

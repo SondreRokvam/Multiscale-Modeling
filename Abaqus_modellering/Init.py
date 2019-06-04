@@ -1,16 +1,19 @@
-Iterations = 0
+
 # Globale Directories
-GitHub, workpath = 'C:/MultiScaleMethod/Github/Multiscale-Modeling/', 'C:/Temp/'
-Tekstfiler, Modellering, processering = 'C:/MultiScaleMethod/Github/textfiles/', GitHub + 'Abaqus_modellering/', GitHub + 'Abaqus_prosessering/'
+multiMod, workpath = GitHub+'Multiscale-Modeling/', 'C:/Temp/'
+Tekstfiler, Modellering, processering = GitHub+'textfiles/',multiMod+'Abaqus_modellering/', multiMod+'/Abaqus_prosessering/'
+
+#RVE parametere
+nf = 1
+Vf = 0.2
+
+#Iterasjon parametere
+Iterations = 0
+SweepParametere = np.genfromtxt(multiMod + 'Sweeps.txt')
+SweepPrime = 9973  # A prime for good measure
 
 
-Yeah = np.genfromtxt(GitHub + 'Sweeps.txt')
 
-
-
-nf = 25
-Vf = 0.6
-scsc = 9973  # A prime for good measure
 
 # Hvilken parameter sweepes
 
@@ -21,12 +24,6 @@ scsc = 9973  # A prime for good measure
 #   Klareringsavstand
 
 
-
-
-# Loops
-
-
-
 # Open for big scale iterations
 execfile(Modellering + 'IterationParameters.py')  # Sette iterasjonsnummer
 if Iterations:
@@ -35,4 +32,4 @@ if Iterations:
     Itra.close()
     Iterasjonfiks()
 
-print'Iterasjon : ', ItraPara  # Antall itersjoner saa langt
+print 'Iterasjon : ', ItraPara  # Antall itersjoner saa langt

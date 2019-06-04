@@ -5,7 +5,6 @@ def LageRVEflate(model):
     s = model.ConstrainedSketch(name='__profile__', sheetSize=3 * dL)
     p = mod.Part(name=partName, dimensionality=THREE_D,
                  type=DEFORMABLE_BODY)
-
     s.Line(point1=(-dL/2, -dL/2), point2=(dL/2, -dL/2))
     s.Line(point1=(dL/2, -dL/2), point2=(dL/2, dL/2))
     s.Line(point1=(dL/2, dL/2), point2=(-dL/2, dL/2))
@@ -97,10 +96,10 @@ def SketcheInnFiber_Interface(model):
     e1 = p.edges
     p.PartitionFaceBySketch(sketchUpEdge=e1.findAt(coordinates=(dL/2, 0.0, 0.0)), faces=square, sketch=s1)
 
-model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)          #   Lage part
 global  mod
 mod = mdb.models[modelName]
 
-LageRVEflate(model)                                                     # Tegne RVE - Firkant
+LageRVEflate(mod)                                                     # Tegne RVE - Firkant
+
 if not nf == 0:
-    SketcheInnFiber_Interface(model)                                    # Partionere RVE - Fiber med eller uten interface
+    SketcheInnFiber_Interface(mod)                                    # Partionere RVE - Fiber med eller uten interface

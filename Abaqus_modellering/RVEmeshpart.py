@@ -47,7 +47,7 @@ def LageFiberRegionSetsForMeshing():
 
 def meshOrphanRVEpart():
     p = mod.parts[partName]
-    p.seedPart(size=meshsize, deviationFactor=0.1, minSizeFactor=0.1)
+    p.seedPart(size=meshsize, deviationFactor=0.9, minSizeFactor=0.001, constraint=FINER)
     if Interface:
         p = mod.parts[partName]
         for ma in p.sets['Interface'].faces:

@@ -1,38 +1,37 @@
 """         Script variabler                """
-
 global Createmodel,Savemodel,numCPU,Runjobs,linearAnalysis,nonLinearAnalysis,Increments
 #numCPU = multiprocessing.cpu_count()
 numCPU = 1
 
-analyse = 0
-FoundStiff = 1
-stresstest = 1
-if analyse:
+Newmodels = 1
+Runjobs = 1
+Stifftest = 1
+Stresstest = 1
+
+if Newmodels:
     Createmodel = 1
     Savemodel = 1
-    Runjobs = 1
-    if not FoundStiff:
-        linearAnalysis = 1
-        LinearpostPross = 1
-    else:
-        linearAnalysis = 0
-        LinearpostPross = 0
-    nonLinearAnalysis = 1
-    nonLinearpostPross = 1
     openModel = 0
 else:
     Createmodel = 0
     Savemodel = 0
-    Runjobs = 1
+    openModel = 1
+
+if Stifftest:
+    linearAnalysis = 1
+    LinearpostPross = 1
+else:
     linearAnalysis = 0
     LinearpostPross = 0
 
-
-    openModel = 1
-    nonLinearAnalysis = 1 # Finne standard
+if Stresstest:
+    nonLinearAnalysis = 1
+    nonLinearpostPross = 1
+else:
+    nonLinearAnalysis = 1
+    nonLinearpostPross = 1
 
 Increments = {'maxNum': 50, 'initial': 1e-2, 'min': 0.8e-3, 'max': 0.1}
-
 
 
 
@@ -63,20 +62,21 @@ MaterialDens  = 0                           #   Material Density
 
 
 
-
-
 """    RVEmodel variabler                                      """
 global noFibertest,Fibervariation,rmean,Rstdiv,Interface,rinterface,ElementInterfaceT,id, Retning
 
 noFibertest = 0                                     # ON/OFF Fiber i modellen.
 Fibervariation = 1                                  # ON/OFF variasjon fiberradius. Mean and standard div. Kan paavirke Vf i endelig model.
 
+
 rmean = 8.7096                              # Gjennomsnittradius pa fiber
 Rstdiv = 0.6374                             # OStandard avvik fra gjennomsnittsradius
 
 Interface = 1                                   # ON/OFF CohesiveInterface
-rinterface = 0.001                              # Interfacetykkelse ved modellering. Verdi er relativ til radius.    0.01 = 1%
-ElementInterfaceT = 0                  # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
+rinterface = 0.0001                              # Interfacetykkelse ved Sketching. Verdi er relativ til radius.    0.01 = 1%
+AdjustElementInterfaceT = 0                  # Interfacetykkelse paa elementene.  Verdi er relativ til radius.
+ElementInterfaceT = 0
+
 
 id   =   np.identity(6)          # Identity matrix. Good for normalised load cases.'Exx','Eyy','Ezz','Exy','Exz','Eyz'
 Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
@@ -88,7 +88,7 @@ Retning =    ['Exx', 'Eyy', 'Ezz', 'Exy', 'Exz', 'Eyz']
 """Meshsize"""
 global FiberSirkelResolution,meshsize,tykkelse,tol
 
-FiberSirkelResolution =  20                               # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
+FiberSirkelResolution =  20                                # Meshresolution pa Fiber omkrets. 2*pi/FiberSirkelResolution
 meshsize = rmean * 2 * pi / FiberSirkelResolution           # Meshsize fra resolution paa interface paa fiberomkrets
 
 tykkelse = meshsize    # RVE tykkelse
@@ -117,7 +117,7 @@ iterasjonsgrense = 10000  # iterasjonsgrense i Fiberutplassering loop
 """ ABAQUS modelleringsnavn    """
 
 global modelName,partName, meshPartName, instanceName,stepName, difstpNm
-modelName = 'Model-A'
+modelName = 'Model-1'
 partName, meshPartName = 'Part-1', 'Part-1-mesh-1'
 instanceName = 'PART-1-MESH-1-1'
 stepName, difstpNm = 'Enhetstoyninger', 'Lasttoyinger'

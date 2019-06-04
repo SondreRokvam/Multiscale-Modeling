@@ -20,13 +20,16 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
     res.Elastic(table=(ResCon['E,v'],))
     if MaterialDens:
         res.Density(table=((ResCon['Den'],),))
-    if nonLinearAnalysis:
+    if nonLinearAnalysis and ConDmPlast:
         res.ConcreteDamagedPlasticity(table=(ResCon['CDP'],))
         RCDP = res.concreteDamagedPlasticity
         RCDP.ConcreteCompressionHardening(table=ResCon['cdpCCH'])
         RCDP.ConcreteCompressionDamage(table=ResCon['cdpCCD'])
         RCDP.ConcreteTensionStiffening(table=(ResCon['cdpCTS'],), type=GFI)
         RCDP.ConcreteTensionDamage(table=ResCon['cdpCTD'], type=DISPLACEMENT)
+    elif nonLinearAnalysis:
+        mod.materials['resin'].Plastic(table=Sizing)
+
 
     if not nf == 0:
         mod.Material(name='glass')
@@ -39,18 +42,18 @@ def SetMaterialConstants(ResCon,FibCon,IntCon):                     #Assign Prop
             intF.Elastic(type=TRACTION, table=(IntCon['Trac'],))
             if MaterialDens:
                 intF.Density(table=((IntCon['Den'],),))
-            if nonLinearAnalysis:
+            if nonLinearAnalysis and ConDmPlast:
                 intF.QuadsDamageInitiation(table=(IntCon['QDI'],))
                 intF.quadsDamageInitiation.DamageEvolution(type=ENERGY, mixedModeBehavior=BK,
-                                                       power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
-    if not ConDmPlast:
-        del mdb.models['Model-A'].materials['interface'].quadsDamageInitiation
-        mdb.models['Model-A'].materials['interface'].Plastic(table=Epox)
-        del mdb.models['Model-A'].materials['resin'].concreteDamagedPlasticity
-        mdb.models['Model-A'].materials['resin'].Plastic(table=Sizing)
+                                                           power=IntCon['qdiDEpower'], table=(IntCon['qdiDE'],))
+            elif nonLinearAnalysis:
+                mod.materials['interface'].Plastic(table=Epox)
+
+
+
 
 def SectionsAndOrientations():                                  # Create and assign sections to materials
-    p = mdb.models['Model-A'].parts['Part-1-mesh-1']
+    p = mod.parts['Part-1-mesh-1']
     mod.HomogeneousSolidSection(name='SSmatrix', material='resin', thickness=None)          # Create Matrix sections
     region = p.sets['Matrix']
     p.MaterialOrientation(region=region,orientationType=GLOBAL, axis=AXIS_1,additionalRotationType=ROTATION_NONE,
@@ -96,8 +99,8 @@ def SectionsAndOrientations():                                  # Create and ass
             region = p.sets['Interfaces']
             p.SectionAssignment(region=region, sectionName='SSbond', offset=0.0,offsetType=MIDDLE_SURFACE,
                                 offsetField='',thicknessAssignment=FROM_SECTION)
-
 SetMaterialConstants(ResCon,FibCon,IntCon)
+
 SectionsAndOrientations()
 
 print 'Material properties assigned to element sets in model'

@@ -1,18 +1,28 @@
 Mdb()  # reset Abaqus
-model = mdb.Model(name=modelName, modelType=STANDARD_EXPLICIT)  # Lage model
 mod = mdb.models[modelName]  # Lage snarvei
 if Createmodel:
     xydata = None  # Fiber kordinater og radiuser
-    if not noFiber:
-        execfile(Modellering + 'GenerereFiberPopTilFil.py')  # create a random population
-    CreateNewRVEModel()
-    if Savemodel:
-        mdb.saveAs(pathName=RVEmodellpath)
+    try:
+        if not noFiber:
+            execfile(Modellering + 'GenerereFiberPopTilFil.py')  # create a random population
+    except:
+        print 'Feil i generering av fiberpopulasjon - Model'
+        error = 1
+    if not error:
+        try:
+            CreateNewRVEModel()
+        except:
+            print 'Feil i RVEmodellering - Model'
+            error=1
+    if not error:
+        if Savemodel:
+            try:
+                mdb.saveAs(pathName=RVEmodellpath)
+            except:
+                print 'Feil i lagring av RVEmodell - Model'
+                error = 1
 # Prov aa aapne tidligere modell
 if openModel:
     Mdb()
     openMdb(pathName=RVEmodellpath)
     mod = mdb.models[modelName]
-
-t = (time.time() - start_time)
-print('t etter lagd modell=', t)

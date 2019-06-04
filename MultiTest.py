@@ -6,11 +6,11 @@ from sets import Set
 import multiprocessing
 import time
 start_time = time.time()
-print'\n\n>>>\tMultiscale Modelling, Microscale\n',
+print'\n>>>\tMultiscale Modelling, Microscale\n',
 def CreateNewRVEModel():
+
     # Creates RVE model and orphanmesh. Lage 2D RVE shell, meshe RVE, extrudere til 3D part, lage orphanmesh og sette cohesive elementtype paa Interface
     execfile(Modellering+'RVEsketching.py')             # Lage 2D RVE fra fiberpopulasjon data
-    del mdb.models['Model-1']                           # Slett standard part model 1
     execfile(Modellering+'RVEmeshpart.py')              # Meshe 2D RVE  til 3D part, lage orphan mesh part
     p = mod.parts[meshPartName]
     execfile(Modellering+'RVEelementsets.py')           # Fiber, sizing og matrix elementer i set og Fiber center datums for material orientation
@@ -97,18 +97,20 @@ def FrameFinder():
     print 'No divergence found'
     return len(StressSi)-1, StressFlags, StressSi[len(StressSi)-1]
 
-# Init : forste fix
-execfile('C:/MultiScaleMethod/Github/Multiscale-Modeling/Abaqus_modellering/Init.py')
-
-ParameterSweep = Yeah[0]
-
 # Intiering
-execfile(Modellering + 'Initial.py')
-
-
+GitHub = 'C:/Users/sondreor/Documents/GitHub/'
+try:
+    execfile(GitHub + 'Multiscale-Modeling/Abaqus_modellering/Init.py')
+    execfile(Modellering + 'Initial.py')
+except:
+     if not error:
+        print 'Feil i initiering'
+        error=1
+print '\tInitieringstid =', np.round(time.time() - start_time,)
+ParameterSweep = SweepParametere[0]
 n = [int(ParameterSweep * scsc + ItraPara * 169)]
 ItraPara = 0
-tests = 5  # Antall iterasjoner per startup
+tests = 1  # Antall iterasjoner per startup
 
   # Arbeids lokke
 
@@ -133,5 +135,4 @@ while len(n)<=tests:
     import xyPlot
     import displayGroupOdbToolset as dgo
     import connectorBehavior
-
     execfile(Modellering + 'Multilucke.py')

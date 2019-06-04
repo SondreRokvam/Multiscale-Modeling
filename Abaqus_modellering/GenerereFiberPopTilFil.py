@@ -11,13 +11,13 @@ def modellereRVEsnitt():  # Lage fiber populasjon
     senterpunkt = 0
     coun=0
     while nplassert < nf:
-        coun=coun+1
         if Fibervariation:  # Radiusene fordeles med variasjoner
             r= radiuser[int(nplassert)]
             gtol = Rclearing * r  # Dodsone klaring toleranse
             ytredodgrense = r + gtol  # Dodzone avstand, lengst fra kantene
             indredodgrense = r - gtol  # Dodzone avstand, naermest kantene
 
+        coun=coun+1
         frem = countsjikt(coord) / nf  # Forlopig fremdrift - antall fibersenter som finnes i RVE/totalt antall fiber (nf)
         fvf = frem * Vf  # Forlopig volumfraksjon
 
@@ -36,12 +36,9 @@ def modellereRVEsnitt():  # Lage fiber populasjon
             nkrasj = 0
 
         # genererer nye fiberkoordinater"
-        if nf <= 1:
-            x = 0.0
-            y = 0.0
-        else:
-            x = dL * random() - dL * 0.5
-            y = dL * random() - dL * 0.5
+
+        x = dL * random() - dL * 0.5
+        y = dL * random() - dL * 0.5
         # sjekke krasj mot tidligere fiber, at avstand mot hjornet er utenfor eller innenfor doedsonegrensene for hjornet og at avstand fra sidene er over og under doedsonegrensene for kantene.
         if not krasj(x, y,r, coord) and (sqrt((dL / 2-abs(x)) ** 2 + (dL / 2- abs(y)) ** 2) > ytredodgrense or sqrt((dL / 2-abs(x)) ** 2 + (dL / 2- abs(y)) ** 2) < indredodgrense) and (abs(x)>dL/2-indredodgrense or abs(x)<dL/2-ytredodgrense):
             if ishjornep(x, y):  # Er koordinatet i hjornesone?
@@ -238,7 +235,27 @@ if Fibervariation:
     radiuser = []
     for fib in range(0, nf):
         radiuser.append(gauss(rmean, Rstdiv))
-modellereRVEsnitt()
+if nf==1:
+    if nf == 1:
+        x = 0.0
+        y = 0.0
+    if Fibervariation:  # Radiusene fordeles med variasjoner
+        r = radiuser[0]
+    else:
+        r=rmean
+    coord = list()
+    coord.append([x, y,r])
+    g = open(coordpath, "w")
+    for l in range(0, len(coord)):
+        g.write(str(coord[l][0]) + '\t' + str(coord[l][1]) + '\t' + str(coord[l][2]))
+        if l < (len(coord) - 1):
+            g.write('\n')
+    g.close()
+    global xydata
+    xydata = coord
+else:
+    modellereRVEsnitt()
+
 #Finne Vf etter modellering
 fA = []
 for radius in radiuser:

@@ -34,31 +34,37 @@ def adjust():
                 nyx = round(FN[0].coordinates[0], 7)
                 nyy = round(FN[0].coordinates[1], 7)
                 nyz = round(FN[0].coordinates[2], 7)
-
-                RScaling = ElementInterfaceT / r
-
-                if abs(nyy) > dL / 2 - tol and abs(yns) > dL / 2 - tol:
-                    diff=(xns-nyx)/abs(xns-nyx)
-                    Ix=round(nyx + diff * ElementInterfaceT, 7)
-                    Iy = nyy
-                elif abs(nyx) > dL / 2 - tol and abs(xns) > dL / 2 - tol:
-                    diff=(yns-nyy)/abs(yns-nyy)
-                    Iy=round(nyy + diff* ElementInterfaceT, 7)
-                    Ix = nyx
+                if ElementInterfaceT==0:
+                    a.editNode(nodes=a.sets['IN'], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
+                    a.editNode(nodes=a.sets['FN'], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
+                    a.regenerate()
+                    a.deleteSets(setNames=('noFiber' + str(count) + 'nodes', 'IN', 'FN', 'Fiber' + str(count) + 'nodes',
+                                           'FiberInterface' + str(count) + 'nodes', 'Fiberflate' + str(count) + 'nodes',
+                                           'Interface' + str(count) + 'nodes',))
                 else:
-                    Iy = round(nyy + (nyy - y) * RScaling, 7)
-                    Ix = round(nyx + (nyx - x) * RScaling, 7)
-                if abs(Iy) > dL / 2:
-                    Iy = (Iy / abs(Iy)) * dL / 2
-                if abs(Ix) > dL / 2:
-                    Ix = (Ix / abs(Ix)) * dL / 2
-                a.editNode(nodes=a.sets['IN'], coordinate1=Ix, coordinate2=Iy, coordinate3=nyz)
-                a.editNode(nodes=a.sets['FN'], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
-                a.regenerate()
-                a.deleteSets(setNames=('noFiber' + str(count) + 'nodes', 'IN', 'FN', 'Fiber' + str(count) + 'nodes',
-                                       'FiberInterface' + str(count) + 'nodes', 'Fiberflate' + str(count) + 'nodes',
-                                       'Interface' + str(count) + 'nodes',))
+                    RScaling = ElementInterfaceT / r
+                    if abs(nyy) > dL / 2 - tol and abs(yns) > dL / 2 - tol:
+                        diff=(xns-nyx)/abs(xns-nyx)
+                        Ix=round(nyx + diff * ElementInterfaceT, 7)
+                        Iy = nyy
+                    elif abs(nyx) > dL / 2 - tol and abs(xns) > dL / 2 - tol:
+                        diff=(yns-nyy)/abs(yns-nyy)
+                        Iy=round(nyy + diff* ElementInterfaceT, 7)
+                        Ix = nyx
+                    else:
+                        Iy = round(nyy + (nyy - y) * RScaling, 7)
+                        Ix = round(nyx + (nyx - x) * RScaling, 7)
+                    if abs(Iy) > dL / 2:
+                        Iy = (Iy / abs(Iy)) * dL / 2
+                    if abs(Ix) > dL / 2:
+                        Ix = (Ix / abs(Ix)) * dL / 2
+                    a.editNode(nodes=a.sets['IN'], coordinate1=Ix, coordinate2=Iy, coordinate3=nyz)
+                    a.editNode(nodes=a.sets['FN'], coordinate1=nyx, coordinate2=nyy, coordinate3=nyz)
+                    a.regenerate()
+                    a.deleteSets(setNames=('noFiber' + str(count) + 'nodes', 'IN', 'FN', 'Fiber' + str(count) + 'nodes',
+                                           'FiberInterface' + str(count) + 'nodes', 'Fiberflate' + str(count) + 'nodes',
+                                           'Interface' + str(count) + 'nodes',))
         count = count + 1
-if not ElementInterfaceT == 0:
+if not AdjustElementInterfaceT == 0:
     adjust()
 print 'Interface elements adjusted'
